@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>舉發填單助手</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Microsoft JhengHei','微軟正黑體',Arial,sans-serif;background:#eef2f7;color:#172033;font-size:15px;line-height:1.7;min-height:100vh}
+header{background:linear-gradient(135deg,#17324d,#2d6a9f);color:#fff;text-align:center;padding:26px 20px;box-shadow:0 2px 10px rgba(0,0,0,.18)}
+header h1{font-size:1.7rem;letter-spacing:1px}
+header p{opacity:.88;font-size:.95rem;margin-top:6px}
+.container{max-width:1080px;margin:28px auto;padding:0 16px 60px}
+.notice{background:#fff7ed;border:1px solid #fed7aa;border-left:4px solid #f97316;border-radius:0 8px 8px 0;padding:14px 16px;color:#7c2d12;margin-bottom:18px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;box-shadow:0 1px 6px rgba(0,0,0,.07)}
+.tool-card{display:flex;flex-direction:column;min-height:235px}
+.tool-card h2{font-size:1.05rem;color:#17324d;margin-bottom:8px}
+.tool-card p{color:#475569;margin-bottom:14px}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto;margin-bottom:16px}
+.tag{border-radius:999px;background:#e0f2fe;color:#075985;padding:3px 9px;font-size:.78rem;font-weight:800}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.btn{border:none;border-radius:8px;padding:9px 14px;font-family:inherit;font-weight:800;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.primary{background:#17324d;color:#fff}.primary:hover{background:#10263d}
+.light{background:#f1f5f9;color:#475569}.light:hover{background:#e2e8f0}
+.teal{background:#0d9488;color:#fff}.teal:hover{background:#0b7b6f}
+.section{margin-top:16px}
+.section h2{font-size:1rem;color:#17324d;margin-bottom:10px}
+.feedback-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}
+.list{padding-left:1.2em;color:#475569}
+.list li{margin-bottom:4px}
+.muted{color:#64748b;font-size:.88rem;margin-top:8px}
+code{background:#f1f5f9;border-radius:6px;padding:2px 5px}
+@media(max-width:840px){.grid,.feedback-grid{grid-template-columns:1fr}.tool-card{min-height:auto}header h1{font-size:1.35rem}}
+</style>
+</head>
+<body>
+<header>
+  <h1>舉發填單助手</h1>
+  <p>危險物品、液化石油氣、爆竹煙火案件的填寫與開單前檢核入口</p>
+</header>
+
+<div class="container">
+  <div class="notice">
+    本工具為執法輔助，不能取代個案事實調查、業者 SDS、現場數量確認及消防署函釋查核。涉及裁罰時，請以正式資料及現行法規為準。
+  </div>
+
+  <div class="grid">
+    <div class="card tool-card">
+      <h2>舉發單填寫助手</h2>
+      <p>依場所類型與現場事實，產生違規事實、法令依據、管理權人填寫提醒與開單前檢核。</p>
+      <div class="tags"><span class="tag">舉發文字</span><span class="tag">LPG</span><span class="tag">爆竹煙火</span></div>
+      <a class="btn primary" href="舉發單填寫助手.html">開啟工具</a>
+    </div>
+
+    <div class="card tool-card">
+      <h2>危物檢查紀錄表</h2>
+      <p>輸入六類物品、數量與安全管理情形，輔助產生檢查紀錄表文字及違規事實草稿。</p>
+      <div class="tags"><span class="tag">六類物品</span><span class="tag">管制量</span><span class="tag">保安監督</span></div>
+      <a class="btn primary" href="危物案件式填寫助手.html">開啟工具</a>
+    </div>
+
+    <div class="card tool-card">
+      <h2>危險物品標籤初判</h2>
+      <p>整理標籤、CAS、UN、紅框危害圖示等線索，輔助判斷是否需要求業者補 SDS 或進一步查證。</p>
+      <div class="tags"><span class="tag">標籤線索</span><span class="tag">SDS</span><span class="tag">初判</span></div>
+      <a class="btn primary" href="危險物品標籤初判.html">開啟工具</a>
+    </div>
+  </div>
+
+  <div class="section feedback-grid">
+    <div class="card">
+      <h2>意見回饋與錯誤回報</h2>
+      <p>所有頁面的錯誤、法規疑義、功能建議都集中在同一個留言板，方便後續追蹤與修正。</p>
+      <div class="btn-row">
+        <a class="btn teal" href="https://github.com/ahdaq002-cyber/weiwu119v1/discussions/new/choose" target="_blank" rel="noopener">進入留言板</a>
+        <a class="btn light" href="https://github.com/ahdaq002-cyber/weiwu119v1/issues/new?title=%E5%B7%A5%E5%85%B7%E5%95%8F%E9%A1%8C%E5%9B%9E%E5%A0%B1&body=%E5%95%8F%E9%A1%8C%E9%A0%81%E9%9D%A2%EF%BC%9A%0A%E5%95%8F%E9%A1%8C%E6%8F%8F%E8%BF%B0%EF%BC%9A%0A%E6%9C%9F%E6%9C%9B%E4%BF%AE%E6%AD%A3%EF%BC%9A" target="_blank" rel="noopener">改用 Issues 回報</a>
+      </div>
+      <div class="muted">如果 Discussions 尚未啟用，請到 GitHub repo 的 Settings 內開啟 Discussions，或先用 Issues 回報。</div>
+    </div>
+
+    <div class="card">
+      <h2>建議回報格式</h2>
+      <ul class="list">
+        <li>問題頁面：例如 <code>危險物品標籤初判</code></li>
+        <li>現場輸入內容：不含個資即可</li>
+        <li>目前輸出結果：哪一句不合理</li>
+        <li>建議修正：法條、函釋或實務用語</li>
+      </ul>
+    </div>
+  </div>
+</div>
+</body>
+</html>
