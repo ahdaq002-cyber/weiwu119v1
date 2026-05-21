@@ -1,0 +1,3681 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>舉發單填寫助手 — 公共危險物品</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Microsoft JhengHei','微軟正黑體',Arial,sans-serif;background:#eef2f7;min-height:100vh;color:#1a202c;font-size:15px}
+header{background:linear-gradient(135deg,#1e3a5f,#2d6a9f);color:#fff;padding:18px 30px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.2)}
+header h1{font-size:1.6rem;font-weight:700;letter-spacing:1px}
+header p{margin-top:4px;opacity:.8;font-size:.9rem}
+.top-links{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.top-links a{color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.45);border-radius:8px;padding:6px 12px;font-size:.88rem;background:rgba(255,255,255,.12)}
+.top-links a:hover{background:rgba(255,255,255,.22)}
+.container{max-width:960px;margin:28px auto;padding:0 16px 60px}
+.card{background:#fff;border-radius:12px;padding:24px;margin-bottom:18px;box-shadow:0 1px 6px rgba(0,0,0,.08);border:1px solid #e2e8f0}
+.card-title{font-size:1rem;font-weight:700;color:#1e3a5f;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.step-num{background:#1e3a5f;color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;flex-shrink:0}
+select,input[type=text],input[type=date]{width:100%;padding:10px 14px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:.95rem;font-family:inherit;color:#1a202c;background:#fff;transition:border-color .2s,box-shadow .2s}
+textarea{width:100%;min-height:110px;resize:vertical;padding:10px 14px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:.95rem;font-family:inherit;color:#1a202c;background:#fff;transition:border-color .2s,box-shadow .2s;line-height:1.6}
+select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath fill='%23666' d='M6 8L0 0h12z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;cursor:pointer}
+select:focus,input:focus,textarea:focus{outline:none;border-color:#2d6a9f;box-shadow:0 0 0 3px rgba(45,106,159,.15)}
+.form-group{margin-bottom:0}
+label{display:block;font-size:.88rem;font-weight:600;color:#4a5568;margin-bottom:6px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.span-full{grid-column:1/-1}
+.cb-group{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.cb-item{display:flex;align-items:flex-start;gap:8px;padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:8px;cursor:pointer;background:#fff;transition:all .15s}
+.cb-item:hover{border-color:#93c5fd;background:#eff6ff}
+.cb-item.on{border-color:#2d6a9f;background:#eff6ff}
+.cb-item input[type=checkbox]{flex-shrink:0;margin-top:2px;accent-color:#1e3a5f;transform:scale(1.2);cursor:pointer}
+.cb-item label{font-size:.85rem;font-weight:400;color:#374151;cursor:pointer;margin:0;line-height:1.5}
+.output-area{background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:20px;font-family:'Microsoft JhengHei',sans-serif;font-size:.95rem;line-height:2;white-space:pre-wrap;word-break:break-all;min-height:80px;color:#1a202c}
+.law-box{background:#fffbeb;border:1px solid #fcd34d;border-left:4px solid #f59e0b;border-radius:0 8px 8px 0;padding:14px 16px;margin-top:14px;font-size:.93rem;line-height:1.7}
+.law-box strong{color:#92400e}
+.off-box{background:#f0fdf4;border:1px solid #86efac;border-left:4px solid #22c55e;border-radius:0 8px 8px 0;padding:14px 16px;margin-top:10px;font-size:.93rem;line-height:1.7}
+.off-box strong{color:#166534}
+.btn-row{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border:none;border-radius:8px;font-size:.9rem;font-weight:600;font-family:inherit;cursor:pointer;transition:all .2s}
+.btn-gen{background:#1e3a5f;color:#fff}.btn-gen:hover{background:#163059}
+.btn-cpy{background:#0d9488;color:#fff}.btn-cpy:hover{background:#0b7b6f}
+.btn-all{background:#7c3aed;color:#fff}.btn-all:hover{background:#6d28d9}
+.btn-rst{background:#f1f5f9;color:#475569}.btn-rst:hover{background:#e2e8f0}
+.alert-info{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px 16px;font-size:.88rem;color:#1e40af;line-height:1.6}
+.dead-box{background:#eff6ff;border:1px solid #bfdbfe;border-left:4px solid #3b82f6;border-radius:0 8px 8px 0;padding:14px 16px;margin-top:10px;font-size:.93rem;line-height:1.9}
+.dead-box strong{color:#1e3a5f}
+.dead-date{font-size:1.05rem;font-weight:700;color:#1e40af}
+.hidden{display:none!important}
+.chem-row{border:1.5px solid #c7d7ed;border-radius:10px;padding:14px 16px;margin-bottom:10px;background:#f8fafc}
+.chem-row-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.chem-row-num{font-size:.9rem;font-weight:700;color:#1e3a5f}
+.fw-item-row{display:grid;grid-template-columns:1.2fr .5fr .5fr .85fr .85fr auto;gap:8px;margin-bottom:6px;align-items:center}
+.fw-group-total{margin-top:8px;line-height:1.8}
+.chem-warn{background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;padding:10px 14px;margin-top:10px;color:#991b1b;font-weight:600;font-size:.9rem;line-height:1.6}
+.lpg-item-row{display:grid;grid-template-columns:1fr .65fr .75fr auto;gap:8px;margin-bottom:8px;align-items:end}
+.lpg-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.lpg-meter{border:1.5px solid #cbd5e1;border-radius:10px;background:#f8fafc;padding:12px 14px}
+.lpg-meter strong{display:block;color:#1e3a5f;font-size:1.08rem;margin-top:2px}
+.lpg-status{border-radius:10px;padding:12px 14px;margin-top:10px;line-height:1.8;border:1.5px solid #cbd5e1;background:#f8fafc}
+.lpg-ok{border-color:#86efac;background:#f0fdf4;color:#166534}
+.lpg-warn{border-color:#fcd34d;background:#fffbeb;color:#92400e}
+.lpg-bad{border-color:#fca5a5;background:#fef2f2;color:#991b1b}
+.lpg-note{color:#64748b;font-size:.86rem;line-height:1.7;margin-top:6px}
+.report-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.report-item{display:flex;gap:10px;align-items:flex-start;border:1.5px solid #fca5a5;border-radius:10px;background:#fef2f2;color:#7f1d1d;padding:11px 13px;line-height:1.7;cursor:pointer;transition:all .15s}
+.report-item.done{border-color:#86efac;background:#f0fdf4;color:#166534}
+.report-item input{margin-top:4px;accent-color:#16a34a;transform:scale(1.25);flex-shrink:0}
+.report-item strong{display:block;color:inherit;margin-bottom:2px}
+.report-progress{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px;color:#475569;line-height:1.6}
+.report-progress strong{color:#1e3a5f}
+.report-files{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
+.report-file{display:flex;gap:10px;align-items:flex-start;border:1.5px solid #fca5a5;border-radius:8px;background:#fef2f2;color:#7f1d1d;padding:9px 12px;line-height:1.6;cursor:pointer;transition:all .15s}
+.report-file.done{border-color:#86efac;background:#f0fdf4;color:#166534}
+.report-file input{margin-top:4px;accent-color:#16a34a;transform:scale(1.2);flex-shrink:0}
+.report-file small{display:block;color:inherit;opacity:.82;margin-top:2px}
+.report-save-note{font-size:.86rem;color:#64748b;line-height:1.7;margin-top:8px}
+.comment-item{border:1.5px solid #e2e8f0;border-radius:10px;padding:14px 16px;background:#f8fafc;margin-top:10px}
+.comment-meta{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:8px;color:#64748b;font-size:.84rem;flex-wrap:wrap}
+.comment-name{font-weight:700;color:#1e3a5f;font-size:.95rem}
+.comment-tag{display:inline-flex;align-items:center;border-radius:999px;background:#e0f2fe;color:#075985;padding:2px 8px;font-size:.78rem;font-weight:700;margin-left:6px}
+.comment-text{white-space:pre-wrap;word-break:break-word;line-height:1.8;color:#1a202c}
+.comment-empty{padding:14px 16px;background:#f8fafc;border:1.5px dashed #cbd5e1;border-radius:10px;color:#64748b;line-height:1.7}
+input[type=number]{width:100%;padding:10px 14px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:.95rem;font-family:inherit;color:#1a202c;background:#fff;transition:border-color .2s,box-shadow .2s}
+input[type=number]:focus{outline:none;border-color:#2d6a9f;box-shadow:0 0 0 3px rgba(45,106,159,.15)}
+@media(max-width:600px){.form-grid,.cb-group,.lpg-summary,.report-grid{grid-template-columns:1fr}.fw-row,.fw-item-row,.lpg-item-row{grid-template-columns:1fr!important}header h1{font-size:1.3rem}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🚒 舉發單填寫助手</h1>
+  <p>公共危險物品、可燃性高壓氣體及爆竹煙火 — 違規事實自動生成</p>
+  <div class="top-links">
+    <a href="危險物品標籤初判.html">危險物品標籤初判</a>
+    <a href="危物案件式填寫助手.html">危物檢查紀錄表</a>
+  </div>
+</header>
+<div class="container">
+
+  <div class="card" id="s1">
+    <div class="card-title"><span class="step-num">1</span>選擇場所類型</div>
+    <div class="form-group">
+      <label for="selF">場所類型</label>
+      <select id="selF" onchange="onF()">
+        <option value="">— 請選擇 —</option>
+        <option value="fill">可燃性高壓氣體分裝場所（分裝場）</option>
+        <option value="retail">液化石油氣販賣場所（瓦斯行）</option>
+        <option value="lpgGuide">液化石油氣案件判斷助手（先判斷再開單）</option>
+        <option value="serial">容器串接使用場所</option>
+        <option value="chem">公共危險物品場所（製造/處理/販賣/儲存）</option>
+        <option value="firework">爆竹煙火案件</option>
+        <option value="fireworkGuide">爆竹煙火新手導引（不熟法規先選這個）</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="card hidden" id="s1b">
+    <div class="card-title"><span class="step-num">1-2</span>選擇公共危險物品場所分類</div>
+    <div class="form-grid">
+    <div class="form-group">
+      <label for="selChemSub">場所大類</label>
+      <select id="selChemSub" onchange="onChemSub()">
+        <option value="">— 請選擇場所大類 —</option>
+      </select>
+    </div>
+    <div class="form-group hidden" id="chemDetailGroup">
+      <label for="selChemDetail">場所細項</label>
+      <select id="selChemDetail" onchange="onChemDetail()">
+        <option value="">— 請先選擇大類 —</option>
+      </select>
+    </div>
+    </div>
+  </div>
+
+  <div class="card hidden" id="lpgGuide">
+    <div class="card-title"><span class="step-num">2</span>液化石油氣案件判斷助手</div>
+    <div class="alert-info" style="margin-bottom:14px">此區先分開判斷第73條備用量、第73-1條串接使用場所、第73-2條新建建築物容器位置。新建物使用瓦斯本身不是違規，重點是容器是否放在室內。</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="lpg_use">場所使用型態</label>
+        <select id="lpg_use" onchange="runLpgGuide()">
+          <option value="business">營業使用</option>
+          <option value="home">家庭使用</option>
+          <option value="vendor">瓦斯行或販賣場所</option>
+          <option value="unknown">尚未確認</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="lpg_building">建築物適用狀態</label>
+        <select id="lpg_building" onchange="runLpgGuide()">
+          <option value="existing">既有建築物或111年6月30日前已掛件</option>
+          <option value="new">111年7月1日後申請建築執照掛件的新建建築物</option>
+          <option value="unknown">不確定，需查建照掛件日期</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="lpg_location">容器放置位置</label>
+        <select id="lpg_location" onchange="runLpgGuide()">
+          <option value="indoor">室內</option>
+          <option value="outdoor">室外或屋外</option>
+          <option value="basement">地下室</option>
+          <option value="unknown">不確定</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="lpg_indoor_def">是否符合第8條「室內」定義</label>
+        <select id="lpg_indoor_def" onchange="runLpgGuide()">
+          <option value="yes">是，具有頂蓋且三面以上有牆，或無頂蓋且四周有牆</option>
+          <option value="no">否，現場屬室外或屋外</option>
+          <option value="unknown">不確定，需現場判斷牆面及頂蓋</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="lpg_connect">供氣連接方式</label>
+        <select id="lpg_connect" onchange="runLpgGuide()">
+          <option value="separate">各鋼瓶分別連接不同設備</option>
+          <option value="manifold">多支鋼瓶串接或共用管線供氣</option>
+          <option value="unknown">不確定</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="lpg_count_basis">第73條備用量判斷範圍</label>
+        <select id="lpg_count_basis" onchange="runLpgGuide()">
+          <option value="total">以現場非空瓶總量判斷</option>
+          <option value="reserve">僅以備用或未連接鋼瓶判斷</option>
+        </select>
+      </div>
+      <div class="form-group span-full">
+        <label>鋼瓶明細</label>
+        <div id="lpgRows"></div>
+        <div class="btn-row" style="margin-top:10px">
+          <button class="btn btn-gen" type="button" onclick="addLpgRow()">＋ 新增鋼瓶規格</button>
+          <button class="btn btn-rst" type="button" onclick="resetLpgGuide()">重設判斷</button>
+        </div>
+      </div>
+      <div class="form-group span-full">
+        <label>串接場所安全缺失（有檢查到再勾）</label>
+        <div class="cb-group">
+          <div class="cb-item"><input type="checkbox" id="lpg_bad_basement" onchange="lpgToggle(this);runLpgGuide()"><label for="lpg_bad_basement">容器置於地下室</label></div>
+          <div class="cb-item"><input type="checkbox" id="lpg_bad_sign" onchange="lpgToggle(this);runLpgGuide()"><label for="lpg_bad_sign">無嚴禁煙火標示</label></div>
+          <div class="cb-item"><input type="checkbox" id="lpg_bad_fix" onchange="lpgToggle(this);runLpgGuide()"><label for="lpg_bad_fix">使用或備用容器未直立或未防止傾倒</label></div>
+          <div class="cb-item"><input type="checkbox" id="lpg_bad_alarm" onchange="lpgToggle(this);runLpgGuide()"><label for="lpg_bad_alarm">未設置氣體漏氣警報器</label></div>
+        </div>
+      </div>
+      <div class="form-group span-full">
+        <label for="lpg_place">違規地點或場所名稱（產生文字用，可選填）</label>
+        <input type="text" id="lpg_place" placeholder="例：○○小吃店、桃園市○○區○○路○號1樓" oninput="runLpgGuide()">
+      </div>
+      <div class="form-group span-full">
+        <label for="lpg_note">現場補充事實（可選填）</label>
+        <textarea id="lpg_note" placeholder="例：現場為集合住宅1樓店面；3支20公斤鋼瓶分別連接炒鍋、湯鍋及蒸籠機。" oninput="runLpgGuide()"></textarea>
+      </div>
+    </div>
+    <div id="lpgGuideResult" style="margin-top:16px"></div>
+  </div>
+
+  <div class="card hidden" id="reportGuideLegacy">
+    <div class="card-title"><span class="step-num">2</span>陳報附件檢核</div>
+    <div class="alert-info" style="margin-bottom:14px">這裡是案件送出前的附件提醒。危險物品案件請使用「危物專用」檢核表；照片資料仍要整理到照片黏貼用紙內一併陳報。</div>
+    <div class="form-grid">
+      <div class="form-group span-full">
+        <label for="report_case">案件類型</label>
+        <select id="report_case_legacy">
+          <option value="hazmat">公共危險物品案件（危物專用檢核表）</option>
+          <option value="general">液化石油氣／可燃性高壓氣體一般案件（一般檢核表）</option>
+        </select>
+      </div>
+    </div>
+    <div id="reportGuideBodyLegacy"></div>
+  </div>
+
+  <div class="card hidden" id="fwGuide">
+    <div class="card-title"><span class="step-num">2</span>爆竹煙火新手導引</div>
+    <div class="alert-info" style="margin-bottom:14px">先填現場看到的事實，系統會列出「可能涉及、為什麼、還要確認、建議勾選」。不確定的欄位可以先選不確定。</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="fg_scene">這次現場主要狀況</label>
+        <select id="fg_scene">
+          <option value="unknown">不確定，讓系統協助判斷</option>
+          <option value="hold">持有／販賣爆竹煙火</option>
+          <option value="store">儲存爆竹煙火</option>
+          <option value="discharge">施放爆竹煙火</option>
+          <option value="pro">專業爆竹煙火</option>
+          <option value="insurance">保險或場所管理問題</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="fg_type">爆竹煙火種類</label>
+        <select id="fg_type">
+          <option value="unknown">不確定</option>
+          <option value="marked_other">已附認可標示一般爆竹煙火</option>
+          <option value="marked_hand">已附認可標示手持火花類等</option>
+          <option value="marked_throw">已附認可標示摔炮類</option>
+          <option value="total_other">未附認可標示或其他一般／舞臺煙火</option>
+          <option value="total_hand">未附認可標示手持火花類等</option>
+          <option value="total_throw">未附認可標示摔炮類</option>
+          <option value="pro">舞臺煙火以外之專業爆竹煙火</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="fg_mark">有無認可標示</label>
+        <select id="fg_mark">
+          <option value="unknown">不確定</option>
+          <option value="yes">有認可標示</option>
+          <option value="no">未附認可標示</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="fg_store">儲存／販賣場所狀態</label>
+        <select id="fg_store">
+          <option value="unknown">不確定</option>
+          <option value="bad">未設於合格儲存或販賣場所</option>
+          <option value="good">已有合格儲存或販賣場所</option>
+          <option value="notcase">本案不是儲存／販賣場所問題</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="fg_total">總重量（公斤，可選填）</label>
+        <input type="number" id="fg_total" min="0" step="0.001" placeholder="例：16.8、0.528">
+      </div>
+      <div class="form-group">
+        <label for="fg_powder">火藥量（公斤，可選填）</label>
+        <input type="number" id="fg_powder" min="0" step="0.001" placeholder="例：33.128">
+      </div>
+      <div class="form-group">
+        <label for="fg_temp">專業煙火施放前臨時儲存</label>
+        <select id="fg_temp">
+          <option value="unknown">不確定或不適用</option>
+          <option value="bad">未儲存於合格臨時儲存場所</option>
+          <option value="good">已有合格臨時儲存場所</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="fg_ins">公共意外責任保險</label>
+        <select id="fg_ins">
+          <option value="unknown">不確定或不適用</option>
+          <option value="no">未投保或查無保險資料</option>
+          <option value="yes">已有保險資料</option>
+        </select>
+      </div>
+      <div class="form-group span-full">
+        <label>如果是施放案件，現場有沒有下列情形</label>
+        <div class="cb-group">
+          <div class="cb-item"><input type="checkbox" id="fg_area"><label for="fg_area">在桃園市禁止施放區域</label></div>
+          <div class="cb-item"><input type="checkbox" id="fg_time"><label for="fg_time">上午8時前或下午10時後施放飛行／升空／摔炮類</label></div>
+          <div class="cb-item"><input type="checkbox" id="fg_method"><label for="fg_method">未依產品標示或使用說明方式施放</label></div>
+          <div class="cb-item"><input type="checkbox" id="fg_ban"><label for="fg_ban">施放本府公告禁止種類</label></div>
+        </div>
+      </div>
+      <div class="form-group span-full">
+        <label for="fg_note">現場補充事實（可選填）</label>
+        <input type="text" id="fg_note" placeholder="例：有扣留清冊、照片、影片、筆錄，或地點在醫院／學校／機場周邊">
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-gen" type="button" onclick="runFwGuide()">產生建議</button>
+      <button class="btn btn-rst" type="button" onclick="resetFwGuide()">清除導引</button>
+    </div>
+    <div id="fwGuideResult" style="margin-top:16px"></div>
+  </div>
+
+  <div class="card hidden" id="s2">
+    <div class="card-title"><span class="step-num">2</span>選擇違規類型（可複選，逐項勾選即可）</div>
+    <div class="form-group">
+      <label>違規類型</label>
+      <div id="vCbGroup" class="cb-group" style="margin-top:8px"></div>
+    </div>
+  </div>
+
+  <div class="card hidden" id="s3">
+    <div class="card-title"><span class="step-num">3</span>填入現場資料</div>
+    <div id="dynForm"></div>
+    <div class="btn-row" style="margin-top:20px">
+      <button class="btn btn-gen" onclick="gen()">📋 產生違規事實</button>
+    </div>
+  </div>
+
+  <div class="card hidden" id="s4">
+    <div class="card-title">📄 違規事實（複製貼入舉發單）</div>
+    <div class="output-area" id="outV"></div>
+    <div class="law-box" id="outL"></div>
+    <div class="off-box" id="outO"></div>
+    <div class="dead-box" id="reportGuidePanel">
+      <strong>開單前資料核對</strong>
+      <div style="margin-top:8px;line-height:1.8">每一份舉發單都要核對這份共用檢核表。確認違規事實、法條、附件與簽章後，再往下看裁處期限。</div>
+      <div id="reportGuideBody" style="margin-top:12px"></div>
+    </div>
+    <div class="dead-box" id="dateCalc">
+      <strong>限改到期日計算器</strong>
+      <div style="display:flex;align-items:center;gap:14px;margin-top:10px;flex-wrap:wrap">
+        <div>
+          <label for="issueDate" style="font-size:.85rem;font-weight:600;color:#4a5568;display:block;margin-bottom:5px">開單日期（民國換西元）</label>
+          <input type="date" id="issueDate" onchange="calcDead()" style="padding:8px 12px;border:1.5px solid #93c5fd;border-radius:8px;font-size:.95rem;font-family:inherit;color:#1a202c;background:#fff">
+        </div>
+        <div id="deadResult" style="padding-top:18px;line-height:2"></div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-cpy" onclick="cp(0)">📋 複製違規事實</button>
+      <button class="btn btn-all" onclick="cp(1)">📋 複製全部（含法令）</button>
+      <button class="btn btn-rst" onclick="rst()">🔄 重新填寫</button>
+    </div>
+  </div>
+
+  <div class="card" id="commentBoard">
+    <div class="card-title">💬 改進留言板</div>
+    <div class="alert-info" style="margin-bottom:14px">
+      使用上如果發現內容錯誤、流程不順或有想新增的功能，可以在這裡留言。第一次留言需要登入 GitHub 帳號，留言內容會集中保存，方便後續追蹤與修正。
+    </div>
+    <script src="https://giscus.app/client.js"
+            data-repo="ahdaq002-cyber/weiwu119"
+            data-repo-id="R_kgDOSTyI6A"
+            data-category="General"
+            data-category-id="DIC_kwDOSTyI6M4C8UKZ"
+            data-mapping="specific"
+            data-term="舉發單填寫助手改進留言板"
+            data-strict="0"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-theme="preferred_color_scheme"
+            data-lang="zh-TW"
+            crossorigin="anonymous"
+            async>
+    </script>
+  </div>
+
+</div>
+<script>
+const VL={
+  fill:[
+    {id:'fe',  lbl:'灌裝逾期鋼瓶（第78條第2項）'},
+    {id:'fns', lbl:'未設置儲存場所（第71條）'},
+    {id:'fas', lbl:'儲存場所面積不足（第72條）'},
+    {id:'fnc', lbl:'未申請儲存場所合格證明書（第72-1條）'},
+    {id:'fhw', lbl:'儲存場所硬體設備不符規定（第70條）'},
+    {id:'fsd', lbl:'安全距離不足（第66/68條）'},
+    {id:'ffo', lbl:'在分裝場外從事灌氣作業（第77條）'},
+    {id:'fse', lbl:'儲存場所放置逾期鋼瓶（第70條第13款）'},
+    {id:'fmap',lbl:'儲存場所與平面圖（證明書）不符（第72-1條）'},
+  ],
+  retail:[
+    {id:'rtol',lbl:'小貨車載運容器未存放於儲存場所（第71條）'},
+    {id:'rol', lbl:'現場超過儲氣量限制（第73條）'},
+    {id:'rex', lbl:'販售／儲存逾期容器（消防法第15-4條）'},
+    {id:'rnc', lbl:'未申請儲存場所合格證明書（第72-1條）'},
+    {id:'rmap',lbl:'儲存場所與平面圖（證明書）不符（第72-1條）'},
+    {id:'ras', lbl:'儲存場所面積不足（第72條）'},
+  ],
+  serial:[
+    {id:'sol', lbl:'串接使用量超過1000公斤（第73-1條）'},
+    {id:'sit', lbl:'串接場所安全設施不符規定（第73-1條）'},
+    {id:'sre', lbl:'備用鋼瓶超量（營業80公斤／住家40公斤）'},
+    {id:'spos',lbl:'新建建築物容器設於室內且超過10公斤（第73-2條）'},
+  ],
+  firework:[
+    {id:'fwmark',  lbl:'未附加認可標示爆竹煙火（持有／販賣，第9條第3項）'},
+    {id:'fwstore', lbl:'達管制量儲存／販賣場所缺失檢核（先確認第22條保險）'},
+    {id:'fwtemp',  lbl:'專業爆竹煙火施放前臨時儲存場所不符（第16條第3項）'},
+    {id:'fwins',   lbl:'未投保公共意外責任保險（第22條）'},
+    {id:'fwtyarea',lbl:'桃園市禁止區域施放爆竹煙火（自治條例第3條）'},
+    {id:'fwtytime',lbl:'桃園市管制時段施放飛行／升空／摔炮類（自治條例第5條）'},
+    {id:'fwtymethod',lbl:'未依產品使用說明方式施放（自治條例第6條）'},
+    {id:'fwtyban', lbl:'施放本府公告禁止種類（自治條例第4條）'},
+  ],
+  chem:[],
+};
+
+// ── 公共危險物品場所子分類 ──────────────────────────────────────────
+const CHEM_SUBS=[
+  {id:'manufacture',lbl:'製造場所',subs:[
+    {id:'mfg',lbl:'公共危險物品製造場所'},
+  ]},
+  {id:'process',lbl:'處理場所',subs:[
+    {id:'proc',lbl:'一般處理場所'},
+  ]},
+  {id:'sale',lbl:'販賣場所',subs:[
+    {id:'sell1',lbl:'第一種販賣場所（未達管制量15倍）'},
+    {id:'sell2',lbl:'第二種販賣場所（管制量15倍以上未達40倍）'},
+  ]},
+  {id:'storage',lbl:'儲存場所',subs:[
+    {id:'sins', lbl:'室內儲存場所'},
+    {id:'sout', lbl:'室外儲存場所'},
+    {id:'tins', lbl:'室內儲槽場所'},
+    {id:'tout', lbl:'室外儲槽場所'},
+    {id:'tund', lbl:'地下儲槽場所'},
+  ]},
+];
+const _CS=[  // 各子分類共用違規
+  {id:'cdex',    lbl:'超量儲存（超過管制量）'},
+  {id:'cdsu',    lbl:'未設置保安監督人（達30倍以上，第43-1條）'},
+  {id:'cdplan',  lbl:'未制定保安監督計畫（達30倍以上，第43-2條）'},
+  {id:'cd_board',lbl:'未設置標示板（第19條）'},
+  {id:'cd_check',lbl:'未每月自主檢查或紀錄未留存（第46條第11款）'},
+];
+const CHEM_VL={
+  mfg:[
+    {id:'m_sdist', lbl:'安全距離不足（第13條）'},
+    {id:'m_space', lbl:'保留空地不足（第14條）'},
+    {id:'m_struct',lbl:'場所構造不符規定（第15條）'},
+    {id:'m_equip', lbl:'場所設備不符規定（第16條）'},
+    ..._CS,
+  ],
+  proc:[
+    {id:'p_sdist', lbl:'安全距離不足（第13條）'},
+    {id:'p_space', lbl:'保留空地不足（第14條）'},
+    {id:'p_struct',lbl:'一般處理場所構造不符規定（第15條）'},
+    {id:'p_equip', lbl:'一般處理場所設備不符規定（第16條）'},
+    {id:'p_safe',  lbl:'處理作業安全管理不符規定（第46-1條）'},
+    ..._CS,
+  ],
+  sell1:[
+    {id:'s1_struct',lbl:'構造不符規定（第17條）'},
+    {id:'s1_adj',   lbl:'調配室面積不符規定（第17條第4款）'},
+    {id:'sell_bulk', lbl:'六類物品未以容器存放或散裝販賣（第46-1條）'},
+    {id:'sell_mix',  lbl:'調配六類物品未於調配室內為之（第46-1條）'},
+    {id:'cd_board', lbl:'未設置標示板（第19條）'},
+    {id:'cd_check', lbl:'未每月自主檢查或紀錄未留存（第46條第11款）'},
+  ],
+  sell2:[
+    {id:'s2_struct',lbl:'構造不符規定（第18條）'},
+    {id:'sell_bulk', lbl:'六類物品未以容器存放或散裝販賣（第46-1條）'},
+    {id:'sell_mix',  lbl:'調配六類物品未於調配室內為之（第46-1條）'},
+    {id:'cd_board', lbl:'未設置標示板（第19條）'},
+    {id:'cd_check', lbl:'未每月自主檢查或紀錄未留存（第46條第11款）'},
+  ],
+  sins:[
+    {id:'si_sdist',lbl:'安全距離不足（第21條，準用第13條）'},
+    {id:'si_space',lbl:'保留空地不足（第21條第2款）'},
+    {id:'si_excl', lbl:'非獨立專用建築物（第21條第3款）'},
+    {id:'si_ht',   lbl:'儲存倉庫高度超過6公尺（第21條第4款）'},
+    {id:'si_area', lbl:'樓地板面積超過1000平方公尺（第21條第5款）'},
+    {id:'si_stack',lbl:'室內容器堆積高度超過3公尺（第46-2條第4款）'},
+    ..._CS,
+  ],
+  sout:[
+    {id:'so_sdist',lbl:'安全距離不足（第30條第1款，準用第13條）'},
+    {id:'so_fence',lbl:'未設置圍欄區劃（第30條第3款）'},
+    {id:'so_space',lbl:'保留空地不足（第30條第4款）'},
+    {id:'so_rack', lbl:'架臺高度超過6公尺（第30條第6款）'},
+    {id:'so_stack',lbl:'容器堆積高度超過3公尺（第30條第7款）'},
+    {id:'cdex',    lbl:'超量儲存（超過管制量）'},
+    {id:'cd_board',lbl:'未設置標示板（第19條）'},
+  ],
+  tins:[
+    {id:'ti_gap',  lbl:'儲槽側板外壁與室內牆面距離不足50公分（第33條第2款）'},
+    {id:'ti_cap',  lbl:'儲槽容量超過管制量40倍（第33條第3款）'},
+    {id:'ti_mat',  lbl:'儲槽鋼板厚度不足3.2毫米（第33條第4款）'},
+    {id:'ti_thres',lbl:'出入口門檻高度不足20公分（第33條第16款）'},
+    {id:'cdex',    lbl:'超量儲存（超過管制量）'},
+    {id:'cd_board',lbl:'未設置標示板（第19條）'},
+  ],
+  tout:[
+    {id:'to_sdist',lbl:'安全距離不足（第37條第1款，準用第13條）'},
+    {id:'to_gap',  lbl:'相鄰儲槽側板外壁間距不足（第37條第4款）'},
+    {id:'to_space',lbl:'保留空地不足（第37條第3款）'},
+    {id:'to_dike', lbl:'防液堤不符規定（第38條）'},
+    {id:'to_light',lbl:'未設置避雷設備（第37條第18款）'},
+    ..._CS,
+  ],
+  tund:[
+    {id:'tu_gap',  lbl:'儲槽外壁與槽室牆壁間隔不足10公分（第41條第2款）'},
+    {id:'tu_top',  lbl:'儲槽頂部距地面不足60公分（第41條第3款）'},
+    {id:'tu_adj',  lbl:'相鄰儲槽側板外壁間隔不足1公尺（第41條第4款）'},
+    {id:'tu_leak', lbl:'未設置4處以上測漏管（第41條第13款）'},
+    {id:'tu_conc', lbl:'槽室混凝土厚度不足規定（第41條第14款）'},
+    {id:'cdex',    lbl:'超量儲存（超過管制量）'},
+    {id:'cd_board',lbl:'未設置標示板（第19條）'},
+  ],
+};
+
+const FM={
+  fe:{
+    flds:[
+      {id:'loc',lbl:'發現位置',ph:'分裝台上（灌裝作業區）',w:2},
+      {id:'cnt',lbl:'逾期鋼瓶數量（隻）',ph:'1',w:1},
+      {id:'spc',lbl:'容器規格（公升）',ph:'20',w:1},
+      {id:'cno',lbl:'容器號碼',ph:'A123456',w:1},
+      {id:'ndt',lbl:'下次檢驗日期（民國年.月）',ph:'113.06',w:1},
+      {id:'twt',lbl:'秤重總重（公斤）',ph:'20.5',w:1},
+      {id:'nwt',lbl:'容器實重含閥（公斤）',ph:'15.8',w:1},
+      {id:'dn', lbl:'桶身分銷商名稱',ph:'○○瓦斯行',w:1},
+      {id:'dp', lbl:'桶身分銷商電話',ph:'02-XXXXXXXX',w:1},
+    ],
+    gen(v){
+      const loc=v.loc||'分裝台上';
+      const cnt=v.cnt||'一';
+      const a=`一、於${loc}發現${cnt}隻逾期鋼瓶，容器規格為${v.spc||'__'}公升，容器號碼：${v.cno||'__'}，下次檢驗日期：${v.ndt||'__'}。`;
+      const b=(v.twt||v.nwt)?`二、現場以業者罐裝儀器秤重，總重為${v.twt||'__'}公斤，容器實重含閥${v.nwt||'__'}公斤。`:'';
+      const ci=b?'三':'二';
+      const c=`${ci}、桶身標示分銷商名稱：${v.dn||'__'}，電話：${v.dp||'__'}。`;
+      const di=b?'四':'三';
+      const d=`${di}、違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第78條第2項。`;
+      return [a,b,c,d].filter(Boolean).join('\n');
+    },
+    law:'違反消防法第15條第1項，依消防法第42條規定處罰。',
+    off:'管理權人（行為人）姓名欄：填寫分裝場【負責人姓名】（自然人）。',
+  },
+
+  fns:{
+    flds:[],
+    gen(){return'一、稽查發現，本分裝場所未依規定設置液化石油氣儲存場所（用於儲存空桶及實桶之場所）。\n二、違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第71條第1項規定。'},
+    law:'違反消防法第15條第1項，依消防法第42條規定處罰。',
+    off:'管理權人（行為人）姓名欄：填寫分裝場【負責人姓名】（自然人）。',
+  },
+
+  fas:{
+    flds:[
+      {id:'area',lbl:'儲存場所實際面積（平方公尺）',ph:'6',w:1},
+      {id:'typ',lbl:'使用型態',tp:'sel',opts:[{v:'10',l:'單獨一家使用（法定至少10平方公尺）'},{v:'6',l:'多家共用（每家法定至少6平方公尺）'}],w:1},
+    ],
+    gen(v){return`一、稽查發現，本分裝場所之液化石油氣儲存場所面積實測為${v.area||'__'}平方公尺，未達法定最低面積標準${v.typ||'10'}平方公尺之規定。\n二、違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第72條第1項規定。`},
+    law:'違反消防法第15條第1項，依消防法第42條規定處罰。',
+    off:'管理權人（行為人）姓名欄：填寫分裝場【負責人姓名】（自然人）。',
+  },
+
+  fnc:{
+    flds:[],
+    gen(){return'一、稽查發現，本分裝場所之液化石油氣儲存場所，未依規定向直轄市、縣（市）消防機關申請核發液化石油氣儲存場所證明書。\n二、違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第72-1條第1項規定。'},
+    law:'違反消防法第15條第1項，依消防法第42條規定處罰。',
+    off:'管理權人（行為人）姓名欄：填寫分裝場【負責人姓名】（自然人）。（管理辦法第72-1條違反屬第15條範疇，填自然人，非法人格式）',
+  },
+
+  fhw:{
+    flds:[
+      {id:'chk',lbl:'請勾選違規款次（可複選）',tp:'cb',w:2,items:[
+        {v:'1',l:'第1款：未設警戒標示及防爆型緊急照明設備'},
+        {v:'2',l:'第2款：未設置氣體漏氣自動警報設備'},
+        {v:'3',l:'第3款：未設置防止氣體滯留之有效通風裝置'},
+        {v:'4',l:'第4款：屋頂未以輕質金屬板覆蓋，或屋簷距地面未達2.5公尺'},
+        {v:'5',l:'第5款：未保持攝氏40度以下溫度，或容器未防日光直射'},
+        {v:'6',l:'第6款：灌氣容器與殘氣容器未分開儲存，或未直立放置'},
+        {v:'8',l:'第8款：周圍2公尺範圍內有可燃性物質或未嚴禁煙火'},
+        {v:'9',l:'第9款：未設置避雷設備或未符合CNS規定'},
+        {v:'10',l:'第10款：人員攜帶可產生火源之機具或設備進入'},
+        {v:'11',l:'第11款：未設有專人管理'},
+        {v:'13',l:'第13款：儲存場所非場所專用（逾期鋼瓶請另選逾期鋼瓶項目）'},
+      ]},
+      {id:'rem',lbl:'補充說明（可選填）',ph:'例：周圍2公尺內放置紙箱等可燃性物品',w:2},
+    ],
+    gen(v){
+      const TX={
+        '1':'未設置警戒標示及防爆型緊急照明設備',
+        '2':'未設置氣體漏氣自動警報設備',
+        '3':'未設置防止氣體滯留之有效通風裝置',
+        '4':'屋頂未以輕質金屬板或其他輕質不燃材料覆蓋（或屋簷距地面未達二點五公尺）',
+        '5':'未保持攝氏四十度以下之溫度（或容器未防止日光之直射）',
+        '6':'灌氣容器與殘氣容器未分開儲存（或未直立放置，或重疊堆放）',
+        '8':'周圍二公尺範圍內有可燃性物質或未嚴禁煙火',
+        '9':'未設置避雷設備或未符合CNS一二八七二規定',
+        '10':'人員攜帶可產生火源之機具或設備進入',
+        '11':'未設有專人管理',
+        '13':'儲存場所非場所專用',
+      };
+      const NUM='一二三四五六七八九十十一十二';
+      const cks=(v.chk||[]).slice().sort((a,b)=>+a-+b);
+      if(!cks.length)return'（請先勾選至少一項違規款次）';
+      const lines=cks.map((k,i)=>`${NUM[i]}、稽查發現，本分裝場所之儲存場所${TX[k]}。`);
+      if(v.rem)lines.push(`備註：${v.rem}`);
+      lines.push(`（違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第70條${cks.map(k=>`第${k}款`).join('、')}規定。）`);
+      return lines.join('\n');
+    },
+    law:'違反消防法第15條第1項，依消防法第42條規定處罰。',
+    off:'管理權人（行為人）姓名欄：填寫分裝場【負責人姓名】（自然人）。',
+  },
+
+  fsd:{
+    flds:[],
+    customRender(c){
+      c.innerHTML=`
+<div class="form-grid">
+  <div class="form-group">
+    <label for="fsd_art">引用條款</label>
+    <select id="fsd_art" onchange="fsdRenderBasis()">
+      <option value="67">第67條（可燃性高壓氣體儲存場所）</option>
+      <option value="66">第66條（可燃性高壓氣體製造場所）</option>
+      <option value="68">第68條（液化石油氣製造場所，準用第66條）</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="fsd_pcl">保護物類型</label>
+    <select id="fsd_pcl" onchange="fsdCalc()">
+      <option value="1">第一類保護物（古蹟/學校/醫院/收容300人以上場所）</option>
+      <option value="2">第二類保護物（一般供人居住使用建築物）</option>
+    </select>
+  </div>
+  <div class="span-full" id="fsd_basis"></div>
+  <div class="form-group">
+    <label for="fsd_obj">鄰近保護物名稱</label>
+    <input type="text" id="fsd_obj" placeholder="○○里民活動中心">
+  </div>
+  <div class="form-group">
+    <label for="fsd_act">實測距離（公尺）</label>
+    <input type="number" id="fsd_act" step="0.01" placeholder="5" oninput="fsdCalc()">
+  </div>
+  <div class="span-full">
+    <div id="fsd_result" class="alert-info" style="line-height:1.8"></div>
+  </div>
+</div>`;
+      fsdRenderBasis();
+    },
+    customCollect(){
+      return{
+        art:document.getElementById('fsd_art')?.value||'67',
+        pcl:document.getElementById('fsd_pcl')?.value||'1',
+        obj:document.getElementById('fsd_obj')?.value.trim()||'',
+        act:document.getElementById('fsd_act')?.value||'',
+        req:document.getElementById('fsd_result')?.dataset.req||'',
+        wall:document.getElementById('fsd_wall')?.checked||false,
+        basisTxt:document.getElementById('fsd_result')?.dataset.basis||'',
+      };
+    },
+    gen(v){
+      const cls=v.pcl==='1'?'第一類保護物':'第二類保護物';
+      const wallTxt=v.wall?'（現場已設置防爆牆，已適用縮減後距離）':'';
+      const basisLine=v.basisTxt?`（${v.basisTxt}）`:'';
+      return`一、稽查發現，本分裝場所外牆（或相當於外牆之設施外側）與鄰近${cls}（${v.obj||'__'}）之安全距離，實測為${v.act||'__'}公尺，未達法定應保持${v.req||'__'}公尺以上之規定${basisLine}${wallTxt}。\n二、違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第${v.art||'67'}條規定。`;
+    },
+    law:'違反消防法第15條第1項，依消防法第42條規定處罰。',
+    off:'管理權人（行為人）姓名欄：填寫分裝場【負責人姓名】（自然人）。',
+  },
+
+  ffo:{
+    flds:[
+      {id:'flc',lbl:'實施灌氣之地點描述',ph:'○○路○○號前（分裝場以外）',w:2},
+      {id:'fpr',lbl:'行為人姓名（可選填）',ph:'○○○',w:1},
+      {id:'fvh',lbl:'使用車輛車牌（可選填）',ph:'ABC-1234',w:1},
+    ],
+    gen(v){
+      let a=`一、稽查發現，業者於分裝場所以外之處所（${v.flc||'__'}），從事家庭或營業用液化石油氣之灌氣（分裝）作業`;
+      if(v.fpr)a+=`；行為人：${v.fpr}`;
+      if(v.fvh)a+=`；使用車輛：${v.fvh}`;
+      a+='。';
+      return a+'\n二、違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第77條規定。';
+    },
+    law:'違反消防法第15條第1項，依消防法第42條規定處罰。',
+    off:'管理權人（行為人）姓名欄：填寫現場【行為人姓名】（實際操作灌氣之人員）。',
+  },
+
+  fse:{
+    flds:[
+      {id:'fse_loc',lbl:'發現位置（儲存場所內哪個區域）',ph:'儲存場所空桶區',w:2},
+      {id:'fse_cnt',lbl:'逾期鋼瓶數量（隻）',ph:'1',w:1},
+      {id:'fse_spc',lbl:'容器規格（公升）',ph:'20',w:1},
+      {id:'fse_cno',lbl:'容器號碼',ph:'A123456',w:1},
+      {id:'fse_ndt',lbl:'下次檢驗日期（民國年.月）',ph:'113.06',w:1},
+      {id:'fse_dn', lbl:'桶身分銷商名稱',ph:'○○瓦斯行',w:1},
+      {id:'fse_dp', lbl:'桶身分銷商電話',ph:'02-XXXXXXXX',w:1},
+    ],
+    gen(v){
+      return`一、稽查發現，本分裝場所之儲存場所（${v.fse_loc||'儲存場所內'}）放置逾期液化石油氣鋼瓶${v.fse_cnt||'__'}隻，容器規格為${v.fse_spc||'__'}公升，容器號碼：${v.fse_cno||'__'}，下次檢驗日期：${v.fse_ndt||'__'}。\n二、桶身標示分銷商名稱：${v.fse_dn||'__'}，電話：${v.fse_dp||'__'}。\n三、違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第70條第13款規定。`;
+    },
+    law:'違反消防法第15條第1項，依消防法第42條規定處罰。',
+    off:'管理權人（行為人）姓名欄：填寫分裝場【負責人姓名】（自然人）。',
+  },
+
+  fmap:{
+    flds:[
+      {id:'fmap_desc',lbl:'與平面圖不符之情形描述',ph:'例：實際儲放位置與證明書所載儲放地點編號或核定圖說不同',w:2},
+    ],
+    gen(v){
+      return`一、稽查發現，本分裝場所之液化石油氣儲存場所現場配置（${v.fmap_desc||'__'}），與直轄市、縣（市）消防機關核發之液化石油氣儲存場所證明書所載儲放地點編號或核定圖說不符，且未依規定申請變更。\n二、違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第72-1條第3項規定。`;
+    },
+    law:'違反消防法第15條第1項，依消防法第42條規定處罰。',
+    off:'管理權人（行為人）姓名欄：填寫分裝場【負責人姓名】（自然人）。（管理辦法第72-1條違反屬第15條範疇，填自然人，非法人格式）',
+  },
+
+  rtol:{
+    flds:[],
+    customRender(c){
+      c.innerHTML=`
+<div class="form-grid">
+  <div class="form-group">
+    <label for="rtol_dt">錄影開始時間</label>
+    <input type="datetime-local" id="rtol_dt">
+  </div>
+  <div class="form-group">
+    <label for="rtol_rv">錄影持續時間（分鐘）</label>
+    <input type="number" id="rtol_rv" placeholder="15" min="0">
+  </div>
+  <div class="form-group span-full">
+    <label for="rtol_lc">查獲地點（詳細地址）</label>
+    <input type="text" id="rtol_lc" placeholder="龜山區南祥路61號前">
+  </div>
+  <div class="form-group">
+    <label for="rtol_sn">場所名稱（瓦斯行名稱）</label>
+    <input type="text" id="rtol_sn" placeholder="南崁煤氣行">
+  </div>
+  <div class="form-group">
+    <label for="rtol_pl">車牌號碼</label>
+    <input type="text" id="rtol_pl" placeholder="BZV-9732">
+  </div>
+  <div class="span-full">
+    <div style="border:1.5px solid #fca5a5;border-radius:10px;padding:12px;background:#fef2f2;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <strong style="color:#991b1b">🔴 實桶（內含液化石油氣）</strong>
+        <button type="button" onclick="rtolAddRow('full')" style="padding:6px 12px;border:none;background:#dc2626;color:#fff;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:600">＋ 新增實桶規格</button>
+      </div>
+      <div id="rtol_full_rows"></div>
+      <div id="rtol_full_total" style="margin-top:6px;font-weight:700;color:#991b1b;font-size:.95rem"></div>
+    </div>
+    <div style="border:1.5px solid #93c5fd;border-radius:10px;padding:12px;background:#eff6ff">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <strong style="color:#1e40af">⚪ 空桶（殘氣容器，可不填）</strong>
+        <button type="button" onclick="rtolAddRow('empty')" style="padding:6px 12px;border:none;background:#2563eb;color:#fff;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:600">＋ 新增空桶規格</button>
+      </div>
+      <div id="rtol_empty_rows"></div>
+      <div id="rtol_empty_total" style="margin-top:6px;font-weight:700;color:#1e40af;font-size:.95rem"></div>
+    </div>
+  </div>
+  <div class="form-group span-full">
+    <div class="alert-info">
+      <strong>安管系統提示：</strong>請先點取「未設置儲存場所或容器保管室」，再點選「其他」說明：填上「未依規定將容器儲存於申請核准之儲存場所」。<br>
+    </div>
+  </div>
+  <div class="span-full">
+    <div id="rtol_grand" class="alert-info" style="line-height:1.8"></div>
+  </div>
+</div>`;
+      rtolAddRow('full');
+      rtolUpdateTotal();
+    },
+    customCollect(){
+      return{
+        dt:document.getElementById('rtol_dt')?.value||'',
+        rv:document.getElementById('rtol_rv')?.value||'',
+        lc:document.getElementById('rtol_lc')?.value.trim()||'',
+        sn:document.getElementById('rtol_sn')?.value.trim()||'',
+        pl:document.getElementById('rtol_pl')?.value.trim()||'',
+        full:rtolCollectRows('full'),
+        empty:rtolCollectRows('empty'),
+      };
+    },
+    gen(v){
+      const ts=v.dt?rtolFmtROC(v.dt):'民國__年__月__日__時__分';
+      const fullStr=v.full.parts.length?v.full.parts.join('、'):'__';
+      const grand=v.full.total+v.empty.total;
+      let bottleLine=`二、車上鋼瓶計有：實桶 ${fullStr}（合計 ${v.full.total||'__'} 公斤）`;
+      if(v.empty.parts.length){
+        bottleLine+=`；空桶 ${v.empty.parts.join('、')}（合計 ${v.empty.total} 公斤）`;
+      }
+      bottleLine+=`，總計儲氣量 ${grand||'__'} 公斤。`;
+      const rvLine=`三、現場錄影 ${v.rv||'__'} 分鐘，未見駛離。`;
+      const lawLine=`四、違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第71條規定，未依規定將容器儲存於申請核准之儲存場所。`;
+      return `一、${ts}，於${v.lc||'__'}發現載有${v.sn||'__'}之液化石油氣鋼瓶小貨車（車號 ${v.pl||'__'}）。\n${bottleLine}\n${rvLine}\n${lawLine}`;
+    },
+    law:'違反消防法第15條第1項，依消防法第42條規定處罰。',
+    off:'管理權人（行為人）姓名欄：\n・行號（如「南崁煤氣行」）→ 填：場所名稱 代名人＝負責人姓名（例：南崁煤氣行 代名人＝周明星）\n・有限公司 → 填：代表人個人姓名（消防法第15條違反，仍填自然人）',
+  },
+
+  rol:{
+    flds:[
+      {id:'hasrm',lbl:'是否設有容器保管室',tp:'sel',opts:[{v:'n',l:'否（無容器保管室，限128公斤）'},{v:'y',l:'是（有設容器保管室，限1000公斤）'}],w:2},
+      {id:'r04',lbl:'4公斤容器（支，無則留空）',ph:'6',w:1},
+      {id:'r10',lbl:'10公斤容器（支，無則留空）',ph:'2',w:1},
+      {id:'r16',lbl:'16公斤容器（支，無則留空）',ph:'26',w:1},
+      {id:'r20',lbl:'20公斤容器（支，無則留空）',ph:'33',w:1},
+      {id:'r50',lbl:'50公斤容器（支，無則留空）',ph:'',w:1},
+    ],
+    gen(v){
+      const sizes=[{kg:4,id:'r04'},{kg:10,id:'r10'},{kg:16,id:'r16'},{kg:20,id:'r20'},{kg:50,id:'r50'}];
+      let parts=[],total=0;
+      sizes.forEach(s=>{const n=parseInt(v[s.id])||0;if(n>0){parts.push(`${s.kg}公斤${n}支`);total+=s.kg*n;}});
+      const rm=v.hasrm==='y';
+      const limit=rm?1000:128;
+      const ovr=total>limit?total-limit:'__';
+      const partStr=parts.length?parts.join('、'):'__';
+      return`一、稽查發現，本販賣場所內存放液化石油氣容器，計有${partStr}，合計共${total||'__'}公斤，超過法定備用量${limit}公斤之規定（超出${ovr}公斤）。\n二、違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第73條第1項${rm?'但書':''}規定。`;
+    },
+    law:'違反消防法第15條第1項，依消防法第42條規定處罰。',
+    off:'管理權人（行為人）姓名欄：\n・行號（如「南崁煤氣行」）→ 填：場所名稱 代名人＝負責人姓名\n・有限公司 → 填：代表人個人姓名（消防法第15條違反，仍填自然人）',
+  },
+
+  rex:{
+    flds:[
+      {id:'ecn',lbl:'逾期容器數量（隻）',ph:'2',w:1},
+      {id:'esp',lbl:'容器規格（公升）',ph:'20',w:1},
+      {id:'eno',lbl:'容器號碼（多隻以頓號分隔）',ph:'A123456、B789012',w:2},
+      {id:'edt',lbl:'下次檢驗日期',ph:'113.06',w:1},
+    ],
+    gen(v){return`一、稽查發現，本販賣場所儲存液化石油氣逾期容器計${v.ecn||'__'}隻，容器規格為${v.esp||'__'}公升，容器號碼：${v.eno||'__'}，下次檢驗日期：${v.edt||'__'}。\n二、違反消防法第15-4條第1項規定。`},
+    law:'違反消防法第15-4條第1項，依消防法第42-2條規定處罰。',
+    off:'管理權人（行為人）姓名欄：填寫【法人名稱（代表人：○○○）】，非個人姓名。（消防法第15-4條違反，依第42-2條裁罰，管理權人應為法人或商業名稱）',
+  },
+
+  rnc:{
+    flds:[],
+    gen(){return'一、稽查發現，本販賣場所之液化石油氣儲存場所，未依規定向直轄市、縣（市）消防機關申請核發液化石油氣儲存場所證明書。\n二、違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第72-1條第1項規定。'},
+    law:'違反消防法第15條第1項，依消防法第42條規定處罰。',
+    off:'管理權人（行為人）姓名欄：\n・行號 → 填：場所名稱 代名人＝負責人姓名\n・有限公司 → 填：代表人個人姓名（自然人）\n（管理辦法第72-1條違反屬第15條範疇，填自然人，非法人格式）',
+  },
+
+  rmap:{
+    flds:[
+      {id:'rmap_desc',lbl:'與平面圖不符之情形描述',ph:'例：實際儲放位置與證明書所載儲放地點編號或核定圖說不同',w:2},
+    ],
+    gen(v){
+      return`一、稽查發現，本販賣場所使用之液化石油氣儲存場所現場配置（${v.rmap_desc||'__'}），與直轄市、縣（市）消防機關核發之液化石油氣儲存場所證明書所載儲放地點編號或核定圖說不符，且未依規定申請變更。\n二、違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第72-1條第3項規定。`;
+    },
+    law:'違反消防法第15條第1項，依消防法第42條規定處罰。',
+    off:'管理權人（行為人）姓名欄：\n・行號 → 填：場所名稱 代名人＝負責人姓名\n・有限公司 → 填：代表人個人姓名（自然人）\n（管理辦法第72-1條違反屬第15條範疇，填自然人，非法人格式）',
+  },
+
+  ras:{
+    flds:[
+      {id:'raa',lbl:'儲存場所實際面積（平方公尺）',ph:'4',w:1},
+      {id:'rat',lbl:'使用型態',tp:'sel',opts:[{v:'10',l:'單獨一家使用（法定至少10平方公尺）'},{v:'6',l:'多家共用（每家法定至少6平方公尺）'}],w:1},
+    ],
+    gen(v){return`一、稽查發現，本販賣場所之液化石油氣儲存場所面積實測為${v.raa||'__'}平方公尺，未達法定最低面積標準${v.rat||'10'}平方公尺之規定。\n二、違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第72條第1項規定。`},
+    law:'違反消防法第15條第1項，依消防法第42條規定處罰。',
+    off:'管理權人（行為人）姓名欄：填寫販賣場所【負責人姓名】（自然人）。',
+  },
+
+  sol:{
+    flds:[
+      {id:'slc',lbl:'場所地址',ph:'○○市○○區○○路○○號',w:2},
+      {id:'skg',lbl:'現場串接使用量（公斤）',ph:'1200',w:1},
+      {id:'sov',lbl:'超出量（公斤）',ph:'200',w:1},
+    ],
+    gen(v){return`一、稽查發現，位於${v.slc||'__'}之容器串接使用場所，現場液化石油氣串接使用量計${v.skg||'__'}公斤，超過法定上限一千公斤之規定（超出${v.sov||'__'}公斤）。\n二、違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第73-1條第1項規定。`},
+    law:'違反消防法第15條第1項，依消防法第42條規定處罰。',
+    off:'管理權人（行為人）姓名欄：填寫現場【行為人姓名】。',
+  },
+
+  sit:{
+    flds:[
+      {id:'slc2',lbl:'場所地址',ph:'○○市○○區○○路○○號',w:2},
+      {id:'str',lbl:'串接使用量範圍',tp:'sel',opts:[{v:'1',l:'80公斤以上至120公斤以下'},{v:'2',l:'超過120公斤至300公斤以下'},{v:'3',l:'超過300公斤至1000公斤以下'}],w:2},
+      {id:'schk',lbl:'請勾選違反之安全規定項目（可複選）',tp:'cb',w:2,items:[
+        {v:'a',l:'容器未設於屋外（且無有效通風裝置）'},
+        {v:'b',l:'無嚴禁煙火標示'},
+        {v:'c',l:'溫度超過攝氏40度，或無防日光直射措施'},
+        {v:'d',l:'容器未直立放置或無防止傾倒固定措施'},
+        {v:'e',l:'燃氣導管未由合格技術士安裝或未完成竣工檢查'},
+        {v:'f',l:'燃氣用軟管超過1.8公尺，或衔接處無防止脫落裝置'},
+        {v:'g',l:'未設置氣體漏氣警報器'},
+        {v:'h',l:'容器未與用火設備保持2公尺以上距離（120-300公斤適用）'},
+        {v:'i',l:'未設置自動緊急遮斷裝置（超過300公斤適用）'},
+        {v:'j',l:'屋外放置容器無柵欄/容器櫃/圍牆且未設輕質屋蓋（超過300公斤適用）'},
+        {v:'k',l:'未設置標示板標示緊急聯絡人姓名及電話（超過300公斤適用）'},
+      ]},
+    ],
+    afterRender(){setupSitRangeFilter();},
+    gen(v){
+      const TX={
+        a:'容器未設置於屋外（且未設置防止氣體滯留之有效通風裝置）',
+        b:'現場無嚴禁煙火標示',
+        c:'場所溫度超過攝氏四十度或無防日光直射措施',
+        d:'容器未直立放置或無防止傾倒之固定措施',
+        e:'燃氣導管未由領有氣體燃料導管配管技術士證照之人員安裝，或未完成竣工檢查',
+        f:'燃氣用軟管超過一點八公尺，或衔接處無防止脫落裝置',
+        g:'未設置氣體漏氣警報器',
+        h:'容器未與用火設備保持二公尺以上距離',
+        i:'未設置自動緊急遮斷裝置',
+        j:'容器屋外放置處無柵欄、容器櫃或圍牆等措施，或其上方未設置輕質屋蓋',
+        k:'未設置標示板標示緊急聯絡人姓名及電話',
+      };
+      const N='一二三四五六七八九十十一';
+      const cks=v.schk||[];
+      if(!cks.length)return'（請先勾選至少一項違規項目）';
+      const lines=cks.map((k,i)=>`${N[i]}、稽查發現，位於${v.slc2||'__'}之串接使用場所${TX[k]}。`);
+      lines.push(`（以上各項違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第73-1條第1項各款規定。）`);
+      return lines.join('\n');
+    },
+    law:'違反消防法第15條第1項，依消防法第42條規定處罰。',
+    off:'管理權人（行為人）姓名欄：填寫現場【行為人姓名】或場所負責人姓名。',
+  },
+
+  sre:{
+    flds:[
+      {id:'srlc',lbl:'查獲地址（詳細）',ph:'龜山區○○路○○號',w:2},
+      {id:'srut',lbl:'使用場所類型',tp:'sel',opts:[{v:'c',l:'營業使用場所（限80公斤）'},{v:'h',l:'住家使用場所（限40公斤）'}],w:2},
+      {id:'srs1',lbl:'容器規格（公斤）',ph:'20',w:1},
+      {id:'src1',lbl:'備用容器數量（支）',ph:'6',w:1},
+      {id:'srtt',lbl:'合計儲氣量（公斤，可手動覆蓋）',ph:'120',w:1},
+    ],
+    gen(v){
+      const isComm=v.srut!=='h';
+      const limit=isComm?80:40;
+      const utLabel=isComm?'營業':'住家';
+      const spc=parseFloat(v.srs1)||0;
+      const cnt=parseInt(v.src1)||0;
+      const auto=spc&&cnt?spc*cnt:0;
+      const total=v.srtt?parseFloat(v.srtt):auto;
+      const totalStr=total||'__';
+      const ovr=total&&total>limit?total-limit:'__';
+      return`一、稽查發現，位於${v.srlc||'__'}（${utLabel}使用場所）存放液化石油氣備用鋼瓶${cnt||'__'}支（每支${spc||'__'}公斤），合計儲氣量${totalStr}公斤，超過${utLabel}使用場所法定備用量上限${limit}公斤之規定（超出${ovr}公斤）。\n二、違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第73條第3項規定。`;
+    },
+    law:'違反消防法第15條第1項，依消防法第42條規定處罰。',
+    off:'管理權人（行為人）姓名欄：填寫使用場所【負責人或戶長姓名】（自然人）。',
+  },
+
+  spos:{
+    flds:[
+      {id:'splc',lbl:'查獲地址或場所名稱',ph:'○○市○○區○○路○號1樓',w:2},
+      {id:'spbuild',lbl:'建築物適用狀態',tp:'sel',opts:[
+        {v:'new',l:'111年7月1日後申請建築執照掛件的新建建築物'},
+        {v:'unknown',l:'不確定，需確認建照掛件日期'},
+      ],w:2},
+      {id:'sppos',lbl:'容器放置位置',tp:'sel',opts:[
+        {v:'indoor',l:'室內'},
+        {v:'basement',l:'地下室'},
+        {v:'unknown',l:'不確定'},
+      ],w:1},
+      {id:'spkg',lbl:'液化石油氣使用量（公斤）',ph:'60',w:1},
+      {id:'spdesc',lbl:'容器明細或現場事實',ph:'20公斤鋼瓶3支，分別連接炒鍋、湯鍋及蒸籠機',w:2},
+    ],
+    gen(v){
+      const b=v.spbuild==='new'?'屬111年7月1日後申請建築執照掛件之新建建築物':'建築物適用狀態尚待確認';
+      const pos=v.sppos==='basement'?'地下室':(v.sppos==='indoor'?'室內':'室內或屋外狀態尚待確認');
+      return`一、稽查發現，位於${v.splc||'__'}之場所，${b}，現場液化石油氣容器設置於${pos}，使用量計${v.spkg||'__'}公斤（${v.spdesc||'容器明細待補'}），已逾10公斤。\n二、上開情形係容器設置位置不符規定，違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第73-2條規定。`;
+    },
+    law:'違反消防法第15條第1項，依消防法第42條規定處罰。',
+    off:'管理權人（行為人）姓名欄：填寫使用場所【負責人、承租人或實際使用人姓名】；開單前應確認建築執照掛件日期及容器所在位置是否屬室內。',
+  },
+
+  fwmark:{
+    flds:[],
+    customRender(c){renderFwMarkForm(c);},
+    customCollect(){return collectFwMarkForm();},
+    gen(v){
+      const manualSummary=!!v.summary;
+      const itemTxt=v.summary||v.groupText||'品項、數量及重量詳如扣留清冊';
+      const ratioTxt=manualSummary&&v.totalRatio
+        ?`，合計佔管制量${v.totalRatio}倍（${fwMarkThresholdLabel(v.totalRatioNum)}）`
+        :(!v.groupText&&!v.summary?'，達中央主管機關所定管制量五分之一以上':'');
+      const act=fwMarkActionText(v.action);
+      return`一、於${v.dt||'__'}，在${v.loc||'__'}查獲行為人${act}如下：${itemTxt}${ratioTxt}。\n二、上開情形違反爆竹煙火管理條例第9條第3項規定，依同條例第30條第1款規定處罰。\n三、前開爆竹煙火依爆竹煙火管理條例第32條規定，應逕予沒入；未有認可標示之爆竹煙火，拍照存證並記載其數量後銷毀。`;
+    },
+    law:'違反爆竹煙火管理條例第9條第3項，依同條例第30條第1款規定處罰；沒入及銷毀依同條例第32條規定辦理。',
+    off:'管理權人（行為人）姓名欄：填寫現場持有人或行為人姓名（自然人）；如為商號或公司案件，請另確認負責人及實際行為人。',
+  },
+
+  fwstore:{
+    flds:[],
+    customRender(c){renderFwStoreForm(c);},
+    customCollect(){return collectFwStoreForm();},
+    gen(v){
+      const manualSummary=!!v.summary;
+      const itemTxt=v.summary||v.groupText||'品項、數量及重量詳如扣留清冊';
+      const totalTxt=manualSummary&&v.totalWeight?`，${v.totalLabel||'計算重量'}合計${v.totalWeight}公斤`:'';
+      const ratioTxt=manualSummary&&v.totalRatio?`，合計佔管制量${v.totalRatio}倍`:'';
+      const scale=v.scale==='over'||(v.scale==='auto'&&v.totalRatioNum>=30)?'over':'under';
+      const scaleNote=v.totalRatio?`${v.totalStatus||fwStatusLabel(v.totalRatioNum)}${v.totalRatioNum>=1&&v.totalRatioNum<30?'，未達管制量三十倍':''}`:'管制量倍數待確認';
+      const defectKind=v.defectKind||'check';
+      const insurance=v.insurance||'unknown';
+      const head=`一、於${v.dt||'__'}，在${v.loc||'__'}發現${v.placeType||'儲存或販賣場所'}儲放爆竹煙火如下：${itemTxt}${totalTxt}${ratioTxt}。\n二、上開爆竹煙火${scaleNote}。`;
+      if(insurance==='no'||defectKind==='insurance'){
+        const penalty=fwInsurancePenaltyText(scale);
+        return`${head}\n三、現場已確認負責人未依規定投保公共意外責任保險；本項事實通常較位置、構造、設備或安全管理缺失更易客觀認定，建議優先依保險缺失開立。\n四、上開情形違反爆竹煙火管理條例第22條第1項規定，依同條例${penalty}規定處罰，並命限期改善；屆期未改善者，得按次處罰，並得予以停工或停業之處分。\n五、若後續另確認位置、構造、設備或安全管理具體不符事項，再視案件需要補充檢討第4條第2項。`;
+      }
+      if(defectKind==='check'){
+        const insuranceNote=insurance==='yes'
+          ?'公共意外責任保險已確認符合；如仍要開第4條第2項，請先填具體位置、構造、設備或安全管理缺失。'
+          :'尚未確認公共意外責任保險；建議先查第22條保險資料，若未投保即可優先依保險缺失處理。';
+        return`${head}\n三、目前尚未填寫位置、構造、設備或安全管理之具體不符事項，不宜逕以爆竹煙火管理條例第4條第2項及第27條或第28條第1項第1款、第2款作為處罰依據。\n四、開單優先順序建議：${insuranceNote}\n五、若保險已符合，再補查是否為合格儲存或販賣場所、現場位置／構造／設備／安全管理具體缺失及照片。`;
+      }
+      const defectText=v.defect||fwStoreDefectText(defectKind);
+      const penalty=fwStorePenaltyText(defectKind,scale);
+      const prior=insurance==='yes'?'（已先確認保險符合，續行檢討場所缺失）':'（保險狀態尚未填明；實務上仍建議先確認第22條保險）';
+      return`${head}\n三、${prior}現場已確認${defectText}，屬爆竹煙火管理條例第4條第2項所定${fwStoreDefectLawText(defectKind)}不符。\n四、上開情形違反爆竹煙火管理條例第4條第2項規定，${penalty}。\n五、違法儲存之爆竹煙火是否依爆竹煙火管理條例第32條規定沒入，請依扣留物性質及案件事實核對。`;
+    },
+    law:'達管制量僅代表需進一步檢核，不能單獨等同第4條第2項違規。已確認位置、構造或設備不符者，依爆竹煙火管理條例第4條第2項、第27條第1項第1款（達30倍以上）或第28條第1項第1款（未達30倍）處罰；已確認安全管理不符者，依第28條第1項第2款處罰。未投保公共意外責任保險請另依第22條及第27條第1項第7款或第28條第1項第8款處理。',
+    off:'管理權人（行為人）姓名欄：填寫場所負責人、實際儲放人或現場持有人；若涉及店家，建議同步確認商業登記負責人。',
+  },
+
+  fwtemp:{
+    flds:[],
+    customRender(c){renderFwTempForm(c);},
+    customCollect(){return collectFwTempForm();},
+    gen(v){
+      const itemTxt=v.summary||v.groupText||'品項、數量及重量詳如扣留清冊';
+      const ratioTxt=v.totalRatio?`（合計佔管制量${v.totalRatio}倍，${v.totalStatus||fwStatusLabel(v.totalRatioNum)}）`:'';
+      return`一、於${v.dt||'__'}，在${v.loc||'__'}查獲專業爆竹煙火如下：${itemTxt}${ratioTxt}。\n二、專業爆竹煙火施放前，未儲存於合格之臨時儲存場所，違反爆竹煙火管理條例第16條第3項規定。\n三、上開情形依爆竹煙火管理條例第27條規定處罰，並依同條例第32條規定予以沒入。`;
+    },
+    law:'違反爆竹煙火管理條例第16條第3項；處罰及沒入條文請依同條例第27條及第32條核對。',
+    off:'管理權人（行為人）姓名欄：填寫專業爆竹煙火持有人、施放申請人、現場實際管理人或相關行為人，並依案件資料確認。',
+  },
+
+  fwins:{
+    flds:[
+      {id:'fwidt',lbl:'查獲時間',ph:'民國115年2月5日9時36分',w:1},
+      {id:'fwiloc',lbl:'查獲地點',ph:'桃園市桃園區富國路308號',w:1},
+      {id:'fwiplace',lbl:'場所類型',tp:'sel',opts:[{v:'爆竹煙火儲存場所',l:'爆竹煙火儲存場所'},{v:'爆竹煙火販賣場所',l:'爆竹煙火販賣場所'},{v:'專業爆竹煙火施放場所',l:'專業爆竹煙火施放場所'}],w:1},
+      {id:'fwiratio',lbl:'管制量倍數（可選填）',ph:'18.82',w:1},
+      {id:'fwiscale',lbl:'管制量狀態',tp:'sel',opts:[{v:'under',l:'未達30倍（第28條第1項第8款）'},{v:'over',l:'達30倍以上（第27條第1項第7款）'}],w:2},
+    ],
+    gen(v){
+      const ratioTxt=v.fwiratio?`，現場爆竹煙火合計達管制量${v.fwiratio}倍`:'';
+      const over=v.fwiscale==='over';
+      const penalty=over?'第27條第1項第7款':'第28條第1項第8款';
+      return`一、於${v.fwidt||'__'}，在${v.fwiloc||'__'}發現${v.fwiplace||'爆竹煙火儲存或販賣場所'}${ratioTxt}，其負責人未依規定投保公共意外責任保險。\n二、上開情形違反爆竹煙火管理條例第22條第1項規定，依同條例${penalty}規定處罰，並命限期改善；屆期未改善者，得按次處罰，並得予以停工或停業之處分。`;
+    },
+    law:'違反爆竹煙火管理條例第22條第1項；未達管制量30倍者依第28條第1項第8款處罰，達30倍以上者依第27條第1項第7款處罰。',
+    off:'管理權人（行為人）姓名欄：填寫場所負責人或管理權人；公司或商號案件請確認登記負責人。',
+  },
+
+  fwtyarea:{
+    flds:[
+      {id:'tya_dt',lbl:'查獲／施放時間',ph:'民國115年2月8日22時30分',w:1},
+      {id:'tya_loc',lbl:'施放地點',ph:'桃園市__區__路__號前',w:1},
+      {id:'tya_kind',lbl:'爆竹煙火種類或品名',ph:'例：高空煙火、沖天炮、蜂炮、仙女棒等',w:1},
+      {id:'tya_person',lbl:'行為人（可選填）',ph:'例：現場施放人或負責人姓名',w:1},
+      {id:'tya_area',lbl:'禁止施放區域類型',tp:'sel',opts:[
+        {v:'industrial',l:'工業區'},
+        {v:'forest',l:'國有林班地'},
+        {v:'hospital',l:'醫院院區'},
+        {v:'school',l:'學校校區'},
+        {v:'airport',l:'機場周邊1公里'},
+        {v:'traffic',l:'高速公路／捷運／高架道路／鐵路兩側3公尺'},
+        {v:'heritage',l:'古蹟周邊20公尺'},
+        {v:'announced',l:'其他本府公告禁止施放區域'}
+      ],w:2},
+      {id:'tya_permit',lbl:'許可狀態',tp:'sel',opts:[
+        {v:'未經本府許可',l:'未經本府許可'},
+        {v:'查無許可資料',l:'查無許可資料'},
+        {v:'許可狀態待確認',l:'許可狀態待確認'}
+      ],w:1},
+      {id:'tya_dist',lbl:'安全距離或補充事實（可選填）',ph:'例：距醫院急診入口約__公尺；現場未保持產品標示安全距離',w:1},
+      {id:'tya_conf',lbl:'是否一併扣留或沒入',tp:'cb',items:[
+        {v:'fw',l:'尚有未施放爆竹煙火'},
+        {v:'tool',l:'現場有施放器具或相關物品'}
+      ],w:2},
+    ],
+    gen(v){
+      const person=v.tya_person?`行為人${v.tya_person}於`:'行為人於';
+      const extra=v.tya_dist?`；${v.tya_dist}`:'';
+      const conf=tyFwConfText(v.tya_conf);
+      return`一、於${v.tya_dt||'__'}，在${v.tya_loc||'__'}查獲${person}桃園市禁止施放區域施放${v.tya_kind||'爆竹煙火'}，該地點屬${tyFwAreaLabel(v.tya_area)}，${v.tya_permit||'未經本府許可'}${extra}。\n二、上開情形違反桃園市爆竹煙火施放管制自治條例第3條規定，依同自治條例第8條及爆竹煙火管理條例第29條第1項第7款規定處罰。${conf}`;
+    },
+    law:'違反桃園市爆竹煙火施放管制自治條例第3條；依同自治條例第8條及爆竹煙火管理條例第29條第1項第7款規定處罰。若現場扣留未施放爆竹煙火或施放器具，沒入請再依第32條核對。',
+    off:'管理權人（行為人）姓名欄：填寫實際施放人；如為活動、店家或宮廟案件，請同步確認主辦、負責人及現場指揮人。',
+  },
+
+  fwtytime:{
+    flds:[
+      {id:'tyt_dt',lbl:'查獲／施放時間',ph:'民國115年2月8日22時30分',w:1},
+      {id:'tyt_loc',lbl:'施放地點',ph:'桃園市__區__路__號前',w:1},
+      {id:'tyt_kind',lbl:'施放種類',tp:'sel',opts:[
+        {v:'飛行類一般爆竹煙火',l:'飛行類一般爆竹煙火'},
+        {v:'升空類一般爆竹煙火',l:'升空類一般爆竹煙火'},
+        {v:'摔炮類一般爆竹煙火',l:'摔炮類一般爆竹煙火'},
+        {v:'飛行類、升空類或摔炮類一般爆竹煙火',l:'多種類或尚待清冊確認'}
+      ],w:1},
+      {id:'tyt_period',lbl:'管制時段',tp:'sel',opts:[
+        {v:'上午8時前',l:'上午8時前'},
+        {v:'下午10時後',l:'下午10時後'},
+        {v:'上午8時前或下午10時後',l:'上午8時前或下午10時後'}
+      ],w:1},
+      {id:'tyt_exception',lbl:'節慶或公告例外狀態',tp:'sel',opts:[
+        {v:'非本府公告之年節或特殊節慶例外日期',l:'非公告例外日期'},
+        {v:'是否屬年節或特殊節慶例外日期待確認',l:'公告例外待確認'},
+        {v:'已屬本府公告例外日期（請審慎確認是否仍違規）',l:'已屬公告例外日期'}
+      ],w:1},
+      {id:'tyt_permit',lbl:'許可狀態',tp:'sel',opts:[
+        {v:'未經本府許可',l:'未經本府許可'},
+        {v:'查無許可資料',l:'查無許可資料'},
+        {v:'許可狀態待確認',l:'許可狀態待確認'}
+      ],w:1},
+      {id:'tyt_note',lbl:'補充事實（可選填）',ph:'例：現場有影片、照片或民眾報案紀錄佐證',w:1},
+      {id:'tyt_conf',lbl:'是否一併扣留或沒入',tp:'cb',items:[
+        {v:'fw',l:'尚有未施放爆竹煙火'},
+        {v:'tool',l:'現場有施放器具或相關物品'}
+      ],w:2},
+    ],
+    gen(v){
+      const note=v.tyt_note?`；${v.tyt_note}`:'';
+      const conf=tyFwConfText(v.tyt_conf);
+      return`一、於${v.tyt_dt||'__'}，在${v.tyt_loc||'__'}查獲行為人於${v.tyt_period||'管制時段'}施放${v.tyt_kind||'飛行類、升空類或摔炮類一般爆竹煙火'}，${v.tyt_exception||'非本府公告之年節或特殊節慶例外日期'}，且${v.tyt_permit||'未經本府許可'}${note}。\n二、上開情形違反桃園市爆竹煙火施放管制自治條例第5條規定，依同自治條例第8條及爆竹煙火管理條例第29條第1項第7款規定處罰。${conf}`;
+    },
+    law:'違反桃園市爆竹煙火施放管制自治條例第5條；依同自治條例第8條及爆竹煙火管理條例第29條第1項第7款規定處罰。請開單前確認是否屬年節或特殊節慶公告例外日期。',
+    off:'管理權人（行為人）姓名欄：填寫實際施放人；如為活動、店家或宮廟案件，請同步確認主辦、負責人及現場指揮人。',
+  },
+
+  fwtymethod:{
+    flds:[
+      {id:'tym_dt',lbl:'查獲／施放時間',ph:'民國115年2月8日20時10分',w:1},
+      {id:'tym_loc',lbl:'施放地點',ph:'桃園市__區__路__號前',w:1},
+      {id:'tym_kind',lbl:'爆竹煙火種類或品名',ph:'例：沖天炮、排炮、蜂炮、舞臺煙火等',w:1},
+      {id:'tym_fact',lbl:'未依說明施放情形',ph:'例：倒置施放、非固定方式施放、串接施放、改裝後施放、未依標示方向施放',w:2},
+      {id:'tym_evidence',lbl:'佐證資料（可選填）',ph:'例：產品標示照片、現場影片、殘骸照片',w:1},
+      {id:'tym_conf',lbl:'是否一併扣留或沒入',tp:'cb',items:[
+        {v:'fw',l:'尚有未施放爆竹煙火'},
+        {v:'tool',l:'現場有施放器具或相關物品'}
+      ],w:2},
+    ],
+    gen(v){
+      const ev=v.tym_evidence?`；佐證資料：${v.tym_evidence}`:'';
+      const conf=tyFwConfText(v.tym_conf);
+      return`一、於${v.tym_dt||'__'}，在${v.tym_loc||'__'}查獲行為人施放${v.tym_kind||'爆竹煙火'}，未依產品標示或使用說明方式施放（${v.tym_fact||'未依產品使用說明方式施放之事實待補'}）${ev}。\n二、上開情形違反桃園市爆竹煙火施放管制自治條例第6條規定，依同自治條例第8條及爆竹煙火管理條例第29條第1項第7款規定處罰。${conf}`;
+    },
+    law:'違反桃園市爆竹煙火施放管制自治條例第6條；依同自治條例第8條及爆竹煙火管理條例第29條第1項第7款規定處罰。請保留產品標示、使用說明或現場影片照片佐證。',
+    off:'管理權人（行為人）姓名欄：填寫實際施放人；如為活動、店家或宮廟案件，請同步確認主辦、負責人及現場指揮人。',
+  },
+
+  fwtyban:{
+    flds:[
+      {id:'tyb_dt',lbl:'查獲／施放時間',ph:'民國115年2月8日20時10分',w:1},
+      {id:'tyb_loc',lbl:'施放地點',ph:'桃園市__區__路__號前',w:1},
+      {id:'tyb_kind',lbl:'本府公告禁止種類／品名',ph:'例：公告禁止之__類爆竹煙火，品名__',w:1},
+      {id:'tyb_ann',lbl:'公告資料',ph:'例：桃園市政府__年__月__日府消預字第__號公告',w:1},
+      {id:'tyb_note',lbl:'補充事實（可選填）',ph:'例：現場施放照片、影片、扣留清冊或產品標示',w:2},
+      {id:'tyb_conf',lbl:'是否一併扣留或沒入',tp:'cb',items:[
+        {v:'fw',l:'尚有未施放爆竹煙火'},
+        {v:'tool',l:'現場有施放器具或相關物品'}
+      ],w:2},
+    ],
+    gen(v){
+      const ann=v.tyb_ann?`，該種類係依${v.tyb_ann}公告禁止施放`:'，公告資料待補';
+      const note=v.tyb_note?`；${v.tyb_note}`:'';
+      const conf=tyFwConfText(v.tyb_conf);
+      return`一、於${v.tyb_dt||'__'}，在${v.tyb_loc||'__'}查獲行為人施放本府公告禁止施放之爆竹煙火（${v.tyb_kind||'禁止種類或品名待補'}）${ann}${note}。\n二、上開情形違反桃園市爆竹煙火施放管制自治條例第4條規定，依同自治條例第8條及爆竹煙火管理條例第29條第1項第7款規定處罰。${conf}`;
+    },
+    law:'違反桃園市爆竹煙火施放管制自治條例第4條；依同自治條例第8條及爆竹煙火管理條例第29條第1項第7款規定處罰。此項務必填入本府公告資料後再開單。',
+    off:'管理權人（行為人）姓名欄：填寫實際施放人；如為活動、店家或宮廟案件，請同步確認主辦、負責人及現場指揮人。',
+  },
+
+  cdex:{
+    flds:[],
+    customRender(c){initChemForm(c);},
+    customCollect(){return collectChemData();},
+    gen(v){
+      const st=v.cdst||currentChemPlace();
+      const artMap={'公共危險物品室內儲存場所':'第46條第1款','公共危險物品室外儲存場所':'第46條第1款','公共危險物品室內儲槽場所':'第46條第1款','公共危險物品室外儲槽場所':'第46條第1款','公共危險物品地下儲槽場所':'第46條第1款','公共危險物品製造場所':'第46條第1款','公共危險物品一般處理場所':'第46條第1款','公共危險物品第一種販賣場所':'第46條第1款','公共危險物品第二種販賣場所':'第46條第1款'};
+      const art=artMap[st]||'相關規定';
+      const nums='一二三四五六七八九十';
+      const defectMap={pos:'位置',struct:'構造',equip:'設備',safe:'安全管理',other:'其他缺失'};
+      const defects=(v.defects||[]).map(x=>defectMap[x]||x);
+      const defectText=defects.length?defects.join('、'):'位置、構造、設備或安全管理等不符合事項';
+      const places=(v.places&&v.places.length)?v.places:[{label:st,place:v.mainPlace||'',rows:v.rows||[],totalRatio:v.totalRatio||0,judgement:''}];
+      const siteSummary=v.siteSummary||places.map((p,i)=>`${p.label||st}${p.place?`（${p.place}）`:`第${i+1}處`}`).join('、');
+      const extra=v.extra?`\n    補充說明：${v.extra}`:'';
+      const lines=[];
+      lines.push(`一、現場發現${siteSummary}等，不符合規定。所有不合格場所均應列出並一次告知；如場所數量眾多，可另以清冊詳列。`);
+      places.forEach((p,pi)=>{
+        lines.push(`${nums[pi+1]||pi+2}、${p.place||`${p.label||st}第${pi+1}處`}（${p.label||st}）儲存或處理下列公共危險物品：`);
+        (p.rows||[]).forEach((r,i)=>{
+          const name=r.name?`（品名：${r.name}）`:'';
+          lines.push(`    （${nums[i]||i+1}）${r.cls}${r.sub}${name}，管制量${r.ctl||'__'}${r.unit||'公升'}，實際儲量${r.act||'__'}${r.unit||'公升'}，佔管制量${r.ratio||'__'}倍；`);
+        });
+        lines.push(`    本場所合計達管制量${p.totalRatio||'__'}倍。${p.judgement?` ${p.judgement}`:''}`);
+      });
+      lines.push(`${nums[places.length+1]||places.length+2}、該場所違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法${art}規定；違規事項為${defectText}，詳如現場檢查紀錄或清冊。${extra}`);
+      return lines.join('\n');
+    },
+    law:'違反消防法第15條第1項，依消防法第42條規定處罰。',
+    off:'管理權人（行為人）姓名欄：填寫場所【代表人姓名】（自然人）。',
+  },
+
+  cdsp:{
+    flds:[
+      {id:'cdsdist',lbl:'儲槽相互實際間距（公分）',ph:'30',w:1},
+      {id:'cdsreq', lbl:'法定最小間距（公分）',ph:'50',w:1},
+    ],
+    gen(v){
+      return`一、稽查發現，本場所儲槽與儲槽（或牆面）相互間隔距離實測為${v.cdsdist||'__'}公分，未達法定最小間距${v.cdsreq||'50'}公分之規定。\n二、違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第33條規定。`;
+    },
+    law:'違反消防法第15條第1項，依消防法第42條規定處罰。',
+    off:'管理權人（行為人）姓名欄：填寫場所【代表人姓名】（自然人）。',
+  },
+
+  cdca:{
+    flds:[
+      {id:'cdcadist',lbl:'實際保留空地寬度（公尺）',ph:'1',w:1},
+      {id:'cdcareq', lbl:'法定最小寬度（公尺）',ph:'3',w:1},
+    ],
+    gen(v){
+      return`一、稽查發現，本場所保留空地寬度實測為${v.cdcadist||'__'}公尺，未達法定最小寬度${v.cdcareq||'__'}公尺之規定。\n二、違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第30條規定。`;
+    },
+    law:'違反消防法第15條第1項，依消防法第42條規定處罰。',
+    off:'管理權人（行為人）姓名欄：填寫場所【代表人姓名】（自然人）。',
+  },
+
+  cdarea:{
+    flds:[
+      {id:'cdaraa',lbl:'室內儲存場所實際面積（平方公尺）',ph:'120',w:1},
+    ],
+    gen(v){
+      return`一、稽查發現，本室內儲存場所面積實測為${v.cdaraa||'__'}平方公尺，超過法定上限75平方公尺之規定。\n二、違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第23條規定。`;
+    },
+    law:'違反消防法第15條第1項，依消防法第42條規定處罰。',
+    off:'管理權人（行為人）姓名欄：填寫場所【代表人姓名】（自然人）。',
+  },
+
+  cdvent:{
+    flds:[
+      {id:'cdvloc',lbl:'場所名稱或位置',ph:'P1棟化學品倉',w:2},
+    ],
+    gen(v){
+      return`一、稽查發現，本${v.cdvloc||'儲存場所'}之通風排出設備，未附出版功能証明（即未通過功能測試）或未依規定設置，不符合法規規定。\n二、違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法相關規定。`;
+    },
+    law:'違反消防法第15條第1項，依消防法第42條規定處罰。',
+    off:'管理權人（行為人）姓名欄：填寫場所【代表人姓名】（自然人）。',
+  },
+
+  cdmap:{
+    flds:[],
+    gen(){
+      return'一、稽查發現，本場所危險物品儲存設施之現場配置，與核准之平面圖不符規定，現場佈局與申請核准資料不一致。\n二、違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法相關規定。';
+    },
+    law:'違反消防法第15條第1項，依消防法第42條規定處罰。',
+    off:'管理權人（行為人）姓名欄：填寫場所【代表人姓名】（自然人）。',
+  },
+
+  cdsu:{
+    flds:[
+      {id:'cdsutype',lbl:'場所類型',ph:'會自動帶入目前公共危險物品場所細項，可視需要覆寫',w:2},
+      {id:'cdsuml',lbl:'現場管制量倍數',ph:'45',w:1},
+    ],
+    gen(v){
+      const tp=v.cdsutype||currentChemPlace();
+      const ml=v.cdsuml||'__';
+      return`一、稽查發現，本${tp}現場公共危險物品儲量達管制量${ml}倍，依規定達管制量30倍以上之場所應設置保安監督人，惟稽查時該場所未依規定設置保安監督人。\n二、違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第45條規定。`;
+    },
+    law:'違反消防法第15條第1項，依消防法第42條規定處罰。',
+    off:'管理權人（行為人）姓名欄：填寫場所【代表人姓名】（自然人）。',
+  },
+
+  cdplan:{
+    flds:[
+      {id:'cdpltype',lbl:'場所類型',ph:'會自動帶入目前公共危險物品場所細項，可視需要覆寫',w:2},
+      {id:'cdplml',lbl:'現場管制量倍數',ph:'45',w:1},
+      {id:'cdpldft',lbl:'缺失情形',tp:'sel',opts:[{v:'未制定保安監督計畫',l:'未制定保安監督計畫'},{v:'未報請主管機關備查',l:'計畫未報請主管機關備查'},{v:'未制定計畫且未報請備查',l:'未制定計畫且未報請備查'}],w:2},
+    ],
+    gen(v){
+      const tp=v.cdpltype||currentChemPlace();
+      const ml=v.cdplml||'__';
+      const dft=v.cdpldft||'未制定保安監督計畫';
+      return`一、稽查發現，本${tp}現場公共危險物品儲量達管制量${ml}倍，依規定達管制量30倍以上之場所應制定保安監督計畫並報請主管機關備查，惟稽查時發現該場所${dft}。\n二、違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第48條規定。`;
+    },
+    law:'違反消防法第15條第1項，依消防法第42條規定處罰。',
+    off:'管理權人（行為人）姓名欄：填寫場所【代表人姓名】（自然人）。',
+  },
+};
+
+const CHEM_PLACE_LABEL={
+  mfg:'公共危險物品製造場所',
+  proc:'公共危險物品一般處理場所',
+  sell1:'公共危險物品第一種販賣場所',
+  sell2:'公共危險物品第二種販賣場所',
+  sins:'公共危險物品室內儲存場所',
+  sout:'公共危險物品室外儲存場所',
+  tins:'公共危險物品室內儲槽場所',
+  tout:'公共危險物品室外儲槽場所',
+  tund:'公共危險物品地下儲槽場所',
+};
+
+function currentChemPlace(){
+  const id=document.getElementById('selChemDetail')?.value||document.getElementById('selChemSub')?.value||'';
+  return CHEM_PLACE_LABEL[id]||'公共危險物品場所';
+}
+
+function chemSimple(article, defect, opts={}){
+  const fields=[
+    {id:'loc',lbl:'場所名稱或位置',ph:'例：一樓油漆調配區、P1棟化學品倉',w:2},
+    {id:'desc',lbl:'現場違規情形',ph:opts.ph||defect,w:2},
+  ];
+  if(opts.measure){
+    fields.splice(1,0,
+      {id:'act',lbl:'實測或現場數值',ph:opts.actPh||'例：2公尺',w:1},
+      {id:'req',lbl:'法定標準',ph:opts.reqPh||'例：3公尺以上',w:1}
+    );
+  }
+  return{
+    flds:fields,
+    gen(v){
+      const place=currentChemPlace();
+      const at=v.loc?`（${v.loc}）`:'';
+      const measure=(opts.measure&&(v.act||v.req))?`，實測或現場數值為${v.act||'__'}，未達法定標準${v.req||'__'}`:'';
+      return`一、稽查發現，本${place}${at}${measure}，${v.desc||defect}。\n二、違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法${article}規定。`;
+    },
+    law:'違反消防法第15條第1項，依消防法第42條規定處罰。',
+    off:'管理權人（行為人）姓名欄：填寫場所【代表人姓名】（自然人）。',
+  };
+}
+
+Object.assign(FM,{
+  m_sdist: chemSimple('第13條','外牆或相當於外牆之設施外側與鄰近場所之安全距離不足。',{measure:true,actPh:'例：8公尺',reqPh:'例：10公尺以上'}),
+  m_space: chemSimple('第14條','場所四周保留空地寬度不足。',{measure:true,actPh:'例：1.5公尺',reqPh:'例：3公尺以上'}),
+  m_struct:chemSimple('第15條','場所構造不符法定規定。'),
+  m_equip: chemSimple('第16條','場所設備不符法定規定。'),
+  p_sdist: chemSimple('第13條','外牆或相當於外牆之設施外側與鄰近場所之安全距離不足。',{measure:true,actPh:'例：8公尺',reqPh:'例：10公尺以上'}),
+  p_space: chemSimple('第14條','場所四周保留空地寬度不足。',{measure:true,actPh:'例：1.5公尺',reqPh:'例：3公尺以上'}),
+  p_struct:chemSimple('第15條','一般處理場所構造不符法定規定。'),
+  p_equip: chemSimple('第16條','一般處理場所設備不符法定規定。'),
+  p_safe:  chemSimple('第46-1條','處理作業未依公共危險物品特性採取必要安全管理措施。'),
+  s1_struct:chemSimple('第17條','第一種販賣場所位置、構造或設備不符規定。'),
+  s1_adj:   chemSimple('第17條第4款','調配室面積或構造不符規定。',{measure:true,actPh:'例：4平方公尺',reqPh:'例：6平方公尺以上'}),
+  s2_struct:chemSimple('第18條','第二種販賣場所位置、構造或設備不符規定。'),
+  sell_bulk:chemSimple('第46-1條第2項第1款','六類物品未存放於容器，或有散裝販賣情形。'),
+  sell_mix: chemSimple('第46-1條第2項第2款','調配六類物品未以塗料類為限，或未於調配室內為之。'),
+  si_sdist:chemSimple('第21條第1款準用第13條','室內儲存場所安全距離不足。',{measure:true,actPh:'例：8公尺',reqPh:'例：10公尺以上'}),
+  si_space:chemSimple('第21條第2款','室內儲存場所周圍保留空地寬度不足。',{measure:true,actPh:'例：0.5公尺',reqPh:'例：1公尺以上'}),
+  si_excl: chemSimple('第21條第3款','室內儲存場所非獨立專用建築物。'),
+  si_ht:   chemSimple('第21條第4款','儲存倉庫高度超過六公尺。',{measure:true,actPh:'例：7公尺',reqPh:'例：6公尺以下'}),
+  si_area: chemSimple('第21條第5款','儲存倉庫樓地板面積超過一千平方公尺。',{measure:true,actPh:'例：1200平方公尺',reqPh:'例：1000平方公尺以下'}),
+  si_stack:chemSimple('第46-2條第4款','室內儲存場所容器堆積高度超過三公尺。',{measure:true,actPh:'例：3.5公尺',reqPh:'例：3公尺以下'}),
+  so_sdist:chemSimple('第30條第1款準用第13條','室外儲存場所安全距離不足。',{measure:true,actPh:'例：8公尺',reqPh:'例：10公尺以上'}),
+  so_fence:chemSimple('第30條第3款','室外儲存場所未以圍欄區劃。'),
+  so_space:chemSimple('第30條第4款','室外儲存場所保留空地寬度不足。',{measure:true,actPh:'例：1公尺',reqPh:'例：3公尺以上'}),
+  so_rack: chemSimple('第30條第6款','架臺高度超過六公尺。',{measure:true,actPh:'例：7公尺',reqPh:'例：6公尺以下'}),
+  so_stack:chemSimple('第30條第7款','容器堆積高度超過三公尺。',{measure:true,actPh:'例：3.5公尺',reqPh:'例：3公尺以下'}),
+  ti_gap:  chemSimple('第33條第2款','儲槽側板外壁與室內牆面距離不足五十公分。',{measure:true,actPh:'例：30公分',reqPh:'例：50公分以上'}),
+  ti_cap:  chemSimple('第33條第3款','儲槽容量超過管制量四十倍。',{measure:true,actPh:'例：45倍',reqPh:'例：40倍以下'}),
+  ti_mat:  chemSimple('第33條第4款','儲槽鋼板厚度不足三點二毫米。',{measure:true,actPh:'例：2.8毫米',reqPh:'例：3.2毫米以上'}),
+  ti_thres:chemSimple('第33條第16款','出入口門檻高度不足二十公分。',{measure:true,actPh:'例：10公分',reqPh:'例：20公分以上'}),
+  to_sdist:chemSimple('第37條第1款準用第13條','室外儲槽場所安全距離不足。',{measure:true,actPh:'例：8公尺',reqPh:'例：10公尺以上'}),
+  to_gap:  chemSimple('第37條第4款','相鄰儲槽側板外壁間距不足。',{measure:true,actPh:'例：0.5公尺',reqPh:'例：1公尺以上'}),
+  to_space:chemSimple('第37條第3款','室外儲槽場所保留空地寬度不足。',{measure:true,actPh:'例：2公尺',reqPh:'例：3公尺以上'}),
+  to_dike: chemSimple('第38條','防液堤容量、構造或排水設備不符規定。'),
+  to_light:chemSimple('第37條第18款','未設置避雷設備或避雷設備不符規定。'),
+  tu_gap:  chemSimple('第41條第2款','儲槽外壁與槽室牆壁間隔不足十公分。',{measure:true,actPh:'例：5公分',reqPh:'例：10公分以上'}),
+  tu_top:  chemSimple('第41條第3款','儲槽頂部距離地面不足六十公分。',{measure:true,actPh:'例：40公分',reqPh:'例：60公分以上'}),
+  tu_adj:  chemSimple('第41條第4款','相鄰儲槽側板外壁間隔不足。',{measure:true,actPh:'例：50公分',reqPh:'例：1公尺以上'}),
+  tu_leak: chemSimple('第41條第13款','未於儲槽周圍適當位置設置四處以上測漏管或同等效能洩漏檢測設備。'),
+  tu_conc: chemSimple('第41條第14款','槽室牆壁、底部或頂蓋之混凝土厚度、強度或防水措施不符規定。'),
+  cd_board:chemSimple('第19條','未於場所明顯處設置標示板，或標示內容不符規定。'),
+  cd_check:chemSimple('第46條第11款','未指派專人每月對場所位置、構造及設備自主檢查，或檢查紀錄未至少留存一年。'),
+});
+
+// ── 公共危險物品類別管制量資料庫 ─────────────────────────────────
+const CATDB=[
+  {label:'第1類 氧化性固體（第一級）',             cls:'第一類',sub:'氧化性固體（第一級）',                 ctl:50,    unit:'公斤'},
+  {label:'第1類 氧化性固體（第二級）',             cls:'第一類',sub:'氧化性固體（第二級）',                 ctl:300,   unit:'公斤'},
+  {label:'第1類 氧化性固體（第三級）',             cls:'第一類',sub:'氧化性固體（第三級）',                 ctl:1000,  unit:'公斤'},
+  {label:'第2類 硫化磷、赤磷、硫磺',               cls:'第二類',sub:'硫化磷、赤磷、硫磺',                   ctl:100,   unit:'公斤'},
+  {label:'第2類 鐵粉',                             cls:'第二類',sub:'鐵粉',                                 ctl:500,   unit:'公斤'},
+  {label:'第2類 金屬粉、鎂、三聚甲醛等（第一級）', cls:'第二類',sub:'金屬粉、鎂、三聚甲醛等（第一級）',     ctl:100,   unit:'公斤'},
+  {label:'第2類 金屬粉、鎂、三聚甲醛等（第二級）', cls:'第二類',sub:'金屬粉、鎂、三聚甲醛等（第二級）',     ctl:500,   unit:'公斤'},
+  {label:'第2類 易燃性固體',                       cls:'第二類',sub:'易燃性固體',                           ctl:1000,  unit:'公斤'},
+  {label:'第3類 發火性液體、發火性固體及禁水性物質（第一級）', cls:'第三類',sub:'發火性液體、發火性固體及禁水性物質（第一級）', ctl:10,  unit:'公斤'},
+  {label:'第3類 發火性液體、發火性固體及禁水性物質（第二級）', cls:'第三類',sub:'發火性液體、發火性固體及禁水性物質（第二級）', ctl:50,  unit:'公斤'},
+  {label:'第3類 發火性液體、發火性固體及禁水性物質（第三級）', cls:'第三類',sub:'發火性液體、發火性固體及禁水性物質（第三級）', ctl:300, unit:'公斤'},
+  {label:'第4類 特殊易燃物',                       cls:'第四類',sub:'特殊易燃物',                           ctl:50,    unit:'公升'},
+  {label:'第4類 第一石油類（非水溶性）',           cls:'第四類',sub:'第一石油類（非水溶性）',               ctl:200,   unit:'公升'},
+  {label:'第4類 第一石油類（水溶性）',             cls:'第四類',sub:'第一石油類（水溶性）',                 ctl:400,   unit:'公升'},
+  {label:'第4類 酒精類',                           cls:'第四類',sub:'酒精類',                               ctl:400,   unit:'公升'},
+  {label:'第4類 第二石油類（非水溶性）',           cls:'第四類',sub:'第二石油類（非水溶性）',               ctl:1000,  unit:'公升'},
+  {label:'第4類 第二石油類（水溶性）',             cls:'第四類',sub:'第二石油類（水溶性）',                 ctl:2000,  unit:'公升'},
+  {label:'第4類 第三石油類（非水溶性）',           cls:'第四類',sub:'第三石油類（非水溶性）',               ctl:2000,  unit:'公升'},
+  {label:'第4類 第三石油類（水溶性）',             cls:'第四類',sub:'第三石油類（水溶性）',                 ctl:4000,  unit:'公升'},
+  {label:'第4類 第四石油類',                       cls:'第四類',sub:'第四石油類',                           ctl:6000,  unit:'公升'},
+  {label:'第4類 動植物油類',                       cls:'第四類',sub:'動植物油類',                           ctl:10000, unit:'公升'},
+  {label:'第5類 自反應物質及有機過氧化物（A型、B型）', cls:'第五類',sub:'自反應物質及有機過氧化物（A型、B型）', ctl:10,  unit:'公斤'},
+  {label:'第5類 自反應物質及有機過氧化物（C型、D型）', cls:'第五類',sub:'自反應物質及有機過氧化物（C型、D型）', ctl:100, unit:'公斤'},
+  {label:'第6類 氧化性液體（第一級）',             cls:'第六類',sub:'氧化性液體（第一級）',                 ctl:300,   unit:'公升'},
+  {label:'第6類 氧化性液體（第二級）',             cls:'第六類',sub:'氧化性液體（第二級）',                 ctl:1500,  unit:'公升'},
+  {label:'第6類 氧化性液體（第三級）',             cls:'第六類',sub:'氧化性液體（第三級）',                 ctl:2500,  unit:'公升'},
+];
+
+// ── 限改天數對照表（依安檢複訓115上半年 Slide 18）──────────────────
+// 安全管理類預設30天（桃園市）；位置170天；LPG構造/設備90天；危物構造/設備170天
+const DEAD={
+  fe  :'30天（安全管理）',
+  fns :'90天（構造・設備）',
+  fas :'90天（構造・設備）',
+  fnc :'30天（安全管理）',
+  fhw :'90天（構造・設備）',
+  fsd :'170天（位置）',
+  ffo :'30天（安全管理）',
+  fse :'30天（安全管理）',
+  fmap:'30天（安全管理）',
+  rtol:'30天（安全管理）',
+  rol :'30天（安全管理）',
+  rex :'30天（安全管理）',
+  rnc :'30天（安全管理）',
+  rmap:'30天（安全管理）',
+  ras :'90天（構造・設備）',
+  sol :'30天（安全管理）',
+  sit :'90天（構造・設備）',
+  sre :'30天（安全管理）',
+  spos:'30天（安全管理；如需遷移或改善依主管機關認定）',
+  fwmark:'無限改（依法處罰、沒入及銷毀）',
+  fwstore:'限期改善天數待確認（違法物依第32條沒入）',
+  fwtemp:'無限改（依法處罰、沒入）',
+  fwins:'限期改善天數待確認',
+  fwtyarea:'無限改（依法處罰；如有扣留物，沒入請另核對第32條）',
+  fwtytime:'無限改（依法處罰；如有扣留物，沒入請另核對第32條）',
+  fwtymethod:'無限改（依法處罰；如有扣留物，沒入請另核對第32條）',
+  fwtyban:'無限改（依法處罰；如有扣留物，沒入請另核對第32條）',
+  cdex:'30天（安全管理）',
+  cdsp:'170天（構造・設備）',
+  cdca:'170天（位置，30倍以上）或 355天（位置，30倍以下）',
+  cdarea:'170天（構造）',
+  cdvent:'170天（設備）',
+  cdmap:'30天（安全管理）',
+  cdsu:'90天（保安監督人・構造・設備）',
+  cdplan:'30天（安全管理）',
+  m_sdist:'170天（位置）',
+  m_space:'170天（位置）',
+  m_struct:'170天（構造）',
+  m_equip:'170天（設備）',
+  p_sdist:'170天（位置）',
+  p_space:'170天（位置）',
+  p_struct:'170天（構造）',
+  p_equip:'170天（設備）',
+  p_safe:'30天（安全管理）',
+  s1_struct:'170天（構造・設備）',
+  s1_adj:'170天（構造・設備）',
+  s2_struct:'170天（構造・設備）',
+  sell_bulk:'30天（安全管理）',
+  sell_mix:'30天（安全管理）',
+  si_sdist:'170天（位置）',
+  si_space:'170天（位置）',
+  si_excl:'170天（構造）',
+  si_ht:'170天（構造）',
+  si_area:'170天（構造）',
+  si_stack:'30天（安全管理）',
+  so_sdist:'170天（位置）',
+  so_fence:'170天（構造・設備）',
+  so_space:'170天（位置）',
+  so_rack:'170天（構造・設備）',
+  so_stack:'30天（安全管理）',
+  ti_gap:'170天（構造・設備）',
+  ti_cap:'30天（安全管理）',
+  ti_mat:'170天（構造・設備）',
+  ti_thres:'170天（構造・設備）',
+  to_sdist:'170天（位置）',
+  to_gap:'170天（構造・設備）',
+  to_space:'170天（位置）',
+  to_dike:'170天（構造・設備）',
+  to_light:'170天（設備）',
+  tu_gap:'170天（構造・設備）',
+  tu_top:'170天（構造・設備）',
+  tu_adj:'170天（構造・設備）',
+  tu_leak:'170天（設備）',
+  tu_conc:'170天（構造）',
+  cd_board:'30天（安全管理）',
+  cd_check:'30天（安全管理）',
+};
+
+// ── 限改天數（數字，供日期計算）──────────────────────────────────
+const DAYS={
+  fe:30, fns:90, fas:90, fnc:30, fhw:90, fsd:170, ffo:30, fse:30,
+  fmap:30, rtol:30, rol:30, rex:30, rnc:30, rmap:30, ras:90,
+  sol:30, sit:90, sre:30, spos:30,
+  fwmark:0, fwstore:0, fwtemp:0, fwins:0, fwtyarea:0, fwtytime:0, fwtymethod:0, fwtyban:0,
+  cdex:30, cdsp:170, cdca:[170,355], cdarea:170, cdvent:170, cdmap:30,
+  cdsu:90, cdplan:30,
+  m_sdist:170, m_space:170, m_struct:170, m_equip:170,
+  p_sdist:170, p_space:170, p_struct:170, p_equip:170, p_safe:30,
+  s1_struct:170, s1_adj:170, s2_struct:170, sell_bulk:30, sell_mix:30,
+  si_sdist:170, si_space:170, si_excl:170, si_ht:170, si_area:170, si_stack:30,
+  so_sdist:170, so_fence:170, so_space:170, so_rack:170, so_stack:30,
+  ti_gap:170, ti_cap:30, ti_mat:170, ti_thres:170,
+  to_sdist:170, to_gap:170, to_space:170, to_dike:170, to_light:170,
+  tu_gap:170, tu_top:170, tu_adj:170, tu_leak:170, tu_conc:170,
+  cd_board:30, cd_check:30,
+};
+
+function toROC(d){
+  const y=d.getFullYear()-1911,m=d.getMonth()+1,day=d.getDate();
+  return `民國${y}年${m}月${day}日`;
+}
+
+function calcDead(){
+  const dateVal=document.getElementById('issueDate').value;
+  const el=document.getElementById('deadResult');
+  if(!dateVal||selectedVids.length===0){el.innerHTML='';return;}
+  const base=new Date(dateVal+'T00:00:00');
+  let maxDays=0,maxArr=null;
+  selectedVids.forEach(vid=>{
+    const d=DAYS[vid];if(!d)return;
+    if(Array.isArray(d)){
+      const m=Math.max(...d);
+      if(m>maxDays){maxDays=m;maxArr=d;}
+    }else{
+      if(d>maxDays){maxDays=d;maxArr=null;}
+    }
+  });
+  if(maxDays===0){el.innerHTML='';return;}
+  if(maxArr){
+    const results=maxArr.map((n,i)=>{
+      const t=new Date(base);t.setDate(t.getDate()+n);
+      const label=i===0?`30倍以上（${n}天）`:`30倍以下（${n}天）`;
+      return `${label} → <span class="dead-date">${toROC(t)}</span>`;
+    });
+    el.innerHTML=results.join('<br>');
+  }else{
+    const t=new Date(base);t.setDate(t.getDate()+maxDays);
+    el.innerHTML=`限改到期日 → <span class="dead-date">${toROC(t)}</span>`;
+  }
+}
+
+// ── 安全距離計算（第66/67/68條）────────────────────────────────────
+function fsdRenderBasis(){
+  const art=document.getElementById('fsd_art').value;
+  const basis=document.getElementById('fsd_basis');
+  if(art==='67'){
+    basis.innerHTML=`
+<div class="form-grid">
+  <div class="form-group">
+    <label for="fsd_area">儲存場所面積 Y（平方公尺）</label>
+    <input type="number" id="fsd_area" step="0.01" placeholder="例：6" oninput="fsdCalc()">
+  </div>
+  <div class="form-group" style="display:flex;align-items:flex-end">
+    <label style="display:flex;align-items:center;gap:8px;font-weight:400;cursor:pointer;margin-bottom:10px">
+      <input type="checkbox" id="fsd_wall" onchange="fsdCalc()" style="transform:scale(1.3);accent-color:#1e3a5f">
+      <span>已設置防爆牆（得縮減安全距離）</span>
+    </label>
+  </div>
+</div>`;
+  }else{
+    basis.innerHTML=`
+<div class="form-group">
+  <label for="fsd_cap">儲存能力 / 處理能力 x（壓縮氣體：立方公尺；液化氣體：公斤）</label>
+  <input type="number" id="fsd_cap" placeholder="例：5000" oninput="fsdCalc()">
+</div>`;
+  }
+  fsdCalc();
+}
+
+function fsdCalc(){
+  const art=document.getElementById('fsd_art')?.value;
+  const pcl=document.getElementById('fsd_pcl')?.value;
+  const result=document.getElementById('fsd_result');
+  if(!art||!pcl||!result)return;
+  let req=null,basis='';
+  if(art==='67'){
+    const Y=parseFloat(document.getElementById('fsd_area')?.value);
+    const wall=document.getElementById('fsd_wall')?.checked;
+    if(!isNaN(Y)&&Y>0){
+      if(wall){
+        if(Y<8){req=0;basis=`設防爆牆，0≤Y<8 → 0公尺`;}
+        else if(Y<25){req=(pcl==='1'?2.25:1.5)*Math.sqrt(Y);basis=`設防爆牆，8≤Y<25 → ${pcl==='1'?'2.25':'1.5'}√${Y} 公尺`;}
+        else{req=pcl==='1'?11.25:7.5;basis=`設防爆牆，Y≥25 → ${req}公尺`;}
+      }else{
+        if(Y<8){req=(pcl==='1'?9:6)*Math.SQRT2;basis=`0≤Y<8 → ${pcl==='1'?'9':'6'}√2 公尺`;}
+        else if(Y<25){req=(pcl==='1'?4.5:3)*Math.sqrt(Y);basis=`8≤Y<25 → ${pcl==='1'?'4.5':'3'}√${Y} 公尺`;}
+        else{req=pcl==='1'?22.5:15;basis=`Y≥25 → ${req}公尺`;}
+      }
+    }
+  }else{
+    const x=parseFloat(document.getElementById('fsd_cap')?.value);
+    if(!isNaN(x)&&x>=0){
+      if(x<10000){req=(pcl==='1'?12:8)*Math.SQRT2;basis=`0≤x<10000 → ${pcl==='1'?'12':'8'}√2 公尺`;}
+      else if(x<52500){req=(pcl==='1'?0.12:0.08)*Math.sqrt(x+10000);basis=`10000≤x<52500 → ${pcl==='1'?'0.12':'0.08'}√(${x}+10000) 公尺`;}
+      else{req=pcl==='1'?30:20;basis=`x≥52500 → ${req}公尺`;}
+    }
+  }
+  if(req!==null){
+    const rounded=Math.round(req*100)/100;
+    const cls=pcl==='1'?'第一類保護物':'第二類保護物';
+    const act=parseFloat(document.getElementById('fsd_act')?.value);
+    let cmp='';
+    if(!isNaN(act)&&act>0){
+      const diff=Math.round((rounded-act)*100)/100;
+      cmp=act<rounded
+        ?`<br>實測 ${act}m < 法定 ${rounded}m → <strong style="color:#dc2626">不足 ${diff}公尺（屬違規）</strong>`
+        :`<br>實測 ${act}m ≥ 法定 ${rounded}m → <strong style="color:#059669">合格（無違規）</strong>`;
+    }
+    result.innerHTML=`<strong>📐 法定安全距離（${cls}）：</strong><span style="color:#1e40af;font-weight:700;font-size:1.05rem">${rounded} 公尺</span> <span style="color:#64748b;font-size:.85rem">（依${basis}）</span>${cmp}`;
+    result.dataset.req=rounded;
+    result.dataset.basis=`第${art}條，${basis}`;
+  }else{
+    result.innerHTML='<span style="color:#64748b">請輸入'+(art==='67'?'儲存面積':'儲存／處理能力')+'以自動計算法定距離</span>';
+    result.dataset.req='';
+    result.dataset.basis='';
+  }
+}
+
+// ── 小貨車載運（rtol）多筆規格與時間格式化 ──────────────────────────
+function rtolAddRow(kind){
+  const c=document.getElementById(`rtol_${kind}_rows`);if(!c)return;
+  const row=document.createElement('div');
+  row.className='rtol-row';
+  row.style.cssText='display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-bottom:6px;align-items:center';
+  row.innerHTML=`
+<input type="number" class="rtol-spec" placeholder="規格（公斤）" min="0" oninput="rtolUpdateTotal()" style="padding:8px 12px;border:1.5px solid #cbd5e1;border-radius:6px;font-size:.9rem;font-family:inherit;width:100%">
+<input type="number" class="rtol-cnt" placeholder="數量（支）" min="0" oninput="rtolUpdateTotal()" style="padding:8px 12px;border:1.5px solid #cbd5e1;border-radius:6px;font-size:.9rem;font-family:inherit;width:100%">
+<button type="button" onclick="this.parentElement.remove();rtolUpdateTotal();" style="padding:6px 10px;border:none;background:#f1f5f9;color:#64748b;border-radius:6px;cursor:pointer;font-size:1rem;line-height:1" title="刪除這列">×</button>`;
+  c.appendChild(row);
+  rtolUpdateTotal();
+}
+
+function rtolCollectRows(kind){
+  const rows=document.querySelectorAll(`#rtol_${kind}_rows .rtol-row`);
+  let parts=[],total=0;
+  rows.forEach(r=>{
+    const spec=parseFloat(r.querySelector('.rtol-spec')?.value);
+    const cnt=parseInt(r.querySelector('.rtol-cnt')?.value);
+    if(!isNaN(spec)&&!isNaN(cnt)&&spec>0&&cnt>0){
+      parts.push(`${spec}公斤${cnt}支`);
+      total+=spec*cnt;
+    }
+  });
+  return{parts,total};
+}
+
+function rtolUpdateTotal(){
+  const full=rtolCollectRows('full');
+  const empty=rtolCollectRows('empty');
+  const ftEl=document.getElementById('rtol_full_total');
+  const etEl=document.getElementById('rtol_empty_total');
+  const gEl=document.getElementById('rtol_grand');
+  if(ftEl)ftEl.textContent=full.total>0?`小計：${full.total} 公斤（${full.parts.join('、')}）`:'尚未填寫';
+  if(etEl)etEl.textContent=empty.total>0?`小計：${empty.total} 公斤（${empty.parts.join('、')}）`:'';
+  if(gEl){
+    const grand=full.total+empty.total;
+    gEl.innerHTML=grand>0
+      ?`<strong>📊 總計儲氣量：</strong><span style="color:#1e40af;font-weight:700;font-size:1.1rem">${grand} 公斤</span>　<span style="color:#64748b;font-size:.85rem">（實桶 ${full.total} ＋ 空桶 ${empty.total}）</span>`
+      :'<span style="color:#64748b">請填入實桶規格與數量以自動計算</span>';
+  }
+}
+
+function rtolFmtROC(dtStr){
+  const d=new Date(dtStr);
+  if(isNaN(d.getTime()))return '民國__年__月__日__時__分';
+  const y=d.getFullYear()-1911;
+  const m=d.getMonth()+1;
+  const day=d.getDate();
+  const h=d.getHours();
+  const mn=d.getMinutes();
+  return `民國${y}年${m}月${day}日${h.toString().padStart(2,'0')}時${mn.toString().padStart(2,'0')}分`;
+}
+
+// ── 爆竹煙火：清冊重量與管制量倍數 ───────────────────────────────
+const FW_LIMITS={
+  marked_other:{lbl:'已附認可標示一般爆竹煙火（火藥量5公斤）',limit:5,basis:'火藥量'},
+  marked_hand:{lbl:'已附認可標示手持火花類等（火藥量10公斤）',limit:10,basis:'火藥量'},
+  marked_throw:{lbl:'已附認可標示摔炮類（火藥量0.3公斤）',limit:0.3,basis:'火藥量'},
+  total_other:{lbl:'未標示或其他一般/舞臺煙火（總重量25公斤）',limit:25,basis:'總重量'},
+  total_hand:{lbl:'未標示手持火花類等（總重量50公斤）',limit:50,basis:'總重量'},
+  total_throw:{lbl:'未標示摔炮類（總重量1.5公斤）',limit:1.5,basis:'總重量'},
+  pro:{lbl:'舞臺煙火以外之專業爆竹煙火（總重量0.5公斤）',limit:0.5,basis:'總重量'},
+  custom:{lbl:'自行輸入管制量',limit:0,basis:'計算重量'},
+};
+
+function fwTypeOptions(){
+  return Object.entries(FW_LIMITS).map(([k,v])=>`<option value="${k}">${v.lbl}</option>`).join('');
+}
+
+function renderFwStoreForm(c){
+  c.innerHTML=`
+<div class="form-grid" style="margin-bottom:12px">
+  <div class="form-group">
+    <label for="fwstore_dt">查獲時間</label>
+    <input type="text" id="fwstore_dt" placeholder="民國115年2月5日9時36分">
+  </div>
+  <div class="form-group">
+    <label for="fwstore_loc">查獲地點</label>
+    <input type="text" id="fwstore_loc" placeholder="桃園市桃園區富國路308號">
+  </div>
+  <div class="form-group">
+    <label for="fwstore_place_type">場所類型</label>
+    <select id="fwstore_place_type">
+      <option value="爆竹煙火儲存場所">爆竹煙火儲存場所</option>
+      <option value="爆竹煙火販賣場所">爆竹煙火販賣場所</option>
+      <option value="爆竹煙火儲存或販賣場所">儲存或販賣場所</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="fwstore_scale">管制量狀態</label>
+    <select id="fwstore_scale">
+      <option value="auto">依倍數自動判斷</option>
+      <option value="under">未達30倍（案例常用，第28條）</option>
+      <option value="over">達30倍以上（第27條）</option>
+    </select>
+  </div>
+  <div class="form-group span-full">
+    <label for="fwstore_defect">場所不符情形</label>
+    <input type="text" id="fwstore_defect" placeholder="例：未設於符合規定之場所，位置、構造、設備及安全管理不符規定">
+  </div>
+  <div class="form-group span-full">
+    <label for="fwstore_summary">明細摘要（可留空，系統會用下方列項自動帶入）</label>
+    <textarea id="fwstore_summary" placeholder="例：火花類（手持火花類）15.34公斤，達管制量0.31倍；摔炮類7.14公斤，達管制量4.76倍；摔炮類以外之一般爆竹煙火343.97公斤，達管制量13.75倍"></textarea>
+  </div>
+</div>
+<div class="span-full" style="border:1.5px solid #fde68a;border-radius:10px;padding:12px;background:#fffbeb;margin-bottom:12px">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+    <strong style="color:#92400e">爆竹煙火清冊明細</strong>
+    <button type="button" onclick="fwAddRow()" style="padding:6px 12px;border:none;background:#d97706;color:#fff;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:600">＋ 新增品項</button>
+  </div>
+  <div id="fw_rows"></div>
+  <div id="fw_total" class="alert-info" style="margin-top:8px;line-height:1.8"></div>
+</div>`;
+  fwAddRow();
+}
+
+function fwAddRow(){
+  const c=document.getElementById('fw_rows');if(!c)return;
+  const row=document.createElement('div');
+  row.className='fw-row';
+  row.style.cssText='display:grid;grid-template-columns:1.25fr 1fr .8fr .8fr auto;gap:8px;margin-bottom:6px;align-items:center';
+  row.innerHTML=`
+<input type="text" class="fw-name" placeholder="名稱（例：龍響吐珠）" style="padding:8px 12px;border:1.5px solid #cbd5e1;border-radius:6px;font-size:.9rem;font-family:inherit;width:100%">
+<select class="fw-type" onchange="fwUpdateTotal()" style="padding:8px 12px;border:1.5px solid #cbd5e1;border-radius:6px;font-size:.9rem;font-family:inherit;width:100%">${fwTypeOptions()}</select>
+<input type="number" class="fw-weight" placeholder="火藥量/總重量kg" min="0" step="0.001" oninput="fwUpdateTotal()" style="padding:8px 12px;border:1.5px solid #cbd5e1;border-radius:6px;font-size:.9rem;font-family:inherit;width:100%">
+<input type="number" class="fw-custom-limit" placeholder="自訂管制量" min="0" step="0.01" oninput="fwUpdateTotal()" style="padding:8px 12px;border:1.5px solid #cbd5e1;border-radius:6px;font-size:.9rem;font-family:inherit;width:100%">
+<button type="button" onclick="this.parentElement.remove();fwUpdateTotal();" style="padding:6px 10px;border:none;background:#f1f5f9;color:#64748b;border-radius:6px;cursor:pointer;font-size:1rem;line-height:1" title="刪除這列">×</button>`;
+  c.appendChild(row);
+  fwUpdateTotal();
+}
+
+function fwCollectRows(){
+  const rows=document.querySelectorAll('#fw_rows .fw-row');
+  const parts=[];
+  let totalWeight=0,totalRatio=0;
+  const bases=new Set();
+  rows.forEach(r=>{
+    const name=r.querySelector('.fw-name')?.value.trim()||'爆竹煙火';
+    const type=r.querySelector('.fw-type')?.value||'other';
+    const weight=parseFloat(r.querySelector('.fw-weight')?.value);
+    const custom=parseFloat(r.querySelector('.fw-custom-limit')?.value);
+    const rule=FW_LIMITS[type]||FW_LIMITS.total_other;
+    const limit=type==='custom'?custom:rule.limit;
+    const basis=rule.basis||'計算重量';
+    if(!isNaN(weight)&&weight>0){
+      totalWeight+=weight;
+      bases.add(basis);
+      if(!isNaN(limit)&&limit>0){
+        const ratio=Math.round((weight/limit)*100)/100;
+        totalRatio+=weight/limit;
+        parts.push(`${name}，${basis}${weight}公斤，達管制量${ratio}倍`);
+      }else{
+        parts.push(`${name}，${basis}${weight}公斤`);
+      }
+    }
+  });
+  const totalLabel=bases.size===1?[...bases][0]:'計算重量';
+  return{parts,totalWeight:Math.round(totalWeight*1000)/1000,totalRatio:Math.round(totalRatio*100)/100,totalLabel};
+}
+
+function fwUpdateTotal(){
+  const t=fwCollectRows();
+  const el=document.getElementById('fw_total');if(!el)return;
+  el.innerHTML=t.totalWeight>0
+    ?`${t.totalLabel}合計：<strong>${t.totalWeight}公斤</strong>；合計達管制量：<strong>${t.totalRatio}倍</strong>`
+    :'<span style="color:#64748b">請填入火藥量或總重量以自動計算管制量倍數</span>';
+}
+
+function collectFwStoreForm(){
+  const rows=fwCollectRows();
+  return{
+    dt:document.getElementById('fwstore_dt')?.value.trim()||'',
+    loc:document.getElementById('fwstore_loc')?.value.trim()||'',
+    placeType:document.getElementById('fwstore_place_type')?.value||'',
+    scale:document.getElementById('fwstore_scale')?.value||'auto',
+    defect:document.getElementById('fwstore_defect')?.value.trim()||'',
+    summary:document.getElementById('fwstore_summary')?.value.trim()||'',
+    parts:rows.parts,
+    totalWeight:rows.totalWeight||'',
+    totalLabel:rows.totalLabel||'計算重量',
+    totalRatio:rows.totalRatio||'',
+    totalRatioNum:rows.totalRatio||0,
+  };
+}
+
+// 爆竹煙火新版：種類分組登打，依施行細則第4條邏輯分別換算後相加。
+Object.assign(FW_LIMITS.marked_other,{short:'已附認可標示一般爆竹煙火',calc:'powder',powderLimit:5,totalLimit:25});
+Object.assign(FW_LIMITS.marked_hand,{short:'已附認可標示手持火花類等',calc:'powder',powderLimit:10,totalLimit:50});
+Object.assign(FW_LIMITS.marked_throw,{short:'已附認可標示摔炮類',calc:'powder',powderLimit:0.3,totalLimit:1.5});
+Object.assign(FW_LIMITS.total_other,{lbl:'未附認可標示或其他一般/舞臺煙火（總重量25公斤）',short:'未附認可標示或其他一般/舞臺煙火',calc:'total',powderLimit:5,totalLimit:25});
+Object.assign(FW_LIMITS.total_hand,{lbl:'未附認可標示手持火花類等（總重量50公斤）',short:'未附認可標示手持火花類等',calc:'total',powderLimit:10,totalLimit:50});
+Object.assign(FW_LIMITS.total_throw,{lbl:'未附認可標示摔炮類（總重量1.5公斤）',short:'未附認可標示摔炮類',calc:'total',powderLimit:0.3,totalLimit:1.5});
+Object.assign(FW_LIMITS.pro,{short:'舞臺煙火以外之專業爆竹煙火',calc:'total',totalLimit:0.5});
+Object.assign(FW_LIMITS.custom,{short:'自訂爆竹煙火種類',calc:'auto'});
+const FW_CTRL_STYLE='padding:8px 12px;border:1.5px solid #cbd5e1;border-radius:6px;font-size:.9rem;font-family:inherit;width:100%';
+const FW_NUMS='一二三四五六七八九十';
+const FW_STORE_PLACES=['爆竹煙火儲存場所','爆竹煙火販賣場所','爆竹煙火儲存或販賣場所'];
+const FW_TEMP_PLACES=['專業爆竹煙火施放前臨時儲存場所','專業爆竹煙火施放場所','查獲地點'];
+
+function fwEsc(v){
+  return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+function fwFmt(n,dec=3){
+  const x=Number(n);
+  if(!Number.isFinite(x))return '';
+  return (Math.round(x*Math.pow(10,dec))/Math.pow(10,dec)).toString();
+}
+function fwFmtRatio(n){return fwFmt(n,2);}
+function fwWeightBasisLabel(basis){return basis==='powder'?'火藥量':'總重量';}
+function fwStatusLabel(ratio){
+  const r=Number(ratio)||0;
+  if(r>=30)return '達管制量30倍以上';
+  if(r>=1)return '已達管制量';
+  if(r>0)return '未達管制量';
+  return '待計算';
+}
+function fwStatusColor(ratio){
+  const r=Number(ratio)||0;
+  if(r>=30)return '#991b1b';
+  if(r>=1)return '#b45309';
+  if(r>0)return '#166534';
+  return '#64748b';
+}
+function fwMarkThresholdLabel(ratio){
+  const r=Number(ratio)||0;
+  if(r>=1)return '已達管制量';
+  if(r>=0.2)return '已達管制量五分之一以上';
+  if(r>0)return '未達管制量五分之一';
+  return '待確認是否達管制量五分之一';
+}
+function fwMarkActionText(action){
+  const m={
+    hold:'持有未附加認可標示之一般爆竹煙火',
+    sell:'販賣未附加認可標示之一般爆竹煙火',
+    display:'陳列販賣未附加認可標示之一般爆竹煙火',
+    hold_sell:'販賣並持有未附加認可標示之一般爆竹煙火',
+    store:'儲放未附加認可標示之一般爆竹煙火',
+    other:'有未附加認可標示之一般爆竹煙火相關違規情形'
+  };
+  return m[action]||m.hold;
+}
+function fwStoreDefectText(kind){
+  const m={
+    pos:'儲存或販賣場所之位置、構造或設備不符合規定',
+    safe:'儲存或販賣場所安全管理不符合規定',
+    both:'儲存或販賣場所之位置、構造或設備及安全管理均不符合規定'
+  };
+  return m[kind]||'儲存或販賣場所不符合規定';
+}
+function fwStoreDefectLawText(kind){
+  if(kind==='safe')return '安全管理';
+  if(kind==='both')return '位置、構造、設備及安全管理';
+  return '位置、構造或設備';
+}
+function fwStorePenaltyText(kind,scale){
+  if(kind==='safe')return '依同條例第28條第1項第2款規定處罰';
+  if(kind==='both'){
+    return scale==='over'
+      ?'其位置、構造或設備不符部分依同條例第27條第1項第1款規定處罰；安全管理不符部分依同條例第28條第1項第2款規定處罰'
+      :'依同條例第28條第1項第1款及第2款規定處罰';
+  }
+  return scale==='over'
+    ?'依同條例第27條第1項第1款規定處罰'
+    :'依同條例第28條第1項第1款規定處罰';
+}
+function fwInsurancePenaltyText(scale){
+  return scale==='over'?'第27條第1項第7款':'第28條第1項第8款';
+}
+function fwLimitFor(rule,basis,customLimit){
+  if(rule.calc==='auto')return customLimit;
+  if(basis==='powder')return rule.powderLimit||rule.limit;
+  return rule.totalLimit||rule.limit;
+}
+function fwSelectCalcWeight(rule,totalWeight,powderWeight,customLimit){
+  if(rule.calc==='auto'){
+    if(totalWeight>0)return{basis:'total',weight:totalWeight,limit:customLimit,fallback:false};
+    if(powderWeight>0)return{basis:'powder',weight:powderWeight,limit:customLimit,fallback:false};
+    return{basis:'total',weight:0,limit:customLimit,fallback:false};
+  }
+  const preferred=rule.calc||((rule.basis||'總重量').includes('火藥')?'powder':'total');
+  const alt=preferred==='powder'?'total':'powder';
+  const preferredWeight=preferred==='powder'?powderWeight:totalWeight;
+  const altWeight=alt==='powder'?powderWeight:totalWeight;
+  const preferredLimit=fwLimitFor(rule,preferred,customLimit);
+  const altLimit=fwLimitFor(rule,alt,customLimit);
+  if(preferredWeight>0)return{basis:preferred,weight:preferredWeight,limit:preferredLimit,fallback:false};
+  if(altWeight>0&&altLimit>0)return{basis:alt,weight:altWeight,limit:altLimit,fallback:true};
+  return{basis:preferred,weight:0,limit:preferredLimit,fallback:false};
+}
+function fwTypeOptions(selected='marked_other'){
+  return Object.entries(FW_LIMITS).map(([k,v])=>`<option value="${k}"${k===selected?' selected':''}>${v.lbl}</option>`).join('');
+}
+function fwOptions(list,selected){
+  return list.map(x=>{
+    const v=typeof x==='object'?x.v:x;
+    const l=typeof x==='object'?x.l:x;
+    return `<option value="${fwEsc(v)}"${v===selected?' selected':''}>${fwEsc(l)}</option>`;
+  }).join('');
+}
+function fwItemQtyText(qty,unit){
+  if(qty&&unit)return `數量：${qty}${unit}`;
+  if(qty)return `數量：${qty}（單位未填）`;
+  if(unit)return `單位：${unit}（數量未填）`;
+  return '';
+}
+
+function renderFwInventoryForm(c,prefix,opt={}){
+  const title=opt.title||'爆竹煙火持有量明細';
+  const showPlace=opt.showPlaceType!==false;
+  const placeHtml=showPlace?`
+  <div class="form-group">
+    <label for="${prefix}_place_type">場所類型</label>
+    <select id="${prefix}_place_type">${fwOptions(opt.placeOptions||FW_STORE_PLACES,opt.defaultPlace)}</select>
+  </div>`:'';
+  const actionHtml=opt.actionOptions?`
+  <div class="form-group">
+    <label for="${prefix}_action">${opt.actionLabel||'行為態樣'}</label>
+    <select id="${prefix}_action">${fwOptions(opt.actionOptions,opt.defaultAction||opt.actionOptions[0])}</select>
+  </div>`:'';
+  const scaleHtml=opt.includeScale?`
+  <div class="form-group">
+    <label for="${prefix}_scale">管制量狀態</label>
+    <select id="${prefix}_scale">
+      <option value="auto">依倍數自動判斷</option>
+      <option value="under">未達30倍（案例常用，第28條）</option>
+      <option value="over">達30倍以上（第27條）</option>
+    </select>
+  </div>`:'';
+  const defectHtml=opt.includeDefect?`
+  <div class="form-group">
+    <label for="${prefix}_insurance">保險檢核（開單優先）</label>
+    <select id="${prefix}_insurance">
+      <option value="unknown">尚未確認，先查第22條保險</option>
+      <option value="no">已確認未投保或查無有效保險（優先開第22條）</option>
+      <option value="yes">已確認已投保有效保險（再查第4條缺失）</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="${prefix}_defect_kind">缺失判斷</label>
+    <select id="${prefix}_defect_kind">
+      <option value="check">僅計算達管制量，尚未確認第4條缺失</option>
+      <option value="insurance">已確認未投保保險（優先開第22條）</option>
+      <option value="pos">已確認位置／構造／設備不符</option>
+      <option value="safe">已確認安全管理不符</option>
+      <option value="both">已確認位置／構造／設備及安全管理均不符</option>
+    </select>
+  </div>
+  <div class="form-group span-full">
+    <div class="alert-info">開單優先：同一案件若未投保保險已能客觀認定，先用第22條處理；保險符合後，再檢討第4條位置、構造、設備或安全管理。</div>
+  </div>
+  <div class="form-group span-full">
+    <label for="${prefix}_defect">具體缺失或補查事項</label>
+    <input type="text" id="${prefix}_defect" placeholder="${opt.defectPlaceholder||'例：尚未確認位置、構造、設備或安全管理缺失；先查保險、合格場所證明及現場照片'}">
+  </div>`:'';
+  const summaryHtml=opt.includeSummary===false?'':`
+  <div class="form-group span-full">
+    <label for="${prefix}_summary">${opt.summaryLabel||'明細摘要（可留空，系統會用下方種類與品項自動帶入）'}</label>
+    <textarea id="${prefix}_summary" placeholder="${opt.summaryPlaceholder||'例：已附認可標示一般爆竹煙火火藥量33.128公斤，達管制量6.63倍'}"></textarea>
+  </div>`;
+  c.innerHTML=`
+<div class="form-grid" style="margin-bottom:12px">
+  <div class="form-group">
+    <label for="${prefix}_dt">查獲時間</label>
+    <input type="text" id="${prefix}_dt" placeholder="${opt.dtPlaceholder||'民國115年1月3日22時31分'}">
+  </div>
+  <div class="form-group">
+    <label for="${prefix}_loc">查獲地點</label>
+    <input type="text" id="${prefix}_loc" placeholder="${opt.locPlaceholder||'桃園市龜山區興華三街67號2樓'}">
+  </div>
+  ${placeHtml}
+  ${actionHtml}
+  ${scaleHtml}
+  ${defectHtml}
+  ${summaryHtml}
+</div>
+<div class="span-full" style="border:1.5px solid #fde68a;border-radius:10px;padding:12px;background:#fffbeb;margin-bottom:12px">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+    <strong style="color:#92400e">${title}</strong>
+    <button type="button" onclick="fwAddGroup('${prefix}')" style="padding:6px 12px;border:none;background:#d97706;color:#fff;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:600">＋ 新增種類</button>
+  </div>
+  <div id="${prefix}_groups"></div>
+  <div id="${prefix}_total" class="alert-info" style="margin-top:8px;line-height:1.8"></div>
+</div>`;
+  fwAddGroup(prefix,opt.defaultType||'marked_other');
+}
+
+function renderFwStoreForm(c){
+  renderFwInventoryForm(c,'fwstore',{
+    title:'爆竹煙火清冊明細',
+    defaultType:'marked_other',
+    placeOptions:FW_STORE_PLACES,
+    includeScale:true,
+    includeDefect:true,
+    defectPlaceholder:'例：先確認是否未投保公共意外責任保險；若要開第4條第2項，請填具體位置、構造、設備或安全管理缺失',
+    summaryPlaceholder:'例：已附認可標示一般爆竹煙火，火藥量33.128公斤，佔管制量6.63倍；數量詳如扣留清冊',
+  });
+}
+function renderFwMarkForm(c){
+  renderFwInventoryForm(c,'fwmark',{
+    title:'未附認可標示爆竹煙火明細',
+    defaultType:'total_other',
+    showPlaceType:false,
+    actionLabel:'違規事實',
+    actionOptions:[
+      {v:'hold',l:'持有未附加認可標示之一般爆竹煙火'},
+      {v:'sell',l:'販賣未附加認可標示之一般爆竹煙火'},
+      {v:'display',l:'陳列販賣未附加認可標示之一般爆竹煙火'},
+      {v:'hold_sell',l:'販賣並持有未附加認可標示之一般爆竹煙火'},
+      {v:'store',l:'儲放未附加認可標示之一般爆竹煙火'},
+      {v:'other',l:'其他未認可標示情形（產文後自行修正）'}
+    ],
+    defaultAction:'hold',
+    summaryPlaceholder:'例：未附認可標示一般爆竹煙火，總重量16.8公斤，佔管制量0.67倍；數量詳如扣留清冊',
+  });
+}
+function renderFwTempForm(c){
+  renderFwInventoryForm(c,'fwtemp',{
+    title:'專業爆竹煙火明細',
+    defaultType:'pro',
+    placeOptions:FW_TEMP_PLACES,
+    summaryPlaceholder:'例：3吋閃菊煙火彈3顆，總重量528公克（0.528公斤）',
+  });
+}
+
+function fwAddGroup(prefix,defaultType='marked_other'){
+  const c=document.getElementById(`${prefix}_groups`);if(!c)return;
+  const group=document.createElement('div');
+  group.className='chem-row fw-group';
+  group.dataset.prefix=prefix;
+  group.innerHTML=`
+<div class="chem-row-head">
+  <strong class="chem-row-num fw-group-num">第1類煙火</strong>
+  <button type="button" class="btn btn-rst" onclick="fwRemoveGroup(this)" style="font-size:.8rem;padding:4px 10px">刪除種類</button>
+</div>
+<div class="form-grid" style="margin-top:8px">
+  <div class="form-group">
+    <label>煙火種類</label>
+    <select class="fw-group-type" onchange="fwOnGroupType(this)">${fwTypeOptions(defaultType)}</select>
+  </div>
+  <div class="form-group fw-custom-wrap" style="${defaultType==='custom'?'':'display:none'}">
+    <label>自訂管制量（公斤）</label>
+    <input type="number" class="fw-custom-limit" placeholder="例：5" min="0" step="0.001" oninput="fwUpdateInventory('${prefix}')">
+  </div>
+  <div class="form-group">
+    <label>種類備註</label>
+    <input type="text" class="fw-group-note" placeholder="例：有附加認可標示者／未標示／專業煙火清冊" oninput="fwUpdateInventory('${prefix}')">
+  </div>
+</div>
+<div class="fw-item-list"></div>
+<div class="btn-row" style="margin-top:8px">
+  <button class="btn btn-gen fw-add-item" type="button" onclick="fwAddItem(this)" style="font-size:.82rem;padding:6px 12px">＋ 新增品項</button>
+</div>
+<div class="fw-group-total alert-info"></div>`;
+  c.appendChild(group);
+  fwAddItem(group.querySelector('.fw-add-item'));
+  fwRenumberGroups(prefix);
+  fwUpdateInventory(prefix);
+}
+
+function fwAddItem(btn){
+  const group=btn.closest('.fw-group');if(!group)return;
+  const prefix=group.dataset.prefix||'fwstore';
+  const row=document.createElement('div');
+  row.className='fw-item-row';
+  row.innerHTML=`
+<input type="text" class="fw-name" placeholder="品名（例：金洪、3吋閃菊煙火彈）" oninput="fwUpdateInventory('${prefix}')" style="${FW_CTRL_STYLE}">
+<input type="number" class="fw-qty" placeholder="數量" min="0" step="0.01" oninput="fwUpdateInventory('${prefix}')" style="${FW_CTRL_STYLE}">
+<input type="text" class="fw-unit" placeholder="單位（箱、盒、顆）" oninput="fwUpdateInventory('${prefix}')" style="${FW_CTRL_STYLE}">
+<input type="number" class="fw-total-weight" placeholder="總重量（公斤）" min="0" step="0.001" oninput="fwUpdateInventory('${prefix}')" style="${FW_CTRL_STYLE}">
+<input type="number" class="fw-powder-weight" placeholder="火藥量（公斤）" min="0" step="0.001" oninput="fwUpdateInventory('${prefix}')" style="${FW_CTRL_STYLE}">
+<button type="button" onclick="fwRemoveItem(this)" style="padding:6px 10px;border:none;background:#f1f5f9;color:#64748b;border-radius:6px;cursor:pointer;font-size:1rem;line-height:1" title="刪除品項">×</button>`;
+  group.querySelector('.fw-item-list')?.appendChild(row);
+  fwUpdateInventory(prefix);
+}
+
+function fwRemoveItem(btn){
+  const group=btn.closest('.fw-group');
+  const prefix=group?.dataset.prefix||'fwstore';
+  btn.closest('.fw-item-row')?.remove();
+  fwUpdateInventory(prefix);
+}
+
+function fwRemoveGroup(btn){
+  const group=btn.closest('.fw-group');if(!group)return;
+  const prefix=group.dataset.prefix||'fwstore';
+  group.remove();
+  fwRenumberGroups(prefix);
+  fwUpdateInventory(prefix);
+}
+
+function fwRenumberGroups(prefix){
+  document.querySelectorAll(`#${prefix}_groups .fw-group`).forEach((g,i)=>{
+    const n=FW_NUMS[i]||String(i+1);
+    g.querySelector('.fw-group-num').textContent=`第${n}類煙火`;
+  });
+}
+
+function fwOnGroupType(sel){
+  const group=sel.closest('.fw-group');if(!group)return;
+  const prefix=group.dataset.prefix||'fwstore';
+  const rule=FW_LIMITS[sel.value]||FW_LIMITS.marked_other;
+  const custom=group.querySelector('.fw-custom-wrap');
+  if(custom)custom.style.display=sel.value==='custom'?'block':'none';
+  fwUpdateInventory(prefix);
+}
+
+function fwCollectInventory(prefix){
+  const groups=[];
+  const allGroups=[];
+  let totalUsedWeight=0,totalActualWeight=0,totalPowderWeight=0,totalRatioRaw=0;
+  const bases=new Set();
+  document.querySelectorAll(`#${prefix}_groups .fw-group`).forEach(group=>{
+    const type=group.querySelector('.fw-group-type')?.value||'marked_other';
+    const rule=FW_LIMITS[type]||FW_LIMITS.marked_other;
+    const customLimit=parseFloat(group.querySelector('.fw-custom-limit')?.value);
+    const note=group.querySelector('.fw-group-note')?.value.trim();
+    const items=[];
+    let groupUsedWeight=0,groupActualWeight=0,groupPowderWeight=0,groupRatioRaw=0,fallbackCount=0;
+    const groupBases=new Set();
+    group.querySelectorAll('.fw-item-row').forEach(row=>{
+      const name=row.querySelector('.fw-name')?.value.trim();
+      const qty=row.querySelector('.fw-qty')?.value.trim();
+      const unit=row.querySelector('.fw-unit')?.value.trim();
+      const actualRaw=parseFloat(row.querySelector('.fw-total-weight')?.value);
+      const powderRaw=parseFloat(row.querySelector('.fw-powder-weight')?.value);
+      const actualWeight=!isNaN(actualRaw)&&actualRaw>0?actualRaw:0;
+      const powderWeight=!isNaN(powderRaw)&&powderRaw>0?powderRaw:0;
+      if(!name&&!qty&&!unit&&!actualWeight&&!powderWeight)return;
+      groupActualWeight+=actualWeight;
+      groupPowderWeight+=powderWeight;
+      const calc=fwSelectCalcWeight(rule,actualWeight,powderWeight,customLimit);
+      let itemRatio=0;
+      if(calc.weight>0&&calc.limit>0){
+        itemRatio=calc.weight/calc.limit;
+        groupRatioRaw+=itemRatio;
+        groupUsedWeight+=calc.weight;
+        groupBases.add(calc.basis);
+        if(calc.fallback)fallbackCount++;
+      }
+      const detailBits=[];
+      const qtyTxt=fwItemQtyText(qty,unit);
+      if(qtyTxt)detailBits.push(qtyTxt);
+      if(actualWeight>0)detailBits.push(`總重量：${fwFmt(actualWeight)}公斤`);
+      if(powderWeight>0)detailBits.push(`火藥量：${fwFmt(powderWeight)}公斤`);
+      items.push({
+        name:name||'未填品項',
+        qty,
+        unit,
+        totalWeight:actualWeight>0?fwFmt(actualWeight):'',
+        powderWeight:powderWeight>0?fwFmt(powderWeight):'',
+        text:`${name||'未填品項'}${detailBits.length?`（${detailBits.join('、')}）`:''}`,
+      });
+    });
+    if(items.length===0&&(!groupActualWeight&&!groupPowderWeight)){
+      allGroups.push({empty:true,basis:rule.basis||'計算重量',weight:'',ratio:''});
+      return;
+    }
+    groupBases.forEach(b=>bases.add(b));
+    totalUsedWeight+=groupUsedWeight;
+    totalActualWeight+=groupActualWeight;
+    totalPowderWeight+=groupPowderWeight;
+    totalRatioRaw+=groupRatioRaw;
+    const label=note||rule.short||rule.lbl;
+    const itemText=items.length?items.map(i=>i.text).join('、'):'品項詳如扣留清冊';
+    const weightParts=[];
+    if(groupActualWeight>0)weightParts.push(`總重量合計${fwFmt(groupActualWeight)}公斤`);
+    if(groupPowderWeight>0)weightParts.push(`火藥量合計${fwFmt(groupPowderWeight)}公斤`);
+    const calcBasis=groupBases.size===1?fwWeightBasisLabel([...groupBases][0]):'各品項填列重量';
+    const ratioText=groupRatioRaw>0?`，以${calcBasis}換算，佔管制量${fwFmtRatio(groupRatioRaw)}倍（${fwStatusLabel(groupRatioRaw)}）`:'，管制量倍數待計算';
+    const fallbackText=fallbackCount>0?'；部分品項使用非優先重量欄換算，請核對清冊':'';
+    const weightText=weightParts.length?`，${weightParts.join('、')}`:'';
+    const data={
+      type,label,itemText,
+      basis:calcBasis,
+      totalWeight:groupActualWeight>0?fwFmt(groupActualWeight):'',
+      powderWeight:groupPowderWeight>0?fwFmt(groupPowderWeight):'',
+      weight:groupUsedWeight>0?fwFmt(groupUsedWeight):'',
+      ratio:groupRatioRaw>0?fwFmtRatio(groupRatioRaw):'',
+      status:fwStatusLabel(groupRatioRaw),
+      statusColor:fwStatusColor(groupRatioRaw),
+      part:`${label}：${itemText}${weightText}${ratioText}${fallbackText}`
+    };
+    allGroups.push(data);
+    groups.push(data);
+  });
+  const totalLabel=bases.size===1?fwWeightBasisLabel([...bases][0]):'計算重量';
+  return{
+    groups,
+    allGroups,
+    parts:groups.map(g=>g.part),
+    groupText:groups.map((g,i)=>`（${FW_NUMS[i]||i+1}）${g.part}`).join('；'),
+    totalWeight:totalUsedWeight>0?fwFmt(totalUsedWeight):'',
+    totalActualWeight:totalActualWeight>0?fwFmt(totalActualWeight):'',
+    totalPowderWeight:totalPowderWeight>0?fwFmt(totalPowderWeight):'',
+    totalLabel,
+    totalRatio:totalRatioRaw>0?fwFmtRatio(totalRatioRaw):'',
+    totalRatioNum:totalRatioRaw,
+    totalStatus:fwStatusLabel(totalRatioRaw),
+  };
+}
+
+function fwUpdateInventory(prefix){
+  const t=fwCollectInventory(prefix);
+  const domGroups=document.querySelectorAll(`#${prefix}_groups .fw-group`);
+  (t.allGroups||[]).forEach((g,i)=>{
+    const el=domGroups[i]?.querySelector('.fw-group-total');
+    if(!el)return;
+    if(g.empty){
+      el.innerHTML='<span style="color:#64748b">請輸入品項、數量、總重量或火藥量</span>';
+      return;
+    }
+    const weightBits=[];
+    if(g.totalWeight)weightBits.push(`總重量：<strong>${fwEsc(g.totalWeight)}公斤</strong>`);
+    if(g.powderWeight)weightBits.push(`火藥量：<strong>${fwEsc(g.powderWeight)}公斤</strong>`);
+    const ratio=g.ratio?`；佔管制量 <strong>${fwEsc(g.ratio)}倍</strong>`:'；管制量倍數待計算';
+    const status=`；判斷：<strong style="color:${g.statusColor||'#64748b'}">${fwEsc(g.status||'待計算')}</strong>`;
+    el.innerHTML=`${weightBits.join('；')||'重量未填'}${ratio}${status}`;
+  });
+  const total=document.getElementById(`${prefix}_total`);if(!total)return;
+  total.innerHTML=t.totalRatio
+    ?`各類合計佔管制量：<strong>${fwEsc(t.totalRatio)}倍</strong>；判斷：<strong style="color:${fwStatusColor(t.totalRatioNum)}">${fwEsc(t.totalStatus)}</strong><br><span style="color:#64748b">總重量與火藥量可擇一填寫；二種以上種類會分別換算後相加。</span>`
+    :'<span style="color:#64748b">請先選擇煙火種類，並填入總重量或火藥量，系統會自動換算是否超量。</span>';
+}
+
+function collectFwInventoryForm(prefix){
+  const inv=fwCollectInventory(prefix);
+  return{
+    dt:document.getElementById(`${prefix}_dt`)?.value.trim()||'',
+    loc:document.getElementById(`${prefix}_loc`)?.value.trim()||'',
+    placeType:document.getElementById(`${prefix}_place_type`)?.value||'',
+    action:document.getElementById(`${prefix}_action`)?.value||'',
+    scale:document.getElementById(`${prefix}_scale`)?.value||'auto',
+    insurance:document.getElementById(`${prefix}_insurance`)?.value||'unknown',
+    defectKind:document.getElementById(`${prefix}_defect_kind`)?.value||'check',
+    defect:document.getElementById(`${prefix}_defect`)?.value.trim()||'',
+    summary:document.getElementById(`${prefix}_summary`)?.value.trim()||'',
+    groups:inv.groups,
+    parts:inv.parts,
+    groupText:inv.groupText,
+    totalWeight:inv.totalWeight||'',
+    totalActualWeight:inv.totalActualWeight||'',
+    totalPowderWeight:inv.totalPowderWeight||'',
+    totalLabel:inv.totalLabel||'計算重量',
+    totalRatio:inv.totalRatio||'',
+    totalRatioNum:inv.totalRatioNum||0,
+    totalStatus:inv.totalStatus||'待計算',
+  };
+}
+
+function collectFwStoreForm(){return collectFwInventoryForm('fwstore');}
+function collectFwMarkForm(){return collectFwInventoryForm('fwmark');}
+function collectFwTempForm(){return collectFwInventoryForm('fwtemp');}
+function fwAddRow(){fwAddGroup('fwstore');}
+function fwCollectRows(){return fwCollectInventory('fwstore');}
+function fwUpdateTotal(){fwUpdateInventory('fwstore');}
+
+// ── 桃園市爆竹煙火施放管制自治條例輔助文字 ─────────────────────────
+function tyFwAreaLabel(v){
+  const m={
+    industrial:'桃園市爆竹煙火施放管制自治條例第3條第1項所定工業區',
+    forest:'桃園市爆竹煙火施放管制自治條例第3條第1項所定國有林班地',
+    hospital:'桃園市爆竹煙火施放管制自治條例第3條第1項所定醫院院區',
+    school:'桃園市爆竹煙火施放管制自治條例第3條第1項所定學校校區',
+    airport:'桃園市爆竹煙火施放管制自治條例第3條第1項所定機場周邊1公里範圍',
+    traffic:'桃園市爆竹煙火施放管制自治條例第3條第1項所定高速公路、捷運系統、高架道路或鐵路兩側3公尺範圍',
+    heritage:'桃園市爆竹煙火施放管制自治條例第3條第1項所定古蹟周邊20公尺範圍',
+    announced:'桃園市政府公告禁止施放爆竹煙火之區域'
+  };
+  return m[v]||'桃園市禁止施放爆竹煙火區域';
+}
+
+function tyFwConfText(vals){
+  const arr=Array.isArray(vals)?vals:[];
+  if(!arr.length)return '';
+  const parts=[];
+  if(arr.includes('fw'))parts.push('未施放之爆竹煙火');
+  if(arr.includes('tool'))parts.push('施放器具或相關物品');
+  return `\n三、現場扣留${parts.join('及')}，是否依爆竹煙火管理條例第32條規定沒入，請依扣留物性質及案件事實核對。`;
+}
+
+// ── 爆竹煙火新手導引 ─────────────────────────────────────────────
+function fgVal(id){return document.getElementById(id)?.value||'';}
+function fgNum(id){
+  const n=parseFloat(document.getElementById(id)?.value);
+  return Number.isFinite(n)&&n>0?n:0;
+}
+function fgChecked(id){return !!document.getElementById(id)?.checked;}
+function fgTypeRule(type,mark,scene){
+  if(type&&type!=='unknown')return FW_LIMITS[type]||FW_LIMITS.total_other;
+  if(scene==='pro')return FW_LIMITS.pro;
+  if(mark==='no')return FW_LIMITS.total_other;
+  if(mark==='yes')return FW_LIMITS.marked_other;
+  return FW_LIMITS.total_other;
+}
+function fgAddRec(recs,id,title,reason,confirm,priority=2){
+  if(recs.some(r=>r.id===id))return;
+  recs.push({id,title,reason,confirm,priority});
+}
+function fgAddWarn(warns,text){
+  if(text&&!warns.includes(text))warns.push(text);
+}
+
+function setupFwGuideChecks(){
+  document.querySelectorAll('#fwGuide .cb-item input[type=checkbox]').forEach(inp=>{
+    inp.closest('.cb-item')?.classList.toggle('on',inp.checked);
+    inp.onchange=function(){this.closest('.cb-item')?.classList.toggle('on',this.checked);};
+  });
+}
+
+function runFwGuide(){
+  setupFwGuideChecks();
+  const scene=fgVal('fg_scene');
+  const type=fgVal('fg_type');
+  const mark=fgVal('fg_mark');
+  const store=fgVal('fg_store');
+  const temp=fgVal('fg_temp');
+  const ins=fgVal('fg_ins');
+  const total=fgNum('fg_total');
+  const powder=fgNum('fg_powder');
+  const note=fgVal('fg_note').trim();
+  const rule=fgTypeRule(type,mark,scene);
+  const calc=fwSelectCalcWeight(rule,total,powder,NaN);
+  const ratio=calc.weight&&calc.limit?calc.weight/calc.limit:0;
+  const ratioTxt=ratio?`${fwFmtRatio(ratio)}倍（${fwStatusLabel(ratio)}）`:'尚未填入可換算重量';
+  const recs=[];
+  const warns=[];
+
+  if(mark==='no'||['total_other','total_hand','total_throw'].includes(type)){
+    if(ratio>=0.2){
+      fgAddRec(recs,'fwmark','持有／販賣未附認可標示爆竹煙火',
+        `你勾選未附認可標示，且目前換算為佔管制量${fwFmtRatio(ratio)}倍，已達管制量五分之一以上。`,
+        '要確認：未附認可標示照片、扣留清冊、持有人或販賣行為、總重量或火藥量來源。',3);
+    }else if(ratio>0){
+      fgAddWarn(warns,`未附認可標示目前僅佔管制量${fwFmtRatio(ratio)}倍，未達五分之一；第9條第3項是否適用請先跟主管確認。`);
+    }else{
+      fgAddWarn(warns,'若是未附認可標示案件，請先補總重量或火藥量，才能判斷是否達管制量五分之一以上。');
+    }
+  }
+
+  if(ins==='no'){
+    fgAddRec(recs,'fwins','未投保公共意外責任保險',
+      '你勾選未投保或查無公共意外責任保險資料；這類事實通常比位置、構造、設備缺失更容易客觀認定，建議優先處理。',
+      '要確認：場所是否依法應投保、保單有效期間、保險金額及負責人資料。',4);
+  }
+
+  if((scene==='store'||scene==='hold'||scene==='unknown'||store==='bad')&&store!=='good'&&store!=='notcase'){
+    if(ratio>=1){
+      if(ins==='no'){
+        fgAddWarn(warns,`雖然目前佔管制量${fwFmtRatio(ratio)}倍，已達管制量，但已確認未投保時，建議先用第22條保險缺失處理；第4條場所缺失可等保險符合或另有明確事證再檢討。`);
+      }else{
+        fgAddRec(recs,'fwstore','達管制量儲存／販賣場所缺失檢核',
+          `目前換算為佔管制量${fwFmtRatio(ratio)}倍，已達管制量；這只代表要進一步檢核，不代表一定能直接開第4條第2項。`,
+          '先確認第22條公共意外責任保險；若保險符合，再確認是否為合格儲存或販賣場所、是否有位置／構造／設備／安全管理具體不符事項。',3);
+      }
+      if(ins==='unknown')fgAddWarn(warns,'已達管制量時，建議優先查公共意外責任保險；若未投保，通常比直接推第4條第2項更明確。');
+    }else if(ratio>0&&store==='bad'){
+      fgAddWarn(warns,`現場儲放場所可能不符，但目前只佔管制量${fwFmtRatio(ratio)}倍，未達1倍；是否可依第4條第2項開立請補查場所性質與主管意見。`);
+    }else if(store==='bad'){
+      fgAddWarn(warns,'你有填「場所不合格」，但還沒填重量；請補總重量或火藥量，才能判斷是否達管制量。');
+    }
+  }
+
+  if(scene==='pro'||type==='pro'||temp==='bad'){
+    if(temp==='bad'){
+      fgAddRec(recs,'fwtemp','專業爆竹煙火施放前臨時儲存場所不符',
+        '你勾選專業煙火未儲存於合格臨時儲存場所，符合專業煙火施放前儲存問題的檢核方向。',
+        '要確認：是否屬專業爆竹煙火、施放前狀態、臨時儲存場所是否合格、扣留清冊。',3);
+    }else{
+      fgAddWarn(warns,'專業爆竹煙火另可能涉及未申請許可、未報請備查、人員資格或施放作業方式，工具目前先提醒補查，開單前請核對第16條及相關辦法。');
+    }
+  }
+
+  if(scene==='discharge'||fgChecked('fg_area')||fgChecked('fg_time')||fgChecked('fg_method')||fgChecked('fg_ban')){
+    if(fgChecked('fg_area'))fgAddRec(recs,'fwtyarea','桃園市禁止區域施放爆竹煙火','你勾選施放地點在桃園市禁止施放區域。','要確認：地點是否屬自治條例第3條區域、是否有本府許可、地圖或照片佐證。',3);
+    if(fgChecked('fg_time'))fgAddRec(recs,'fwtytime','桃園市管制時段施放特定種類爆竹煙火','你勾選上午8時前或下午10時後施放飛行類、升空類或摔炮類。','要確認：施放時間、種類、是否屬年節或特殊節慶公告例外日期、是否有本府許可。',3);
+    if(fgChecked('fg_method'))fgAddRec(recs,'fwtymethod','未依產品使用說明方式施放','你勾選未依產品標示或使用說明方式施放。','要確認：產品標示或使用說明、現場影片照片、實際施放方式。',2);
+    if(fgChecked('fg_ban'))fgAddRec(recs,'fwtyban','施放本府公告禁止種類','你勾選施放本府公告禁止種類。','要確認：本府公告字號、公告日期、禁止種類與現場品名。',2);
+    if(!fgChecked('fg_area')&&!fgChecked('fg_time')&&!fgChecked('fg_method')&&!fgChecked('fg_ban')){
+      fgAddWarn(warns,'施放案件請先確認：是否在禁止區域、是否在管制時段、是否未依說明施放、是否屬本府公告禁止種類。');
+    }
+  }
+
+  if(note)fgAddWarn(warns,`現場補充事實：${note}`);
+  renderFwGuideResult(recs.sort((a,b)=>b.priority-a.priority),warns,ratioTxt);
+}
+
+function renderFwGuideResult(recs,warns,ratioTxt){
+  const labels=getVLabels();
+  const el=document.getElementById('fwGuideResult');if(!el)return;
+  const recHtml=recs.length?recs.map(r=>`
+<div class="comment-item">
+  <div class="comment-meta"><div class="comment-name">${labels[r.id]||r.title}<span class="comment-tag">建議勾選</span></div></div>
+  <div class="comment-text">為什麼：${r.reason}
+還要確認：${r.confirm}</div>
+</div>`).join(''):'<div class="comment-empty">目前資料不足，不建議直接開單。請先補重量、認可標示、現場行為、地點或許可資料。</div>';
+  const warnHtml=warns.length?`
+<div class="law-box">
+  <strong>需要補查：</strong><br>${warns.map((w,i)=>`${i+1}. ${fwEsc(w)}`).join('<br>')}
+</div>`:'';
+  const ids=recs.map(r=>r.id).join(',');
+  const btn=ids
+    ?`<div class="btn-row"><button class="btn btn-gen" type="button" onclick="fwGuideApply('${ids}')">套用建議到違規類型</button><button class="btn btn-rst" type="button" onclick="document.getElementById('selF').value='firework';onF()">改用熟手模式自行勾選</button></div>`
+    :`<div class="btn-row"><button class="btn btn-rst" type="button" onclick="document.getElementById('selF').value='firework';onF()">改用熟手模式自行勾選</button></div>`;
+  el.innerHTML=`<div class="alert-info">重量換算：${fwEsc(ratioTxt)}</div>${recHtml}${warnHtml}${btn}`;
+}
+
+function fwGuideApply(idText){
+  const ids=idText.split(',').filter(Boolean);
+  document.getElementById('selF').value='firework';
+  hide('fwGuide');
+  renderViolationChoices(VL.firework||[]);
+  ids.forEach(id=>{
+    const cb=document.getElementById(`vcb_${id}`);
+    if(cb){
+      cb.checked=true;
+      cb.closest('.cb-item')?.classList.add('on');
+    }
+  });
+  onV();
+}
+
+function resetFwGuide(){
+  ['fg_scene','fg_type','fg_mark','fg_store','fg_temp','fg_ins'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.selectedIndex=0;
+  });
+  ['fg_total','fg_powder','fg_note'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['fg_area','fg_time','fg_method','fg_ban'].forEach(id=>{
+    const el=document.getElementById(id);if(el){el.checked=false;el.closest('.cb-item')?.classList.remove('on');}
+  });
+  const out=document.getElementById('fwGuideResult');if(out)out.innerHTML='';
+}
+
+// ── 液化石油氣案件判斷助手 ──────────────────────────────────────────
+const LPG_STATUS_LABEL={active:'使用中',reserve:'備用或未連接',empty:'空瓶或殘氣瓶'};
+const LPG_SAFETY_TEXT={
+  lpg_bad_basement:'容器置於地下室',
+  lpg_bad_sign:'無嚴禁煙火標示',
+  lpg_bad_fix:'使用或備用容器未直立放置或未有防止傾倒之固定措施',
+  lpg_bad_alarm:'未設置氣體漏氣警報器'
+};
+
+function lpgToggle(el){el.closest('.cb-item')?.classList.toggle('on',el.checked);}
+function lpgNum(v){const n=parseFloat(v);return Number.isFinite(n)?n:0;}
+function lpgFmt(n){return fwFmt(n,2)||'0';}
+function initLpgGuide(){
+  const rows=document.getElementById('lpgRows');
+  if(rows&&!rows.children.length){
+    addLpgRow(20,3,'active');
+  }
+  runLpgGuide();
+}
+function addLpgRow(kg='',count='',status='active'){
+  const box=document.getElementById('lpgRows');if(!box)return;
+  const row=document.createElement('div');
+  row.className='lpg-item-row';
+  row.innerHTML=`
+    <div>
+      <label>鋼瓶規格</label>
+      <select class="lpg-kg" onchange="runLpgGuide()">
+        <option value="4">4公斤</option>
+        <option value="10">10公斤</option>
+        <option value="16">16公斤</option>
+        <option value="20">20公斤</option>
+        <option value="50">50公斤</option>
+        <option value="custom">自行輸入</option>
+      </select>
+      <input type="number" class="lpg-custom hidden" min="0" step="0.1" placeholder="公斤" oninput="runLpgGuide()" style="margin-top:6px">
+    </div>
+    <div>
+      <label>數量</label>
+      <input type="number" class="lpg-count" min="0" step="1" placeholder="支" oninput="runLpgGuide()">
+    </div>
+    <div>
+      <label>狀態</label>
+      <select class="lpg-status-sel" onchange="runLpgGuide()">
+        <option value="active">使用中</option>
+        <option value="reserve">備用或未連接</option>
+        <option value="empty">空瓶或殘氣瓶</option>
+      </select>
+    </div>
+    <button type="button" class="btn btn-rst" onclick="this.closest('.lpg-item-row').remove();runLpgGuide()" style="padding:9px 12px">刪除</button>`;
+  box.appendChild(row);
+  const kgSel=row.querySelector('.lpg-kg');
+  const custom=row.querySelector('.lpg-custom');
+  if(['4','10','16','20','50'].includes(String(kg))){
+    kgSel.value=String(kg);
+  }else if(kg){
+    kgSel.value='custom';
+    custom.value=kg;
+    custom.classList.remove('hidden');
+  }
+  row.querySelector('.lpg-count').value=count;
+  row.querySelector('.lpg-status-sel').value=status;
+  kgSel.addEventListener('change',()=>{
+    custom.classList.toggle('hidden',kgSel.value!=='custom');
+    runLpgGuide();
+  });
+  runLpgGuide();
+}
+function collectLpgRows(){
+  const rows=[];
+  document.querySelectorAll('#lpgRows .lpg-item-row').forEach(row=>{
+    const sel=row.querySelector('.lpg-kg')?.value||'';
+    const kg=sel==='custom'?lpgNum(row.querySelector('.lpg-custom')?.value):lpgNum(sel);
+    const count=lpgNum(row.querySelector('.lpg-count')?.value);
+    const status=row.querySelector('.lpg-status-sel')?.value||'active';
+    const total=kg*count;
+    if(kg>0&&count>0)rows.push({kg,count,status,total});
+  });
+  return rows;
+}
+function lpgParts(rows,filter){
+  const list=rows.filter(filter||(()=>true)).map(r=>`${lpgFmt(r.kg)}公斤${lpgFmt(r.count)}支`);
+  return list.length?list.join('、'):'未填寫鋼瓶明細';
+}
+function lpgStatusBlock(title,state,text,detail=''){
+  const cls=state==='bad'?'lpg-bad':(state==='warn'?'lpg-warn':'lpg-ok');
+  return `<div class="lpg-status ${cls}"><strong>${fwEsc(title)}</strong><br>${fwEsc(text)}${detail?`<div class="lpg-note">${fwEsc(detail)}</div>`:''}</div>`;
+}
+function lpgBuildingText(v){
+  if(v==='new')return '111年7月1日後申請建築執照掛件的新建建築物';
+  if(v==='existing')return '既有建築物或111年6月30日前已掛件';
+  return '建築物適用狀態尚待確認';
+}
+function lpgUseText(v){
+  if(v==='home')return '家庭使用';
+  if(v==='business')return '營業使用';
+  if(v==='vendor')return '瓦斯行或販賣場所';
+  return '使用型態尚待確認';
+}
+function runLpgGuide(){
+  const result=document.getElementById('lpgGuideResult');if(!result)return;
+  const rows=collectLpgRows();
+  const use=document.getElementById('lpg_use')?.value||'business';
+  const building=document.getElementById('lpg_building')?.value||'existing';
+  const loc=document.getElementById('lpg_location')?.value||'indoor';
+  const indoorDef=document.getElementById('lpg_indoor_def')?.value||'yes';
+  const connect=document.getElementById('lpg_connect')?.value||'separate';
+  const basis=document.getElementById('lpg_count_basis')?.value||'total';
+  const place=document.getElementById('lpg_place')?.value.trim()||'現場';
+  const note=document.getElementById('lpg_note')?.value.trim()||'';
+  const active=rows.filter(r=>r.status==='active').reduce((s,r)=>s+r.total,0);
+  const reserve=rows.filter(r=>r.status==='reserve').reduce((s,r)=>s+r.total,0);
+  const nonEmpty=rows.filter(r=>r.status!=='empty').reduce((s,r)=>s+r.total,0);
+  const empty=rows.filter(r=>r.status==='empty').reduce((s,r)=>s+r.total,0);
+  const allParts=lpgParts(rows,r=>r.status!=='empty');
+  const activeParts=lpgParts(rows,r=>r.status==='active');
+  const reserveParts=lpgParts(rows,r=>r.status==='reserve');
+  const safetyIds=Object.keys(LPG_SAFETY_TEXT).filter(id=>document.getElementById(id)?.checked);
+  if(loc==='basement'&&!document.getElementById('lpg_bad_basement')?.checked){
+    safetyIds.push('lpg_bad_basement');
+  }
+
+  const issues=[];
+  const confirms=[];
+  const facts=[];
+  let statusHtml='';
+
+  const limit=use==='home'?40:(use==='business'?80:null);
+  const limitAmount=basis==='reserve'?reserve:nonEmpty;
+  if(use==='vendor'){
+    if(nonEmpty>128){
+      issues.push({id:'rol',mode:'retail'});
+      facts.push(`一、稽查發現，${place}儲放液化石油氣容器${allParts}，合計${lpgFmt(nonEmpty)}公斤，超過液化石油氣販賣場所總儲氣量128公斤之規定。\n二、違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第73條第1項規定。`);
+      statusHtml+=lpgStatusBlock('第73條販賣場所總儲氣量','bad',`瓦斯行或販賣場所現場非空瓶合計${lpgFmt(nonEmpty)}公斤，已超過128公斤。`,'若超過部分設有容器保管室且總量未逾1000公斤，應另依第73條但書檢討。');
+    }else{
+      statusHtml+=lpgStatusBlock('第73條販賣場所總儲氣量','ok',`瓦斯行或販賣場所現場非空瓶合計${lpgFmt(nonEmpty)}公斤，未超過128公斤。`);
+    }
+  }else if(limit){
+    const label=use==='home'?'家庭':'營業';
+    if(limitAmount>limit){
+      issues.push({id:'sre',mode:'serial'});
+      const basisText=basis==='reserve'?`備用或未連接鋼瓶${reserveParts}`:`液化石油氣容器${allParts}`;
+      facts.push(`一、稽查發現，${place}供${label}使用，現場存放${basisText}，合計${lpgFmt(limitAmount)}公斤，超過${label}使用場所液化石油氣備用量${limit}公斤之規定（超出${lpgFmt(limitAmount-limit)}公斤）。\n二、違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第73條第3項規定。`);
+      statusHtml+=lpgStatusBlock('第73條備用量','bad',`${label}使用的判斷量為${lpgFmt(limitAmount)}公斤，已超過${limit}公斤。`,basis==='total'?'目前以現場非空瓶總量判斷；如要只算備用鋼瓶，可切換判斷範圍。':'目前僅以備用或未連接鋼瓶判斷。');
+    }else{
+      statusHtml+=lpgStatusBlock('第73條備用量','ok',`${label}使用的判斷量為${lpgFmt(limitAmount)}公斤，未超過${limit}公斤。`,basis==='total'?'例如營業場所60公斤，未超過80公斤，不能開成備用量超量。':'目前僅以備用或未連接鋼瓶判斷。');
+    }
+  }else{
+    confirms.push('尚未確認家庭、營業或瓦斯行身分，無法穩定判斷第73條上限。');
+    statusHtml+=lpgStatusBlock('第73條備用量','warn','使用型態尚未確認。','請先確認是家庭使用、營業使用，或瓦斯行/販賣場所。');
+  }
+
+  const isIndoor=loc==='basement'||loc==='indoor'||(loc!=='outdoor'&&indoorDef==='yes');
+  const indoorUnknown=loc==='unknown'||indoorDef==='unknown';
+  if(building==='new'){
+    if(nonEmpty>10&&isIndoor){
+      issues.push({id:'spos',mode:'serial'});
+      facts.push(`一、稽查發現，${place}屬${lpgBuildingText(building)}，現場液化石油氣容器設置於${loc==='basement'?'地下室':'室內'}，容器明細為${allParts}，使用量合計${lpgFmt(nonEmpty)}公斤，已逾10公斤。\n二、上開情形係容器設置位置不符規定，違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第73-2條規定。`);
+      statusHtml+=lpgStatusBlock('第73-2條新建建築物容器位置','bad',`新建建築物、容器在室內、使用量${lpgFmt(nonEmpty)}公斤，已逾10公斤。`,'這不是禁止使用瓦斯，而是容器位置應設於室外或屋外。');
+    }else if(nonEmpty<=10){
+      statusHtml+=lpgStatusBlock('第73-2條新建建築物容器位置','ok',`使用量${lpgFmt(nonEmpty)}公斤，未超過10公斤，不受第73-2條第1項位置限制。`);
+    }else if(!isIndoor&&!indoorUnknown){
+      statusHtml+=lpgStatusBlock('第73-2條新建建築物容器位置','ok',`使用量${lpgFmt(nonEmpty)}公斤，但容器設於室外或屋外，不以第73-2條判定室內放置違規。`);
+    }else{
+      confirms.push('容器放置處是否屬第8條所稱室內尚未確認。');
+      statusHtml+=lpgStatusBlock('第73-2條新建建築物容器位置','warn','新建建築物且使用量超過10公斤，但容器位置或室內定義尚未確認。','請確認放置處是否具有頂蓋且三面以上有牆，或無頂蓋且四周有牆。');
+    }
+  }else if(building==='unknown'){
+    if(nonEmpty>10&&isIndoor){
+      confirms.push('液化石油氣容器在室內且超過10公斤，需確認是否為111年7月1日後申請建築執照掛件的新建建築物。');
+      statusHtml+=lpgStatusBlock('第73-2條新建建築物容器位置','warn',`容器在室內且使用量${lpgFmt(nonEmpty)}公斤，已逾10公斤，但建築物適用狀態尚未確認。`);
+    }else{
+      statusHtml+=lpgStatusBlock('第73-2條新建建築物容器位置','warn','建築物適用狀態尚未確認。','若要用第73-2條，請確認建照掛件日期。');
+    }
+  }else{
+    statusHtml+=lpgStatusBlock('第73-2條新建建築物容器位置','ok','目前選擇為既有建築物或111年6月30日前已掛件，不以第73-2條判斷。','仍應檢討第73條、第73-1條及其他安全缺失。');
+  }
+
+  const serialAmount=active>0?active:nonEmpty;
+  if(connect==='manifold'){
+    if(serialAmount>1000){
+      issues.push({id:'sol',mode:'serial'});
+      facts.push(`一、稽查發現，${place}之容器串接使用場所，現場液化石油氣串接使用量計${lpgFmt(serialAmount)}公斤，超過法定上限1000公斤之規定（超出${lpgFmt(serialAmount-1000)}公斤）。\n二、違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第73-1條第1項規定。`);
+      statusHtml+=lpgStatusBlock('第73-1條串接使用量','bad',`串接使用量${lpgFmt(serialAmount)}公斤，已超過1000公斤。`);
+    }else if(serialAmount>=80){
+      if(safetyIds.length){
+        issues.push({id:'sit',mode:'serial'});
+        const defects=safetyIds.map(id=>LPG_SAFETY_TEXT[id]).filter(Boolean);
+        facts.push(`一、稽查發現，${place}之容器串接使用場所，現場液化石油氣串接使用量計${lpgFmt(serialAmount)}公斤，已達80公斤以上，惟現場有下列安全設施或管理缺失：${defects.join('、')}。\n二、上開情形違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第73-1條第1項規定。`);
+        statusHtml+=lpgStatusBlock('第73-1條串接使用場所','bad',`串接使用量${lpgFmt(serialAmount)}公斤，已達80公斤以上，且有安全缺失。`,defects.join('、'));
+      }else{
+        statusHtml+=lpgStatusBlock('第73-1條串接使用場所','warn',`串接使用量${lpgFmt(serialAmount)}公斤，已達80公斤以上，屬第73-1條應檢討對象。`,'目前未勾選安全缺失，不能只因達80公斤就說違規；應檢查屋外設置、標示、防倒、漏氣警報器、導管等項目。');
+      }
+    }else{
+      statusHtml+=lpgStatusBlock('第73-1條串接使用場所','ok',`串接使用量${lpgFmt(serialAmount)}公斤，未達80公斤。`);
+    }
+  }else if(connect==='separate'){
+    if(serialAmount>=80){
+      confirms.push('雖選擇分別連接設備，但同一場所使用量已達80公斤以上，需確認是否實際有共用管線或串接供氣。');
+      statusHtml+=lpgStatusBlock('第73-1條串接使用場所','warn',`目前輸入使用中容量${lpgFmt(serialAmount)}公斤，達80公斤以上。`,'若確實各鋼瓶分別連接不同設備，是否構成串接使用場所需依現場配管與主管機關認定。');
+    }else{
+      statusHtml+=lpgStatusBlock('第73-1條串接使用場所','ok',`各鋼瓶分別連接不同設備，使用中容量${lpgFmt(serialAmount)}公斤，未達80公斤。`,'例如3支20公斤分別連接炒鍋、湯鍋、蒸籠機，合計60公斤，不能直接開成串接場所違規。');
+    }
+  }else{
+    if(serialAmount>=80)confirms.push('供氣方式尚未確認且使用量達80公斤以上，需確認是否屬容器串接使用場所。');
+    statusHtml+=lpgStatusBlock('第73-1條串接使用場所','warn','供氣連接方式尚未確認。','請確認是多支鋼瓶串接或共用管線，還是各鋼瓶分別連接不同設備。');
+  }
+
+  const factsText=facts.length?facts.join('\n\n'):'目前依輸入資料未自動判定可直接開單的液化石油氣違規事實；仍應依現場其他缺失另行檢討。';
+  const confirmHtml=confirms.length?`<div class="law-box"><strong>開單前需再確認</strong><br>${confirms.map((x,i)=>`${i+1}. ${fwEsc(x)}`).join('<br>')}</div>`:'';
+  const noteHtml=note?`<div class="alert-info" style="margin-top:10px"><strong>現場補充：</strong>${fwEsc(note)}</div>`:'';
+  const serialIds=[...new Set(issues.filter(x=>x.mode==='serial').map(x=>x.id))];
+  const retailIds=[...new Set(issues.filter(x=>x.mode==='retail').map(x=>x.id))];
+  const applyBtns=[
+    serialIds.length?`<button class="btn btn-gen" type="button" onclick="lpgApply('serial','${serialIds.join(',')}')">套用到容器串接使用場所選單</button>`:'',
+    retailIds.length?`<button class="btn btn-gen" type="button" onclick="lpgApply('retail','${retailIds.join(',')}')">套用到瓦斯行選單</button>`:''
+  ].filter(Boolean).join('');
+  result.innerHTML=`
+    <div class="lpg-summary">
+      <div class="lpg-meter">使用中容量<strong>${lpgFmt(active)}公斤</strong></div>
+      <div class="lpg-meter">備用或未連接<strong>${lpgFmt(reserve)}公斤</strong></div>
+      <div class="lpg-meter">非空瓶合計<strong>${lpgFmt(nonEmpty)}公斤</strong></div>
+    </div>
+    ${empty?`<div class="lpg-note">空瓶或殘氣瓶登錄量：${lpgFmt(empty)}公斤。此數值未納入非空瓶總量。</div>`:''}
+    ${statusHtml}
+    ${confirmHtml}
+    ${noteHtml}
+    <div class="output-area" id="lpgFacts" style="margin-top:12px">${fwEsc(factsText)}</div>
+    <div class="btn-row">
+      <button class="btn btn-cpy" type="button" onclick="lpgCopyFacts()">複製判斷文字</button>
+      ${applyBtns}
+    </div>`;
+}
+function lpgApply(mode,ids){
+  document.getElementById('selF').value=mode;
+  hide('lpgGuide');
+  renderViolationChoices(VL[mode]||[]);
+  ids.split(',').filter(Boolean).forEach(id=>{
+    const cb=document.getElementById(`vcb_${id}`);
+    if(cb){
+      cb.checked=true;
+      cb.closest('.cb-item')?.classList.add('on');
+    }
+  });
+  onV();
+}
+function lpgCopyFacts(){
+  const txt=document.getElementById('lpgFacts')?.textContent||'';
+  navigator.clipboard.writeText(txt).then(()=>{
+    const btn=event.target;const orig=btn.textContent;
+    btn.textContent='已複製';setTimeout(()=>{btn.textContent=orig;},1800);
+  }).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+  });
+}
+function resetLpgGuide(){
+  const rows=document.getElementById('lpgRows');if(rows)rows.innerHTML='';
+  ['lpg_bad_basement','lpg_bad_sign','lpg_bad_fix','lpg_bad_alarm'].forEach(id=>{
+    const el=document.getElementById(id);if(el){el.checked=false;el.closest('.cb-item')?.classList.remove('on');}
+  });
+  const defaults={lpg_use:'business',lpg_building:'existing',lpg_location:'indoor',lpg_indoor_def:'yes',lpg_connect:'separate',lpg_count_basis:'total'};
+  Object.entries(defaults).forEach(([id,val])=>{const el=document.getElementById(id);if(el)el.value=val;});
+  ['lpg_place','lpg_note'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  addLpgRow(20,3,'active');
+  runLpgGuide();
+}
+
+// ── 陳報附件檢核：依範本檔整理送件前提醒 ──────────────────────────────
+const REPORT_DATA={
+  hazmat:{
+    title:'公共危險物品案件（危物專用）',
+    files:[
+      '陳報舉發案件檢核表(危物專用).xls',
+      '照片黏貼用紙.doc'
+    ],
+    items:[
+      ['違規事實舉證資料','照片、空拍圖或現場佐證資料，建議整理進照片黏貼用紙。'],
+      ['安全資料表','危物案件應檢附 SDS 或可佐證物質分類、分級及管制量之資料。'],
+      ['行為人身分資料','行為人或管理權人身分證明影本要與舉發單欄位一致。'],
+      ['公司與稅籍資料','公司登記、營業或稅籍登記資料要與場所名稱、負責人一致。'],
+      ['前次初查資料','有初查、限改或前案資料時，檢附前次舉發單或檢查紀錄。'],
+      ['建物及圖說','涉及第79條或既設場所檢討時，檢附使用執照及圖說影本。'],
+      ['違反事實一致性','舉發單違反事實要和檢查紀錄表的檢查項目相符。'],
+      ['法條與裁處','違反法條、處罰條文及引用條文要逐項核對。'],
+      ['既設合法場所確認','確認該違規場所非屬本局已核准之既設合法場所，或已依規定檢討。'],
+      ['核章與送達','發單單位、主管職名章、填單人職名章、簽收或拒簽送達佐證要齊。']
+    ],
+    reminder:'危物案件陳報時，請使用「危物專用」檢核表，並檢附照片黏貼用紙；有 SDS、公司/稅籍、圖說或前次檢查資料者要一併放入。'
+  },
+  general:{
+    title:'液化石油氣／可燃性高壓氣體一般案件',
+    files:[
+      '陳報舉發案件檢核表--106.07.01起使用.xls',
+      '照片黏貼用紙.doc'
+    ],
+    items:[
+      ['前次限改及檢查紀錄','有初查或限改案件時，檢附前次限改單及檢查紀錄表。'],
+      ['建築物資料','涉及建築物者，檢附建築物使用執照影本；涉及適用版本時核對建照日期。'],
+      ['場所登記資料','檢附核准設立登記、營利事業登記或可證明場所/負責人之資料。'],
+      ['公寓大廈資料','管理權人為管委會時，檢附管理組織報備證明或組織型態證明。'],
+      ['違反人身分資料','行為人或管理權人身分資料要和舉發單、安管系統一致。'],
+      ['安管系統一致性','舉發單號、違反人資料、住址、身分證號、場所名稱及檢查地址要一致。'],
+      ['違反法條','違反法條、主旨、處罰條文與引用條文要核對。'],
+      ['違反事實','違反事實要和檢查紀錄表內容相符。'],
+      ['核章與送達','發單單位、主管職名章、填單人職名章、簽收或拒簽送達佐證要齊。']
+    ],
+    reminder:'液化石油氣或可燃性高壓氣體一般案件陳報時，請使用一般陳報檢核表，照片資料整理至照片黏貼用紙。'
+  }
+};
+
+function initReportGuide(kind){
+  const sel=document.getElementById('report_case');
+  if(sel&&kind)sel.value=kind;
+  renderReportGuide();
+}
+const REPORT_DRAFT_PREFIX='ticket_report_checklist_';
+function reportDraftKey(kind){return REPORT_DRAFT_PREFIX+kind;}
+function getReportDraft(kind){
+  try{return JSON.parse(localStorage.getItem(reportDraftKey(kind))||'{}')||{};}catch(e){return{};}
+}
+function reportIsChecked(draft,group,idx){
+  return Array.isArray(draft[group])&&draft[group].includes(idx);
+}
+function renderReportGuide(){
+  const kind=document.getElementById('report_case')?.value||'hazmat';
+  const data=REPORT_DATA[kind]||REPORT_DATA.hazmat;
+  const draft=getReportDraft(kind);
+  const body=document.getElementById('reportGuideBody');if(!body)return;
+  body.innerHTML=`
+    <div class="dead-box">
+      <strong>${fwEsc(data.title)}應附檔案</strong>
+      <div class="report-files">${data.files.map((f,i)=>{
+        const checked=reportIsChecked(draft,'files',i);
+        const photoNote=f.includes('照片')?'<small>回分隊補貼照片完成後再勾選。</small>':'';
+        return `<label class="report-file ${checked?'done':''}">
+          <input type="checkbox" data-report-group="files" data-report-idx="${i}" onchange="reportCheckChanged(this)" ${checked?'checked':''}>
+          <span>${fwEsc(f)}${photoNote}</span>
+        </label>`;
+      }).join('')}</div>
+      <div class="lpg-note">檔案位置：C:\\Users\\USER\\mydetagg\\液化石油氣舉發單範例</div>
+    </div>
+    <div id="reportProgress" class="report-progress"></div>
+    <div class="report-grid">${data.items.map((it,i)=>{
+      const checked=reportIsChecked(draft,'items',i);
+      return `<label class="report-item ${checked?'done':''}">
+        <input type="checkbox" data-report-group="items" data-report-idx="${i}" onchange="reportCheckChanged(this)" ${checked?'checked':''}>
+        <span><strong>${i+1}. ${fwEsc(it[0])}</strong>${fwEsc(it[1])}</span>
+      </label>`;
+    }).join('')}</div>
+    <div id="reportSaveStatus" class="report-save-note"></div>
+    <div class="btn-row">
+      <button class="btn btn-gen" type="button" onclick="saveReportDraft(true)">暫存目前檢核</button>
+      <button class="btn btn-rst" type="button" onclick="renderReportGuide()">載入暫存</button>
+      <button class="btn btn-rst" type="button" onclick="clearReportDraft()">清除暫存</button>
+      <button class="btn btn-cpy" type="button" onclick="copyReportChecklist(this)">複製陳報檢核清單</button>
+    </div>`;
+  updateReportProgress();
+  setReportSaveStatus(`${reportStatusText(kind)} 勾選狀態會自動暫存在這台電腦的瀏覽器。`);
+}
+function collectReportDraft(){
+  const groups={files:[],items:[]};
+  document.querySelectorAll('#reportGuideBody input[data-report-group]').forEach(cb=>{
+    const group=cb.dataset.reportGroup;
+    const idx=parseInt(cb.dataset.reportIdx,10);
+    if(cb.checked&&groups[group]&&!Number.isNaN(idx))groups[group].push(idx);
+  });
+  return groups;
+}
+function reportCheckChanged(cb){
+  const card=cb.closest('.report-item,.report-file');
+  if(card)card.classList.toggle('done',cb.checked);
+  updateReportProgress();
+  saveReportDraft(false);
+}
+function updateReportProgress(){
+  const out=document.getElementById('reportProgress');if(!out)return;
+  const boxes=Array.from(document.querySelectorAll('#reportGuideBody input[data-report-group]'));
+  const done=boxes.filter(x=>x.checked).length;
+  const total=boxes.length;
+  const pending=total-done;
+  out.innerHTML=`<strong>完成 ${done}/${total}</strong><span>${pending?`尚有 ${pending} 項未完成，紅色項目回分隊後可再補齊。`:'全部完成，可以進入填寫舉發事項。'}</span>`;
+}
+function setReportSaveStatus(msg){
+  const el=document.getElementById('reportSaveStatus');
+  if(el)el.textContent=msg||'';
+}
+function saveReportDraft(showMsg){
+  const kind=document.getElementById('report_case')?.value||'hazmat';
+  const draft=collectReportDraft();
+  draft.savedAt=new Date().toISOString();
+  localStorage.setItem(reportDraftKey(kind),JSON.stringify(draft));
+  const msg=`已${showMsg?'手動':'自動'}暫存 ${new Date().toLocaleString('zh-TW')}，回分隊補照片用紙時可以載入。`;
+  setReportSaveStatus(msg);
+  updateReportReminder();
+}
+function clearReportDraft(){
+  const kind=document.getElementById('report_case')?.value||'hazmat';
+  localStorage.removeItem(reportDraftKey(kind));
+  renderReportGuide();
+  setReportSaveStatus('已清除這個案件類型的暫存。');
+  updateReportReminder();
+}
+function reportStatusSummary(kind){
+  const data=REPORT_DATA[kind]||REPORT_DATA.hazmat;
+  const draft=getReportDraft(kind);
+  const filesDone=Array.isArray(draft.files)?draft.files:[];
+  const itemsDone=Array.isArray(draft.items)?draft.items:[];
+  const total=data.files.length+data.items.length;
+  const done=filesDone.length+itemsDone.length;
+  const pending=[
+    ...data.files.map((name,i)=>filesDone.includes(i)?'':name),
+    ...data.items.map((it,i)=>itemsDone.includes(i)?'':it[0])
+  ].filter(Boolean);
+  return{total,done,pending,savedAt:draft.savedAt||''};
+}
+function reportStatusText(kind){
+  const s=reportStatusSummary(kind);
+  if(!s.savedAt)return'尚未暫存陳報附件檢核。';
+  if(!s.pending.length)return`已暫存，完成 ${s.done}/${s.total}。`;
+  return`已暫存，完成 ${s.done}/${s.total}；待補：${s.pending.slice(0,5).join('、')}${s.pending.length>5?'等':''}。`;
+}
+function copyReportChecklist(btn){
+  const kind=document.getElementById('report_case')?.value||'hazmat';
+  const data=REPORT_DATA[kind]||REPORT_DATA.hazmat;
+  const draft=collectReportDraft();
+  const txt=[
+    `【${data.title}陳報附件檢核】`,
+    '應附檔案：',
+    ...data.files.map((f,i)=>`- ${draft.files.includes(i)?'已完成':'未完成'}｜${f}`),
+    '',
+    '送件前檢核：',
+    ...data.items.map((it,i)=>`${i+1}. ${draft.items.includes(i)?'已完成':'未完成'}｜${it[0]}：${it[1]}`)
+  ].join('\n');
+  navigator.clipboard.writeText(txt).then(()=>{
+    const orig=btn.textContent;
+    btn.textContent='已複製';setTimeout(()=>{btn.textContent=orig;},1800);
+  }).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+  });
+}
+function reportKindForCurrent(){
+  const f=document.getElementById('selF')?.value||'';
+  if(f==='chem')return 'hazmat';
+  if(['fill','retail','serial'].includes(f))return 'general';
+  return '';
+}
+function updateReportReminder(){
+  const kind=reportKindForCurrent();
+  const el=document.getElementById('reportReminder');if(!el)return;
+  if(!kind){el.classList.add('hidden');el.innerHTML='';return;}
+  const data=REPORT_DATA[kind];
+  const status=reportStatusText(kind);
+  const statusColor=status.includes('待補')||status.includes('尚未')?'#92400e':'#166534';
+  el.classList.remove('hidden');
+  el.innerHTML=`<strong>陳報附件提醒：</strong>${fwEsc(data.reminder)}<br><span style="color:#64748b">應附檔案：${data.files.map(f=>fwEsc(f)).join('、')}</span><br><span style="color:${statusColor};font-weight:700">檢核暫存：${fwEsc(status)}</span>`;
+}
+
+// 共用開單前檢核表覆寫：改成所有舉發單共用同一張檢核表
+REPORT_DATA.title='桃園市政府消防局危險物品管理科陳報舉發案件檢核表';
+REPORT_DATA.files=[
+  '違規事實舉證資料（照片、空拍圖等）',
+  '安全資料表（SDS）',
+  '行為人身分證明影本',
+  '公司登記及營業（稅籍）登記影本',
+  '前次（初查）舉發單',
+  '建築物使用執照及圖說影本（限違反第79條者）'
+];
+REPORT_DATA.items=[
+  ['舉發單號','與安管系統是否相符，含英文字母是否正確。'],
+  ['違反人（管理權人）姓名','要與安管系統及所附身分證明資料相符。'],
+  ['性別','要與所附身分證明資料及安管系統相符。'],
+  ['住址','要與所附身分證明資料及安管系統相符。'],
+  ['國民身分證統一編號／護照號碼／居留證號','要與所附身分證明資料及安管系統相符。'],
+  ['出生年月日','要與所附身分證明資料及安管系統相符。'],
+  ['違反法條','引用條文是否正確。'],
+  ['場所名稱','要與公司或工廠登記名稱及安管系統相符。'],
+  ['檢查地址','要與公司或工廠登記地址相符。'],
+  ['主旨','填寫內容是否有疏漏或錯誤，並與安管系統相符。'],
+  ['違反事實及法令','要與檢查紀錄表檢查項目內容相符，並確認處罰與引用條文正確。'],
+  ['既設合法場所確認','確認該違規場所非屬本局已核准之既設合法場所。'],
+  ['發單單位','是否有填寫。'],
+  ['主管職名章','是否有蓋章。'],
+  ['填單人職名章','是否有蓋章。'],
+  ['收受通知單者簽章欄','簽收人姓名是否完整清楚。'],
+  ['非本人簽收補充','非本人簽收時，是否填寫身分證字號及關係。'],
+  ['拒簽送達佐證','拒簽者是否檢附完成送達程序之佐證資料，如雙掛號郵件收件回執。']
+];
+REPORT_DATA.reminder='所有舉發單產生後，都要回到這份共用檢核表逐項核對。';
+delete REPORT_DATA.hazmat;
+delete REPORT_DATA.general;
+
+let currentReportTicketKey='';
+function hashText(str){
+  let hash=2166136261;
+  for(let i=0;i<str.length;i++){
+    hash^=str.charCodeAt(i);
+    hash=Math.imul(hash,16777619);
+  }
+  return (hash>>>0).toString(16);
+}
+function setCurrentReportTicket(parts){
+  currentReportTicketKey='ticket_'+hashText(parts.join('||'));
+}
+function initReportGuide(){
+  renderReportGuide();
+}
+function reportDraftKey(){
+  return currentReportTicketKey?`ticket_report_checklist_${currentReportTicketKey}`:'';
+}
+function getReportDraft(){
+  const key=reportDraftKey();
+  if(!key)return{};
+  try{return JSON.parse(localStorage.getItem(key)||'{}')||{};}catch(e){return{};}
+}
+function renderReportGuide(){
+  const body=document.getElementById('reportGuideBody');if(!body)return;
+  if(!currentReportTicketKey){
+    body.innerHTML='<div class="alert-info">請先在上方產生違規事實，再進行開單前資料核對。</div>';
+    return;
+  }
+  const draft=getReportDraft();
+  body.innerHTML=`
+    <div class="lpg-note" style="margin-bottom:10px">${fwEsc(REPORT_DATA.reminder)}</div>
+    <div class="report-files">${REPORT_DATA.files.map((f,i)=>{
+      const checked=reportIsChecked(draft,'files',i);
+      const photoNote=f.includes('照片')?'<small>照片用紙可先回分隊補貼，完成後再勾選。</small>':'';
+      return `<label class="report-file ${checked?'done':''}">
+        <input type="checkbox" data-report-group="files" data-report-idx="${i}" onchange="reportCheckChanged(this)" ${checked?'checked':''}>
+        <span>${fwEsc(f)}${photoNote}</span>
+      </label>`;
+    }).join('')}</div>
+    <div id="reportProgress" class="report-progress"></div>
+    <div class="report-grid">${REPORT_DATA.items.map((it,i)=>{
+      const checked=reportIsChecked(draft,'items',i);
+      return `<label class="report-item ${checked?'done':''}">
+        <input type="checkbox" data-report-group="items" data-report-idx="${i}" onchange="reportCheckChanged(this)" ${checked?'checked':''}>
+        <span><strong>${i+1}. ${fwEsc(it[0])}</strong>${fwEsc(it[1])}</span>
+      </label>`;
+    }).join('')}</div>
+    <div id="reportSaveStatus" class="report-save-note"></div>
+    <div class="btn-row">
+      <button class="btn btn-gen" type="button" onclick="saveReportDraft(true)">暫存這份舉發單檢核</button>
+      <button class="btn btn-rst" type="button" onclick="renderReportGuide()">重新載入本單暫存</button>
+      <button class="btn btn-rst" type="button" onclick="clearReportDraft()">清除本單暫存</button>
+      <button class="btn btn-cpy" type="button" onclick="copyReportChecklist(this)">複製本單檢核清單</button>
+    </div>`;
+  updateReportProgress();
+  setReportSaveStatus(`${reportStatusText()} 勾選狀態會自動保留在這台電腦的瀏覽器。`);
+}
+function saveReportDraft(showMsg){
+  const key=reportDraftKey();
+  if(!key)return;
+  const draft=collectReportDraft();
+  draft.savedAt=new Date().toISOString();
+  localStorage.setItem(key,JSON.stringify(draft));
+  if(showMsg)setReportSaveStatus(`已暫存這份舉發單檢核 ${new Date().toLocaleString('zh-TW')}。`);
+}
+function clearReportDraft(){
+  const key=reportDraftKey();
+  if(!key)return;
+  localStorage.removeItem(key);
+  renderReportGuide();
+  setReportSaveStatus('已清除這份舉發單的檢核暫存。');
+}
+function reportStatusSummary(){
+  const draft=getReportDraft();
+  const filesDone=Array.isArray(draft.files)?draft.files:[];
+  const itemsDone=Array.isArray(draft.items)?draft.items:[];
+  const total=REPORT_DATA.files.length+REPORT_DATA.items.length;
+  const done=filesDone.length+itemsDone.length;
+  const pending=[
+    ...REPORT_DATA.files.map((name,i)=>filesDone.includes(i)?'':name),
+    ...REPORT_DATA.items.map((it,i)=>itemsDone.includes(i)?'':it[0])
+  ].filter(Boolean);
+  return{total,done,pending,savedAt:draft.savedAt||''};
+}
+function reportStatusText(){
+  const s=reportStatusSummary();
+  if(!currentReportTicketKey)return'尚未建立本單檢核。';
+  if(!s.savedAt)return'尚未暫存本單檢核。';
+  if(!s.pending.length)return`已暫存，完成 ${s.done}/${s.total}。`;
+  return`已暫存，完成 ${s.done}/${s.total}；待補：${s.pending.slice(0,5).join('、')}${s.pending.length>5?'等':''}。`;
+}
+function copyReportChecklist(btn){
+  const draft=collectReportDraft();
+  const txt=[
+    `【${REPORT_DATA.title}】`,
+    '應附文件：',
+    ...REPORT_DATA.files.map((f,i)=>`- ${draft.files.includes(i)?'已完成':'未完成'}｜${f}`),
+    '',
+    '開單前核對：',
+    ...REPORT_DATA.items.map((it,i)=>`${i+1}. ${draft.items.includes(i)?'已完成':'未完成'}｜${it[0]}：${it[1]}`)
+  ].join('\n');
+  navigator.clipboard.writeText(txt).then(()=>{
+    const orig=btn.textContent;
+    btn.textContent='已複製';
+    setTimeout(()=>{btn.textContent=orig;},1800);
+  }).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+  });
+}
+function updateReportReminder(){
+  renderReportGuide();
+}
+
+// ── 超量儲存：多場所、多物品與初步法規判斷 ──────────────────────────
+function initChemForm(c){
+  window._chemCatOpts=CATDB.map((cat,i)=>`<option value="${i}">${cat.label}</option>`).join('')+'<option value="custom">自行輸入（清單沒有或依判定資料填寫）</option>';
+  c.innerHTML=`
+<div class="form-grid" style="margin-bottom:12px">
+  <div class="form-group span-full">
+    <label for="cd_site_summary">不合格場所總列（第一段使用，可留空自動帶入）</label>
+    <textarea id="cd_site_summary" placeholder="例：室內儲存場所2處（A棟1樓油漆倉、B棟原料室）、室外儲槽場所1處（柴油槽區）"></textarea>
+  </div>
+  <div class="form-group span-full">
+    <label>違規事項類型（第三段使用，可複選；公版建議順序：位置、構造、設備、安全管理）</label>
+    <div class="cb-group">
+      <div class="cb-item"><input type="checkbox" id="cd_def_pos" value="pos"><label for="cd_def_pos">位置</label></div>
+      <div class="cb-item"><input type="checkbox" id="cd_def_struct" value="struct"><label for="cd_def_struct">構造</label></div>
+      <div class="cb-item"><input type="checkbox" id="cd_def_equip" value="equip"><label for="cd_def_equip">設備</label></div>
+      <div class="cb-item"><input type="checkbox" id="cd_def_safe" value="safe"><label for="cd_def_safe">安全管理</label></div>
+      <div class="cb-item"><input type="checkbox" id="cd_def_other" value="other"><label for="cd_def_other">其他缺失</label></div>
+    </div>
+  </div>
+  <div class="form-group span-full">
+    <label for="cd_extra">補充說明（可選填）</label>
+    <textarea id="cd_extra" placeholder="例：物品眾多者可寫詳如清冊；既設合法場所或已申請核准者，可補充依第79條檢討等文字"></textarea>
+  </div>
+</div>
+<div id="chemPlaces"></div>
+<div class="btn-row" style="margin-top:10px">
+  <button class="btn btn-gen" type="button" onclick="addChemPlace()">＋ 新增場所</button>
+</div>
+<div id="chemTotal"></div>`;
+  c.querySelectorAll('.cb-item input[type=checkbox]').forEach(inp=>{
+    inp.addEventListener('change',function(){this.closest('.cb-item')?.classList.toggle('on',this.checked);});
+  });
+  addChemPlace();
+}
+
+function addChemPlace(){
+  const container=document.getElementById('chemPlaces');
+  if(!container)return;
+  const idx=container.children.length;
+  const row=document.createElement('div');
+  row.className='chem-row chem-place';
+  row.dataset.idx=idx;
+  row.innerHTML=`
+<div class="chem-row-head">
+  <strong class="chem-row-num">第${idx+1}個場所</strong>
+  <button type="button" class="btn btn-rst" onclick="removeChemPlace(this)" style="font-size:.8rem;padding:4px 10px">刪除場所</button>
+</div>
+<div class="form-grid" style="margin-top:8px">
+  <div class="form-group">
+    <label>場所類型</label>
+    <select class="place-type" onchange="onPlaceType(this)">
+      <option value="sins">室內儲存場所</option>
+      <option value="sout">室外儲存場所</option>
+      <option value="tins">室內儲槽場所</option>
+      <option value="tout">室外儲槽場所</option>
+      <option value="tund">地下儲槽場所</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label>場所位置 / 編號</label>
+    <input type="text" class="place-name" placeholder="例：A棟1樓油漆倉、柴油槽區T-01" oninput="updateChemTotal()">
+  </div>
+  <div class="form-group place-rule-wrap">
+    <label>判斷型態</label>
+    <select class="place-rule" onchange="updateChemTotal()"></select>
+  </div>
+  <div class="form-group">
+    <label>實測保留空地 / 防液堤容量（可選填）</label>
+    <input type="number" class="place-actual" placeholder="填數字；依左側判斷型態比較" min="0" step="0.01" oninput="updateChemTotal()">
+  </div>
+  <div class="form-group span-full indoor-qual">
+    <label>室內儲存場所合格判別（選第23條時建議全數符合）</label>
+    <div class="cb-group">
+      <div class="cb-item"><input type="checkbox" class="qual" value="fire" onchange="this.closest('.cb-item').classList.toggle('on',this.checked);updateChemTotal()"><label>牆壁、柱及地板為防火構造，設於第1層或第2層</label></div>
+      <div class="cb-item"><input type="checkbox" class="qual" value="floor" onchange="this.closest('.cb-item').classList.toggle('on',this.checked);updateChemTotal()"><label>地板高於地面，樓層高度未超過6公尺</label></div>
+      <div class="cb-item"><input type="checkbox" class="qual" value="area" onchange="this.closest('.cb-item').classList.toggle('on',this.checked);updateChemTotal()"><label>樓地板面積未超過75平方公尺</label></div>
+      <div class="cb-item"><input type="checkbox" class="qual" value="compartment" onchange="this.closest('.cb-item').classList.toggle('on',this.checked);updateChemTotal()"><label>與其他場所具1小時以上防火區劃</label></div>
+      <div class="cb-item"><input type="checkbox" class="qual" value="door" onchange="this.closest('.cb-item').classList.toggle('on',this.checked);updateChemTotal()"><label>出入口為1小時以上常時關閉式防火門</label></div>
+      <div class="cb-item"><input type="checkbox" class="qual" value="window" onchange="this.closest('.cb-item').classList.toggle('on',this.checked);updateChemTotal()"><label>未設置窗戶</label></div>
+      <div class="cb-item"><input type="checkbox" class="qual" value="vent" onchange="this.closest('.cb-item').classList.toggle('on',this.checked);updateChemTotal()"><label>通風及排出設備設防火閘門或同等防護</label></div>
+      <div class="cb-item"><input type="checkbox" class="qual" value="adjacent" onchange="this.closest('.cb-item').classList.toggle('on',this.checked);updateChemTotal()"><label>同一樓層未相鄰設置</label></div>
+    </div>
+  </div>
+</div>
+<div class="place-chem-list"></div>
+<div class="btn-row" style="margin-top:10px">
+  <button class="btn btn-gen" type="button" onclick="addChemRow(this)" style="font-size:.85rem;padding:8px 16px">＋ 新增化學品</button>
+</div>
+<div class="place-total dead-box" style="margin-top:12px"></div>`;
+  container.appendChild(row);
+  onPlaceType(row.querySelector('.place-type'));
+  addChemRow(row.querySelector('.btn-gen'));
+  renumberChemPlaces();
+  updateChemTotal();
+}
+
+function removeChemPlace(btn){
+  btn.closest('.chem-place')?.remove();
+  renumberChemPlaces();
+  updateChemTotal();
+}
+
+function renumberChemPlaces(){
+  document.querySelectorAll('#chemPlaces .chem-place').forEach((p,i)=>{
+    p.dataset.idx=i;
+    p.querySelector('.chem-row-num').textContent=`第${i+1}個場所`;
+    p.querySelectorAll('.place-chem-list .chem-row').forEach((r,j)=>r.querySelector('.chem-row-num').textContent=`第${j+1}筆化學品`);
+  });
+}
+
+function onPlaceType(sel){
+  const p=sel.closest('.chem-place');
+  const rule=p.querySelector('.place-rule');
+  const opts={
+    sins:[
+      ['unqualified','不合格/未核准室內儲存場所（達1倍即應依第20條設置合格儲存場所）'],
+      ['part20','建築物一部分供作室內儲存場所（第23條，20倍以下）'],
+      ['regular50','一般室內儲存倉庫未達50倍（第24條）'],
+      ['highFlash','高閃火點室內儲存場所（第25條）'],
+      ['general','一般室內儲存場所（第21條保留空地級距）'],
+    ],
+    sout:[
+      ['standard','室外儲存場所一般物品（第30條第4款）'],
+      ['highFlash','室外儲存場所高閃火點物品（第30條第5款）'],
+      ['sulfur','室外儲存場所硫磺（第30條第4款，保留空地得縮減1/3）'],
+    ],
+    tins:[['tank40','室內儲槽場所（第33條，40倍以下）']],
+    tout:[
+      ['flash21','室外儲槽：閃火點未達21度（第37條）'],
+      ['flash70','室外儲槽：21度以上未達70度（第37條）'],
+      ['flash70up','室外儲槽：70度以上（第37條）'],
+      ['highFlash','室外儲槽高閃火點物品（第39條）'],
+    ],
+    tund:[['underground','地下儲槽場所（第41條，構造設備檢核）']],
+  }[sel.value]||[];
+  rule.innerHTML=opts.map(o=>`<option value="${o[0]}">${o[1]}</option>`).join('');
+  p.querySelector('.indoor-qual')?.classList.toggle('hidden',sel.value!=='sins');
+  updateChemTotal();
+}
+
+function addChemRow(btn){
+  const place=btn.closest('.chem-place')||document.querySelector('#chemPlaces .chem-place');
+  const container=place.querySelector('.place-chem-list');
+  const idx=container.children.length;
+  const opts=window._chemCatOpts||CATDB.map((cat,i)=>`<option value="${i}">${cat.label}</option>`).join('');
+  const row=document.createElement('div');
+  row.className='chem-row';
+  row.innerHTML=`
+<div class="chem-row-head">
+  <strong class="chem-row-num">第${idx+1}筆化學品</strong>
+  <button type="button" class="btn btn-rst" onclick="removeChemRow(this)" style="font-size:.8rem;padding:4px 10px">刪除</button>
+</div>
+<div class="form-grid" style="margin-top:8px">
+  <div class="form-group span-full">
+    <label>危險物品類別</label>
+    <select class="chem-cat" onchange="onChemCat(this)">
+      <option value="">— 請選擇類別 —</option>
+      ${opts}
+    </select>
+  </div>
+  <div class="form-group span-full">
+    <label>品名（具體化學品名稱）</label>
+    <input type="text" class="chem-name" placeholder="如：丙酮、汽油、鹽酸">
+  </div>
+  <div class="form-group">
+    <label>管制量</label>
+    <input type="text" class="chem-ctl" readonly style="background:#f1f5f9;color:#64748b" oninput="updateChemTotal()" placeholder="自動帶入；自行輸入時填數字">
+  </div>
+  <div class="form-group chem-custom hidden">
+    <label>單位</label>
+    <select class="chem-unit" onchange="updateChemTotal()"><option value="公斤">公斤</option><option value="公升">公升</option></select>
+  </div>
+  <div class="form-group">
+    <label>實際儲量（填入數量）</label>
+    <input type="number" class="chem-act" placeholder="填入實際數量" min="0" step="0.01" oninput="updateChemTotal()">
+  </div>
+  <div class="form-group">
+    <label>達管制量倍數（自動計算）</label>
+    <input type="text" class="chem-ratio" readonly style="background:#f1f5f9;color:#1e3a5f;font-weight:700">
+  </div>
+</div>`;
+  container.appendChild(row);
+  renumberChemPlaces();
+  updateChemTotal();
+}
+
+function removeChemRow(btn){
+  btn.closest('.chem-row')?.remove();
+  renumberChemPlaces();
+  updateChemTotal();
+}
+
+function onChemCat(sel){
+  const row=sel.closest('.chem-row');
+  const ctlInput=row.querySelector('.chem-ctl');
+  const customBox=row.querySelector('.chem-custom');
+  if(sel.value==='custom'){
+    ctlInput.value='';ctlInput.readOnly=false;ctlInput.style.background='#fff';ctlInput.style.color='#1a202c';
+    customBox?.classList.remove('hidden');
+    row.dataset.custom='1';row.dataset.cls='自行輸入';row.dataset.sub='自訂公共危險物品';
+    delete row.dataset.ctl;delete row.dataset.unit;
+    row.querySelector('.chem-ratio').value='';
+    updateChemTotal();return;
+  }
+  const catIdx=parseInt(sel.value);
+  if(isNaN(catIdx)){
+    ctlInput.value='';ctlInput.readOnly=true;ctlInput.style.background='#f1f5f9';ctlInput.style.color='#64748b';
+    customBox?.classList.add('hidden');
+    row.querySelector('.chem-ratio').value='';
+    ['custom','ctl','unit','cls','sub'].forEach(k=>delete row.dataset[k]);
+    updateChemTotal();return;
+  }
+  const cat=CATDB[catIdx];
+  ctlInput.readOnly=true;ctlInput.style.background='#f1f5f9';ctlInput.style.color='#64748b';ctlInput.value=`${cat.ctl} ${cat.unit}`;
+  customBox?.classList.add('hidden');
+  delete row.dataset.custom;
+  row.dataset.ctl=cat.ctl;row.dataset.unit=cat.unit;row.dataset.cls=cat.cls;row.dataset.sub=cat.sub;
+  updateChemTotal();
+}
+
+function chemRowsForPlace(place){
+  const rows=[];
+  place.querySelectorAll('.place-chem-list .chem-row').forEach(row=>{
+    const catSel=row.querySelector('.chem-cat');
+    const catIdx=parseInt(catSel?.value);
+    const isCustom=catSel?.value==='custom';
+    const cat=isNaN(catIdx)?null:CATDB[catIdx];
+    const act=row.querySelector('.chem-act')?.value||'';
+    const ctl=isCustom?(parseFloat(row.querySelector('.chem-ctl')?.value)||0):(cat?cat.ctl:0);
+    const unit=isCustom?(row.querySelector('.chem-unit')?.value||'公斤'):(cat?cat.unit:'公升');
+    const name=row.querySelector('.chem-name')?.value.trim()||'';
+    const ratio=ctl>0&&act?(Math.round(parseFloat(act)/ctl*100)/100):0;
+    row.querySelector('.chem-ratio').value=ratio?`${ratio}倍`:'';
+    rows.push({cls:isCustom?'自行輸入':(cat?cat.cls:'__'),sub:isCustom?(name||'自訂公共危險物品'):(cat?cat.sub:'__'),name,ctl,unit,act,ratio});
+  });
+  return rows;
+}
+
+function getChemPlaceJudgement(type,rule,total,actual,placeEl=null){
+  const r=Math.round(total*100)/100;
+  if(type==='sins'&&rule==='unqualified')return r>=1?'判斷：本場所屬不合格或未核准室內儲存場所，儲存六類物品已達管制量1倍以上，應依第20條設置合格儲存場所，不得套用第23條20倍以下規定。':'判斷：未達管制量1倍；尚非以第20條達管制量以上應設置儲存場所之邏輯處理，但仍應注意現場安全管理。';
+  if(type==='sins'&&rule==='part20'){
+    const q=placeEl?Array.from(placeEl.querySelectorAll('.qual')).filter(x=>x.checked).length:0;
+    const qualTxt=q>=8?'第23條合格條件已勾選完整':'第23條合格條件尚未全數勾選，請確認後再套用20倍以下判斷';
+    return r>20?`判斷：超過第23條建築物一部分供作室內儲存場所20倍以下之適用範圍，不符合規定。${qualTxt}。`:`判斷：未超過第23條20倍上限；${qualTxt}。`;
+  }
+  if(type==='sins'&&rule==='regular50')return r>=50?'判斷：達50倍以上，不適用第24條未達50倍之室內儲存倉庫規定。':'判斷：未達第24條50倍，請續檢核高度、面積與保留空地。';
+  if(type==='sins'&&rule==='highFlash')return `判斷：高閃火點室內儲存場所依第25條檢核；本場所為${r}倍，請依倍數級距檢查安全距離及保留空地。`;
+  if(type==='sins')return `判斷：一般室內儲存場所依第21條保留空地級距檢核；本場所為${r}倍。`;
+  if(type==='sout'){
+    let need=0,txt='';
+    if(rule==='highFlash'){need=r<50?3:r<200?6:10;txt='第30條第5款高閃火點物品';}
+    else {need=r<10?3:r<20?6:r<50?10:r<200?20:30; if(rule==='sulfur')need=Math.max(Math.round((need/3)*100)/100,0); txt=rule==='sulfur'?'第30條第4款硫磺保留空地得縮減三分之一':'第30條第4款一般物品';}
+    const cmp=actual?`；實測${actual}公尺，${actual>=need?'符合':'不足，不符合'}。`:'。';
+    return `判斷：依${txt}，本場所${r}倍，保留空地應在${need}公尺以上${cmp}`;
+  }
+  if(type==='tins')return r>40?'判斷：超過第33條室內儲槽容量不得超過管制量40倍之規定。':'判斷：未超過第33條40倍上限，仍應檢核儲槽專用室構造設備。';
+  if(type==='tout'){
+    if(rule==='highFlash'){
+      const need=r<2000?3:5;
+      return `判斷：依第39條高閃火點室外儲槽，本場所${r}倍，周圍保留空地應在${need}公尺以上${actual?`；實測${actual}公尺，${actual>=need?'符合':'不足，不符合'}。`:'。'}`;
+    }
+    return `判斷：室外儲槽場所依第37、38條檢核；本場所${r}倍，仍需依閃火點、容量、防液堤及儲槽間距判斷。`;
+  }
+  if(type==='tund')return `判斷：地下儲槽場所依第41條檢核；容量倍數為${r}倍，重點為槽室、覆土、間距、測漏管及構造設備。`;
+  return `判斷：本場所合計${r}倍。`;
+}
+
+function updateChemTotal(){
+  const places=document.querySelectorAll('#chemPlaces .chem-place');
+  let grand=0,over30=false;
+  places.forEach(place=>{
+    const rows=chemRowsForPlace(place);
+    const total=rows.reduce((s,r)=>s+(r.ratio||0),0);
+    grand+=total;if(total>=30)over30=true;
+    const type=place.querySelector('.place-type')?.value||'sins';
+    const rule=place.querySelector('.place-rule')?.value||'';
+    const actual=parseFloat(place.querySelector('.place-actual')?.value)||0;
+    place.querySelector('.place-total').innerHTML=`<strong>本場所合計：</strong><span class="dead-date">${Math.round(total*100)/100} 倍</span><br>${getChemPlaceJudgement(type,rule,total,actual,place)}`;
+  });
+  const el=document.getElementById('chemTotal');if(!el)return;
+  const warn=over30?`<div class="chem-warn">⚠️ 有場所達管制量30倍以上，請一併檢核保安監督人及保安監督計畫。</div>`:'';
+  el.innerHTML=`<div class="dead-box" style="margin-top:12px"><strong>全部場所合計參考值：</strong><span class="dead-date">${Math.round(grand*100)/100} 倍</span><br><span style="color:#64748b">裁處判斷以各場所分別計算為主。</span>${warn}</div>`;
+}
+
+function collectChemData(){
+  const defects=['pos','struct','equip','safe','other'].filter(k=>document.getElementById(`cd_def_${k}`)?.checked);
+  const labelMap={sins:'公共危險物品室內儲存場所',sout:'公共危險物品室外儲存場所',tins:'公共危險物品室內儲槽場所',tout:'公共危險物品室外儲槽場所',tund:'公共危險物品地下儲槽場所'};
+  const places=[];
+  document.querySelectorAll('#chemPlaces .chem-place').forEach(place=>{
+    const type=place.querySelector('.place-type')?.value||'sins';
+    const rule=place.querySelector('.place-rule')?.value||'';
+    const actual=parseFloat(place.querySelector('.place-actual')?.value)||0;
+    const rows=chemRowsForPlace(place);
+    const total=rows.reduce((s,r)=>s+(r.ratio||0),0);
+    places.push({type,rule,label:labelMap[type]||currentChemPlace(),place:place.querySelector('.place-name')?.value.trim()||'',rows,totalRatio:Math.round(total*100)/100,judgement:getChemPlaceJudgement(type,rule,total,actual,place)});
+  });
+  return{
+    cdst:places[0]?.label||currentChemPlace(),
+    siteSummary:document.getElementById('cd_site_summary')?.value.trim()||'',
+    defects,
+    extra:document.getElementById('cd_extra')?.value.trim()||'',
+    places
+  };
+}
+
+// ── UI ──────────────────────────────────────────
+let selectedVids=[];
+
+function getVLabels(){
+  const m={};
+  Object.values(VL).flat().forEach(v=>{m[v.id]=v.lbl;});
+  Object.values(CHEM_VL).flat().forEach(v=>{m[v.id]=v.lbl;});
+  return m;
+}
+
+function currentViolationList(){
+  const f=document.getElementById('selF').value;
+  if(f==='chem'){
+    const detail=document.getElementById('selChemDetail')?.value||'';
+    return CHEM_VL[detail]||[];
+  }
+  return VL[f]||[];
+}
+
+function renderViolationChoices(list){
+  selectedVids=[];
+  hide('s3');hide('s4');
+  document.getElementById('dynForm').innerHTML='';
+  const cg=document.getElementById('vCbGroup');
+  cg.innerHTML='';
+  list.forEach(x=>{
+    const d=document.createElement('div');d.className='cb-item';
+    d.innerHTML=`<input type="checkbox" id="vcb_${x.id}" value="${x.id}"><label for="vcb_${x.id}">${x.lbl}</label>`;
+    d.querySelector('input').addEventListener('change',function(){
+      d.classList.toggle('on',this.checked);
+      onV();
+    });
+    cg.appendChild(d);
+  });
+  if(list.length){
+    show('s2');
+    document.getElementById('s2').scrollIntoView({behavior:'smooth',block:'start'});
+  }else{
+    hide('s2');
+  }
+}
+
+function onF(){
+  const f=document.getElementById('selF').value;
+  selectedVids=[];
+  hide('s1b');hide('lpgGuide');hide('reportGuideLegacy');hide('fwGuide');hide('s2');hide('s3');hide('s4');
+  document.getElementById('dynForm').innerHTML='';
+  document.getElementById('vCbGroup').innerHTML='';
+  if(!f)return;
+  if(f==='lpgGuide'){
+    show('lpgGuide');
+    initLpgGuide();
+    document.getElementById('lpgGuide').scrollIntoView({behavior:'smooth',block:'start'});
+    return;
+  }
+  if(f==='fireworkGuide'){
+    show('fwGuide');
+    setupFwGuideChecks();
+    document.getElementById('fwGuide').scrollIntoView({behavior:'smooth',block:'start'});
+    return;
+  }
+  if(f==='chem'){
+    const sel=document.getElementById('selChemSub');
+    sel.innerHTML='<option value="">— 請選擇場所大類 —</option>';
+    CHEM_SUBS.forEach(x=>{
+      const op=document.createElement('option');
+      op.value=x.id;op.textContent=x.lbl;sel.appendChild(op);
+    });
+    document.getElementById('selChemDetail').innerHTML='<option value="">— 請先選擇大類 —</option>';
+    hide('chemDetailGroup');
+    show('s1b');
+    document.getElementById('s1b').scrollIntoView({behavior:'smooth',block:'start'});
+    return;
+  }
+  renderViolationChoices(VL[f]||[]);
+}
+
+function onChemSub(){
+  selectedVids=[];
+  hide('lpgGuide');hide('reportGuideLegacy');hide('fwGuide');hide('s2');hide('s3');hide('s4');
+  document.getElementById('vCbGroup').innerHTML='';
+  document.getElementById('dynForm').innerHTML='';
+  const groupId=document.getElementById('selChemSub').value;
+  const group=CHEM_SUBS.find(x=>x.id===groupId);
+  const detail=document.getElementById('selChemDetail');
+  detail.innerHTML='<option value="">— 請選擇場所細項 —</option>';
+  if(!group){hide('chemDetailGroup');return;}
+  group.subs.forEach(x=>{
+    const op=document.createElement('option');
+    op.value=x.id;op.textContent=x.lbl;detail.appendChild(op);
+  });
+  show('chemDetailGroup');
+  if(group.subs.length===1){
+    detail.value=group.subs[0].id;
+    onChemDetail();
+  }
+}
+
+function onChemDetail(){
+  const detail=document.getElementById('selChemDetail').value;
+  renderViolationChoices(CHEM_VL[detail]||[]);
+}
+
+function onV(){
+  const checked=new Set(Array.from(document.querySelectorAll('#vCbGroup input:checked')).map(el=>el.value));
+  selectedVids=currentViolationList().map(x=>x.id).filter(id=>checked.has(id));
+  hide('s4');
+  const c=document.getElementById('dynForm');
+  // remove unchecked cards
+  Array.from(c.querySelectorAll('[data-vform]')).forEach(card=>{
+    if(!checked.has(card.dataset.vform))card.remove();
+  });
+  // add new cards
+  const present=new Set(Array.from(c.querySelectorAll('[data-vform]')).map(x=>x.dataset.vform));
+  selectedVids.forEach(vid=>{
+    if(present.has(vid))return;
+    const fd=FM[vid];if(!fd)return;
+    appendVCard(vid,fd);
+  });
+  // reorder cards to match selection order
+  selectedVids.forEach(vid=>{
+    const card=c.querySelector(`[data-vform="${vid}"]`);
+    if(card)c.appendChild(card);
+  });
+  // refresh violation numbers
+  const labels=getVLabels();
+  selectedVids.forEach((vid,i)=>{
+    const card=c.querySelector(`[data-vform="${vid}"]`);
+    const titleEl=card?.querySelector('.vform-title');
+    if(titleEl)titleEl.textContent=`違規 ${i+1}：${labels[vid]||vid}`;
+  });
+  if(selectedVids.length===0){hide('s3');return;}
+  const wasHidden=document.getElementById('s3').classList.contains('hidden');
+  show('s3');
+  if(wasHidden)document.getElementById('s3').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function appendVCard(vid,fd){
+  const labels=getVLabels();
+  const card=document.createElement('div');
+  card.className='vform-card';
+  card.dataset.vform=vid;
+  card.style.cssText='border:1.5px solid #c7d7ed;border-radius:10px;padding:14px 16px;margin-bottom:14px;background:#f8fafc';
+  card.innerHTML=`<div class="vform-title" style="font-weight:700;color:#1e3a5f;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #c7d7ed;font-size:.95rem">違規：${labels[vid]||vid}</div>`;
+  const inner=document.createElement('div');
+  card.appendChild(inner);
+  document.getElementById('dynForm').appendChild(card);
+  renderFormInto(fd,inner);
+}
+
+function renderFormInto(fd,c){
+  if(fd.customRender){fd.customRender(c);return;}
+  if(!fd.flds.length){
+    c.innerHTML='<div class="alert-info">此項違規不需填入額外資料。</div>';
+    return;
+  }
+  const g=document.createElement('div');
+  g.className='form-grid';
+  fd.flds.forEach(f=>{
+    const w=document.createElement('div');
+    w.className='form-group';
+    if(f.w===2)w.classList.add('span-full');
+    if(f.tp==='cb'){
+      w.classList.add('span-full');
+      w.innerHTML=`<label>${f.lbl}</label>`;
+      const cg=document.createElement('div');cg.className='cb-group';
+      f.items.forEach(it=>{
+        const d=document.createElement('div');d.className='cb-item';
+        d.innerHTML=`<input type="checkbox" id="cb_${f.id}_${it.v}" value="${it.v}"><label for="cb_${f.id}_${it.v}">${it.l}</label>`;
+        d.querySelector('input').addEventListener('change',function(){d.classList.toggle('on',this.checked);});
+        cg.appendChild(d);
+      });
+      w.appendChild(cg);
+    } else if(f.tp==='sel'){
+      w.innerHTML=`<label for="${f.id}">${f.lbl}</label>`;
+      const s=document.createElement('select');s.id=f.id;
+      f.opts.forEach(o=>{const op=document.createElement('option');op.value=o.v;op.textContent=o.l;s.appendChild(op);});
+      w.appendChild(s);
+    } else {
+      w.innerHTML=`<label for="${f.id}">${f.lbl}</label><input type="text" id="${f.id}" placeholder="${f.ph||''}">`;
+    }
+    if(f.hint){
+      const h=document.createElement('div');
+      h.style.cssText='margin-top:6px;padding:6px 10px;background:#fffbeb;border-left:3px solid #f59e0b;border-radius:4px;font-size:.82rem;color:#92400e;line-height:1.5';
+      h.innerHTML=`💡 ${f.hint}`;
+      w.appendChild(h);
+    }
+    g.appendChild(w);
+  });
+  c.appendChild(g);
+  if(fd.afterRender)fd.afterRender(c);
+}
+
+function setupSitRangeFilter(){
+  const sel=document.getElementById('str');
+  if(!sel)return;
+  const byRange={
+    '1':['a','b','c','d','e','f','g'],
+    '2':['a','b','c','d','e','f','g','h'],
+    '3':['a','b','c','d','e','f','g','h','i','j','k'],
+  };
+  const all=['a','b','c','d','e','f','g','h','i','j','k'];
+  const apply=()=>{
+    const allowed=new Set(byRange[sel.value]||byRange['1']);
+    all.forEach(v=>{
+      const cb=document.getElementById(`cb_schk_${v}`);
+      const item=cb?.closest('.cb-item');
+      if(!cb||!item)return;
+      const show=allowed.has(v);
+      item.style.display=show?'':'none';
+      if(!show){
+        cb.checked=false;
+        item.classList.remove('on');
+      }
+    });
+  };
+  sel.addEventListener('change',apply);
+  apply();
+}
+
+function collectVals(fd){
+  if(fd.customCollect)return fd.customCollect();
+  const vals={};
+  fd.flds.forEach(f=>{
+    if(f.tp==='cb'){
+      vals[f.id]=f.items.filter(it=>{const el=document.getElementById(`cb_${f.id}_${it.v}`);return el&&el.checked;}).map(it=>it.v);
+    } else if(f.tp==='sel'){
+      const el=document.getElementById(f.id);vals[f.id]=el?el.value:'';
+    } else {
+      const el=document.getElementById(f.id);vals[f.id]=el?el.value.trim():'';
+    }
+  });
+  return vals;
+}
+
+function gen(){
+  if(selectedVids.length===0)return;
+  const labels=getVLabels();
+  const ROC=['壹','貳','參','肆','伍','陸','柒','捌','玖','拾','拾壹','拾貳'];
+  const sections=[];
+  const laws=[];
+  const offs=[];
+  let maxDays=0,maxDeadTxt='',zeroDeadTxt='';
+  selectedVids.forEach((vid,i)=>{
+    const fd=FM[vid];if(!fd)return;
+    const vals=collectVals(fd);
+    const txt=fd.gen(vals);
+    if(selectedVids.length>1){
+      sections.push(`【${ROC[i]||(i+1)}】${labels[vid]}\n${txt}`);
+    }else{
+      sections.push(txt);
+    }
+    if(fd.law&&!laws.includes(fd.law))laws.push(fd.law);
+    if(fd.off&&!offs.includes(fd.off))offs.push(fd.off);
+    const d=DAYS[vid];
+    if(d===0){
+      if(!zeroDeadTxt)zeroDeadTxt=DEAD[vid]||'無限改或限改天數待確認';
+      return;
+    }
+    const dn=Array.isArray(d)?Math.max(...d):d;
+    if(dn>maxDays){maxDays=dn;maxDeadTxt=DEAD[vid]||(dn+'天');}
+  });
+  document.getElementById('outV').textContent=sections.join('\n\n');
+  const lawHtml=laws.length<=1
+    ?(laws[0]||'')
+    :'<br>'+laws.map((l,i)=>`(${i+1}) ${l}`).join('<br>');
+  const offHtml=offs.length<=1
+    ?(offs[0]||'').replace(/\n/g,'<br>')
+    :'<br>'+offs.map((o,i)=>`(${i+1}) ${o}`).join('<br>').replace(/\n/g,'<br>');
+  const multiNote=selectedVids.length>1?'（多項缺失以最長天數為準）':'';
+  const deadTxt=maxDeadTxt||zeroDeadTxt||'30天（安全管理）';
+  const deadPrefix=maxDeadTxt?'自開單日起算 ':'';
+  document.getElementById('outL').innerHTML=`<strong>法令依據：</strong>${lawHtml}<br><strong>限改期限：</strong>${deadPrefix}<span style="color:#b45309;font-weight:700">${deadTxt}</span>${maxDeadTxt?multiNote:''}`;
+  document.getElementById('outO').innerHTML=`<strong>管理權人填寫方式：</strong>${offHtml}`;
+  setCurrentReportTicket([sections.join('\n\n'),laws.join('|'),offs.join('|')]);
+  renderReportGuide();
+  if(!document.getElementById('issueDate').value){
+    document.getElementById('issueDate').value=new Date().toISOString().split('T')[0];
+  }
+  calcDead();
+  show('s4');
+  document.getElementById('s4').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function cp(all){
+  const v=document.getElementById('outV').textContent;
+  const l=document.getElementById('outL').textContent;
+  const o=document.getElementById('outO').textContent;
+  const txt=all?`【違規事實】\n${v}\n\n${l}\n\n${o}`:v;
+  navigator.clipboard.writeText(txt).then(()=>{
+    const btn=event.target;const orig=btn.textContent;
+    btn.textContent='✅ 已複製！';setTimeout(()=>{btn.textContent=orig;},2000);
+  }).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+  });
+}
+
+function rst(){
+  document.getElementById('selF').value='';
+  document.getElementById('selChemSub').innerHTML='<option value="">— 請選擇場所大類 —</option>';
+  document.getElementById('selChemDetail').innerHTML='<option value="">— 請先選擇大類 —</option>';
+  selectedVids=[];
+  currentReportTicketKey='';
+  hide('s1b');hide('chemDetailGroup');hide('lpgGuide');hide('reportGuideLegacy');hide('fwGuide');hide('s2');hide('s3');hide('s4');
+  resetLpgGuide();
+  resetFwGuide();
+  document.getElementById('vCbGroup').innerHTML='';
+  document.getElementById('dynForm').innerHTML='';
+  document.getElementById('s1').scrollIntoView({behavior:'smooth'});
+}
+
+function show(id){document.getElementById(id).classList.remove('hidden');}
+function hide(id){document.getElementById(id).classList.add('hidden');}
+</script>
+</body>
+</html>

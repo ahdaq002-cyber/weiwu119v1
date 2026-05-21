@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>危物檢查紀錄表生成器</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Microsoft JhengHei','微軟正黑體',Arial,sans-serif;background:#eef2f7;color:#172033;font-size:15px;line-height:1.65}
+header{background:linear-gradient(135deg,#17324d,#2d6a9f);color:#fff;text-align:center;padding:20px 28px;box-shadow:0 2px 10px rgba(0,0,0,.18)}
+header h1{font-size:1.55rem;letter-spacing:1px}
+header p{opacity:.86;font-size:.92rem;margin-top:4px}
+.top-links{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.top-links a{color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.45);border-radius:8px;padding:6px 12px;font-size:.88rem;background:rgba(255,255,255,.12)}
+.top-links a:hover{background:rgba(255,255,255,.22)}
+.container{max-width:1120px;margin:26px auto;padding:0 16px 60px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;box-shadow:0 1px 6px rgba(0,0,0,.07)}
+.title{font-weight:800;color:#17324d;font-size:1rem;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.badge{background:#17324d;color:#fff;border-radius:999px;padding:2px 10px;font-size:.82rem}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.span{grid-column:1/-1}
+label{display:block;font-size:.86rem;font-weight:700;color:#475569;margin-bottom:5px}
+input,select,textarea{width:100%;border:1.5px solid #cbd5e1;border-radius:8px;padding:9px 12px;font-family:inherit;font-size:.94rem;color:#172033;background:#fff}
+textarea{min-height:82px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#2d6a9f;box-shadow:0 0 0 3px rgba(45,106,159,.14)}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+button{border:none;border-radius:8px;padding:9px 15px;font-family:inherit;font-weight:800;cursor:pointer}
+.primary{background:#17324d;color:#fff}.primary:hover{background:#10263d}
+.teal{background:#0d9488;color:#fff}.teal:hover{background:#0b7b6f}
+.light{background:#f1f5f9;color:#475569}.light:hover{background:#e2e8f0}
+.danger{background:#fee2e2;color:#991b1b}.danger:hover{background:#fecaca}
+.chem{border:1.5px solid #d6e4f4;background:#f8fafc;border-radius:10px;padding:14px;margin-top:12px}
+.chem-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px}
+.chem-head strong{color:#17324d}
+.result{border-radius:8px;padding:12px 14px;margin-top:12px;font-weight:700}
+.ok{background:#f0fdf4;border:1px solid #86efac;color:#166534}
+.bad{background:#fef2f2;border:1px solid #fca5a5;color:#991b1b}
+.info{background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a5f}
+.muted{background:#f8fafc;border:1px dashed #cbd5e1;color:#64748b}
+.output{white-space:pre-wrap;word-break:break-word;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:18px;line-height:2}
+@media(max-width:760px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <h1>危物檢查紀錄表生成器</h1>
+  <p>依現場檢查紀錄表邏輯：先統計六類物品倍數，再自動判定保安監督及安全管理</p>
+  <div class="top-links">
+    <a href="危險物品標籤初判.html">危險物品標籤初判</a>
+    <a href="舉發單填寫助手.html">回舉發單填寫助手</a>
+  </div>
+</header>
+<div class="container">
+  <div class="card">
+    <div class="title"><span class="badge">1</span>基本資料</div>
+    <div class="grid">
+      <div><label>場所/公司名稱</label><input id="caseName" placeholder="例：○○股份有限公司○○廠"></div>
+      <div><label>檢查日期</label><input id="caseDate" type="date"></div>
+      <div><label>場所型態</label><select id="placeType" onchange="calcAll()"><option>製造場所</option><option>儲存場所</option><option>處理場所</option><option>混合場所</option></select></div>
+      <div><label>檢查表章節</label><input value="五、保安監督及安全管理" readonly></div>
+      <div class="span"><label>備註</label><textarea id="caseNote" placeholder="例：依現場檢查紀錄、照片、六類物品種類及數量一覽表判定"></textarea></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="title"><span class="badge">2</span>六類物品種類及數量一覽表</div>
+    <div id="chemRows"></div>
+    <div class="btn-row">
+      <button class="primary" onclick="addChem()">＋ 新增物品</button>
+    </div>
+    <div id="totalBox" class="result muted">尚未填寫。</div>
+  </div>
+
+  <div class="card">
+    <div class="title"><span class="badge">3</span>五、保安監督及安全管理</div>
+    <div class="grid">
+      <div>
+        <label>保安監督人遴用情形</label>
+        <select id="supervisor" onchange="calcAll()">
+          <option value="auto">依倍數自動判定免設/應設</option>
+          <option value="appointed">已遴用，且可提出資料</option>
+          <option value="none">未遴用</option>
+          <option value="no_doc">稱已遴用，但未提出資料</option>
+          <option value="inactive">已遴用，但未執行保安監督業務</option>
+        </select>
+      </div>
+      <div>
+        <label>保安監督人訓練/資格資料</label>
+        <select id="supervisorDoc" onchange="calcAll()">
+          <option value="na">未檢核/不適用</option>
+          <option value="ok">可提出訓練或資格資料</option>
+          <option value="missing">未提出訓練或資格資料</option>
+        </select>
+      </div>
+      <div>
+        <label>消防防災計畫/保安監督計畫</label>
+        <select id="plan" onchange="calcAll()">
+          <option value="auto">依倍數自動判定免設/應設</option>
+          <option value="filed">已制定並報請備查</option>
+          <option value="not_file">已制定但未報請備查</option>
+          <option value="none">未制定</option>
+          <option value="no_doc">未提出文件</option>
+        </select>
+      </div>
+      <div>
+        <label>自主檢查紀錄</label>
+        <select id="selfCheck" onchange="calcAll()">
+          <option value="ok">有每月自主檢查，且紀錄留存</option>
+          <option value="none">未實施每月自主檢查</option>
+          <option value="no_record">有檢查但紀錄未留存或不完整</option>
+          <option value="na">未檢核</option>
+        </select>
+      </div>
+      <div>
+        <label>自衛消防編組訓練</label>
+        <select id="drill" onchange="calcAll()">
+          <option value="ok">有辦理並可提出紀錄</option>
+          <option value="none">未辦理</option>
+          <option value="no_record">有辦理但未提出紀錄</option>
+          <option value="na">未檢核</option>
+        </select>
+      </div>
+      <div>
+        <label>員工安全管理教育訓練</label>
+        <select id="training" onchange="calcAll()">
+          <option value="ok">有辦理並可提出紀錄</option>
+          <option value="none">未辦理</option>
+          <option value="no_record">有辦理但未提出紀錄</option>
+          <option value="na">未檢核</option>
+        </select>
+      </div>
+      <div class="span"><label>本章補充說明</label><textarea id="safetyNote" placeholder="例：業者現場未能提出保安監督人遴用資料及消防防災計畫備查文件" oninput="calcAll()"></textarea></div>
+    </div>
+    <div id="safetyResult" class="result muted">尚未判定。</div>
+  </div>
+
+  <div class="card">
+    <div class="title"><span class="badge">4</span>輸出</div>
+    <div class="btn-row">
+      <button class="primary" onclick="generateRecord()">產生檢查紀錄表文字</button>
+      <button class="primary" onclick="generateViolation()">產生舉發單違規事實</button>
+      <button class="teal" onclick="copyOut()">複製輸出</button>
+      <button class="light" onclick="resetAll()">清空重填</button>
+    </div>
+    <div id="out" class="output" style="margin-top:14px">尚未產生。</div>
+  </div>
+</div>
+
+<script>
+const CATDB=[
+  {label:'第1類 氧化性固體（第一級）',cls:'第一類',sub:'氧化性固體（第一級）',ctl:50,unit:'公斤'},
+  {label:'第1類 氧化性固體（第二級）',cls:'第一類',sub:'氧化性固體（第二級）',ctl:300,unit:'公斤'},
+  {label:'第1類 氧化性固體（第三級）',cls:'第一類',sub:'氧化性固體（第三級）',ctl:1000,unit:'公斤'},
+  {label:'第2類 硫化磷、赤磷、硫磺',cls:'第二類',sub:'硫化磷、赤磷、硫磺',ctl:100,unit:'公斤'},
+  {label:'第2類 鐵粉',cls:'第二類',sub:'鐵粉',ctl:500,unit:'公斤'},
+  {label:'第2類 金屬粉、鎂、三聚甲醛等（第一級）',cls:'第二類',sub:'金屬粉、鎂、三聚甲醛等（第一級）',ctl:100,unit:'公斤'},
+  {label:'第2類 金屬粉、鎂、三聚甲醛等（第二級）',cls:'第二類',sub:'金屬粉、鎂、三聚甲醛等（第二級）',ctl:500,unit:'公斤'},
+  {label:'第2類 易燃性固體',cls:'第二類',sub:'易燃性固體',ctl:1000,unit:'公斤'},
+  {label:'第3類 發火性液體、發火性固體及禁水性物質（第一級）',cls:'第三類',sub:'發火性液體、發火性固體及禁水性物質（第一級）',ctl:10,unit:'公斤'},
+  {label:'第3類 發火性液體、發火性固體及禁水性物質（第二級）',cls:'第三類',sub:'發火性液體、發火性固體及禁水性物質（第二級）',ctl:50,unit:'公斤'},
+  {label:'第3類 發火性液體、發火性固體及禁水性物質（第三級）',cls:'第三類',sub:'發火性液體、發火性固體及禁水性物質（第三級）',ctl:300,unit:'公斤'},
+  {label:'第4類 特殊易燃物',cls:'第四類',sub:'特殊易燃物',ctl:50,unit:'公升'},
+  {label:'第4類 第一石油類（非水溶性）',cls:'第四類',sub:'第一石油類（非水溶性）',ctl:200,unit:'公升'},
+  {label:'第4類 第一石油類（水溶性）',cls:'第四類',sub:'第一石油類（水溶性）',ctl:400,unit:'公升'},
+  {label:'第4類 酒精類',cls:'第四類',sub:'酒精類',ctl:400,unit:'公升'},
+  {label:'第4類 第二石油類（非水溶性）',cls:'第四類',sub:'第二石油類（非水溶性）',ctl:1000,unit:'公升'},
+  {label:'第4類 第二石油類（水溶性）',cls:'第四類',sub:'第二石油類（水溶性）',ctl:2000,unit:'公升'},
+  {label:'第4類 第三石油類（非水溶性）',cls:'第四類',sub:'第三石油類（非水溶性）',ctl:2000,unit:'公升'},
+  {label:'第4類 第三石油類（水溶性）',cls:'第四類',sub:'第三石油類（水溶性）',ctl:4000,unit:'公升'},
+  {label:'第4類 第四石油類',cls:'第四類',sub:'第四石油類',ctl:6000,unit:'公升'},
+  {label:'第4類 動植物油類',cls:'第四類',sub:'動植物油類',ctl:10000,unit:'公升'},
+  {label:'第5類 自反應物質及有機過氧化物（A型、B型）',cls:'第五類',sub:'自反應物質及有機過氧化物（A型、B型）',ctl:10,unit:'公斤'},
+  {label:'第5類 自反應物質及有機過氧化物（C型、D型）',cls:'第五類',sub:'自反應物質及有機過氧化物（C型、D型）',ctl:100,unit:'公斤'},
+  {label:'第6類 氧化性液體（第一級）',cls:'第六類',sub:'氧化性液體（第一級）',ctl:300,unit:'公升'},
+  {label:'第6類 氧化性液體（第二級）',cls:'第六類',sub:'氧化性液體（第二級）',ctl:1500,unit:'公升'},
+  {label:'第6類 氧化性液體（第三級）',cls:'第六類',sub:'氧化性液體（第三級）',ctl:2500,unit:'公升'},
+];
+const catOpts=CATDB.map((c,i)=>`<option value="${i}">${c.label}</option>`).join('')+'<option value="custom">自行輸入</option>';
+let findings=[];
+function addChem(){
+  const row=document.createElement('div');
+  row.className='chem';
+  row.innerHTML=`
+<div class="chem-head"><strong>公共危險物品</strong><button class="danger" onclick="this.closest('.chem').remove();calcAll()">刪除</button></div>
+<div class="grid">
+  <div class="span"><label>種類/分級</label><select class="cat" onchange="onCat(this)"><option value="">請選擇</option>${catOpts}</select></div>
+  <div><label>品名</label><input class="name" placeholder="例：丙酮、異丙醇" oninput="calcAll()"></div>
+  <div><label>管制量</label><input class="ctl" readonly placeholder="自動帶入；自行輸入時填數字" oninput="calcAll()"></div>
+  <div><label>單位</label><select class="unit" onchange="calcAll()"><option value="公斤">公斤</option><option value="公升">公升</option></select></div>
+  <div><label>實際數量</label><input class="act" type="number" min="0" step="0.01" oninput="calcAll()"></div>
+  <div><label>管制量倍數</label><input class="ratio" readonly></div>
+</div>`;
+  document.getElementById('chemRows').appendChild(row);
+}
+function onCat(sel){
+  const row=sel.closest('.chem'), ctl=row.querySelector('.ctl');
+  if(sel.value==='custom'){ctl.readOnly=false;ctl.value='';calcAll();return;}
+  const cat=CATDB[parseInt(sel.value)];
+  ctl.readOnly=true;
+  if(cat){ctl.value=cat.ctl;row.querySelector('.unit').value=cat.unit;}else ctl.value='';
+  calcAll();
+}
+function collectChems(){
+  const rows=[];
+  document.querySelectorAll('.chem').forEach(r=>{
+    const val=r.querySelector('.cat').value;
+    const cat=val!==''&&val!=='custom'?CATDB[parseInt(val)]:null;
+    const ctl=parseFloat(r.querySelector('.ctl').value)||0;
+    const act=parseFloat(r.querySelector('.act').value)||0;
+    const ratio=ctl&&act?Math.round(act/ctl*100)/100:0;
+    r.querySelector('.ratio').value=ratio?ratio+'倍':'';
+    rows.push({cat,cls:cat?cat.cls:'自行輸入',sub:cat?cat.sub:(r.querySelector('.name').value.trim()||'自訂公共危險物品'),name:r.querySelector('.name').value.trim(),ctl,unit:r.querySelector('.unit').value,act,ratio});
+  });
+  return rows;
+}
+function calcAll(){
+  findings=[];
+  const chems=collectChems();
+  const total=Math.round(chems.reduce((s,c)=>s+c.ratio,0)*100)/100;
+  const totalBox=document.getElementById('totalBox');
+  totalBox.className='result '+(total>=30?'bad':total>0?'info':'muted');
+  totalBox.innerHTML=total?`六類物品合計達管制量 <strong>${total} 倍</strong>。${total>=30?'已達30倍以上，應檢核保安監督制度。':'未達30倍，保安監督人及消防防災計畫原則免設。'}`:'尚未填寫。';
+  evalSafety(total);
+}
+function addFinding(key,title,body,article){findings.push({key,title,body,article});}
+function evalSafety(total){
+  const sup=document.getElementById('supervisor').value;
+  const supDoc=document.getElementById('supervisorDoc').value;
+  const plan=document.getElementById('plan').value;
+  const self=document.getElementById('selfCheck').value;
+  const drill=document.getElementById('drill').value;
+  const train=document.getElementById('training').value;
+  const should=total>=30;
+  const msgs=[];
+  if(!should){
+    msgs.push('保安監督人：免設（未達管制量30倍）。');
+    msgs.push('消防防災計畫/保安監督計畫：免設（未達管制量30倍）。');
+  }else{
+    if(sup==='appointed')msgs.push('保安監督人：符合，已遴用並可提出資料。');
+    else if(sup==='none'){msgs.push('保安監督人：不符合，已達30倍以上但未遴用。');addFinding('sup','未遴用保安監督人',`本場所公共危險物品合計達管制量${total}倍，已達30倍以上，應遴用保安監督人，惟現場未遴用。`,'管理辦法保安監督制度相關規定');}
+    else if(sup==='no_doc'||sup==='auto'){msgs.push('保安監督人：尚難認定/不符合，已達30倍以上但未提出遴用資料。');addFinding('supdoc','未提出保安監督人遴用資料',`本場所公共危險物品合計達管制量${total}倍，已達30倍以上，現場未能提出保安監督人遴用資料，尚難認定符合規定。`,'管理辦法保安監督制度相關規定');}
+    else if(sup==='inactive'){msgs.push('保安監督人：不符合，已遴用但未執行保安監督業務。');addFinding('supinactive','保安監督人未執行業務',`本場所雖遴用保安監督人，惟未依消防防災計畫執行自主檢查、訓練或相關安全管理業務。`,'管理辦法保安監督制度相關規定');}
+    if(supDoc==='missing'){msgs.push('保安監督人資格資料：不符合/尚難認定，未提出訓練或資格資料。');addFinding('supqual','未提出保安監督人訓練或資格資料','現場未能提出保安監督人訓練或資格相關資料，尚難認定符合規定。','管理辦法保安監督制度相關規定');}
+    if(plan==='filed')msgs.push('消防防災計畫/保安監督計畫：符合，已制定並報請備查。');
+    else if(plan==='none'){msgs.push('消防防災計畫/保安監督計畫：不符合，未制定。');addFinding('plan','未制定消防防災計畫/保安監督計畫',`本場所公共危險物品合計達管制量${total}倍，已達30倍以上，惟未制定消防防災計畫或保安監督計畫。`,'管理辦法保安監督制度相關規定');}
+    else if(plan==='not_file'){msgs.push('消防防災計畫/保安監督計畫：不符合，已制定但未報請備查。');addFinding('planfile','消防防災計畫/保安監督計畫未報請備查','現場雖有消防防災計畫或保安監督計畫，惟未報請主管機關備查。','管理辦法保安監督制度相關規定');}
+    else if(plan==='no_doc'||plan==='auto'){msgs.push('消防防災計畫/保安監督計畫：尚難認定/不符合，未提出文件。');addFinding('plandoc','未提出消防防災計畫/保安監督計畫文件','現場未能提出消防防災計畫或保安監督計畫文件，尚難認定符合規定。','管理辦法保安監督制度相關規定');}
+  }
+  if(self==='none'){msgs.push('自主檢查紀錄：不符合，未每月自主檢查。');addFinding('self','未每月自主檢查','場所未指派專人每月對位置、構造及設備實施自主檢查。','第46條第11款');}
+  else if(self==='no_record'){msgs.push('自主檢查紀錄：不符合，紀錄未留存或不完整。');addFinding('selfrecord','自主檢查紀錄未留存或不完整','場所雖稱有自主檢查，惟檢查紀錄未留存或內容不完整。','第46條第11款');}
+  if(should&&drill==='none'){msgs.push('自衛消防編組訓練：不符合，未辦理。');addFinding('drill','未辦理自衛消防編組訓練','達管制量30倍以上場所未依消防防災計畫辦理自衛消防編組訓練。','管理辦法保安監督制度相關規定');}
+  else if(should&&drill==='no_record'){msgs.push('自衛消防編組訓練：尚難認定，未提出紀錄。');addFinding('drillrecord','未提出自衛消防編組訓練紀錄','達管制量30倍以上場所未能提出自衛消防編組訓練紀錄。','管理辦法保安監督制度相關規定');}
+  if(should&&train==='none'){msgs.push('員工安全管理教育訓練：不符合，未辦理。');addFinding('train','未辦理員工安全管理教育訓練','達管制量30倍以上場所未依消防防災計畫辦理員工安全管理教育訓練。','管理辦法保安監督制度相關規定');}
+  else if(should&&train==='no_record'){msgs.push('員工安全管理教育訓練：尚難認定，未提出紀錄。');addFinding('trainrecord','未提出員工安全管理教育訓練紀錄','達管制量30倍以上場所未能提出員工安全管理教育訓練紀錄。','管理辦法保安監督制度相關規定');}
+  const el=document.getElementById('safetyResult');
+  el.className='result '+(findings.length?'bad':'ok');
+  el.innerHTML=msgs.join('<br>')+(document.getElementById('safetyNote').value?'<br>補充：'+document.getElementById('safetyNote').value:'');
+}
+function chemText(){
+  const chems=collectChems();
+  const nums='一二三四五六七八九十';
+  return chems.filter(c=>c.ratio).map((c,i)=>`（${nums[i]||i+1}）${c.cls}${c.sub}${c.name?`（品名：${c.name}）`:''}，管制量${c.ctl}${c.unit}，實際數量${c.act}${c.unit}，達管制量${c.ratio}倍。`).join('\n');
+}
+function totalRatio(){return Math.round(collectChems().reduce((s,c)=>s+c.ratio,0)*100)/100;}
+function generateRecord(){
+  calcAll();
+  const total=totalRatio();
+  const lines=[];
+  lines.push('五、保安監督及安全管理');
+  lines.push(`公共危險物品種類及數量一覽：\n${chemText()||'（未填寫）'}`);
+  lines.push(`合計管制量倍數：${total||'__'}倍。`);
+  lines.push('檢查結果：');
+  lines.push(document.getElementById('safetyResult').innerText);
+  document.getElementById('out').textContent=lines.join('\n');
+}
+function generateViolation(){
+  calcAll();
+  const caseName=document.getElementById('caseName').value.trim()||'本場所';
+  const total=totalRatio();
+  if(!findings.length){document.getElementById('out').textContent='目前未產生不符合事項。';return;}
+  const lines=[];
+  lines.push(`一、稽查發現，${caseName}製造、儲存或處理公共危險物品合計達管制量${total}倍。`);
+  lines.push(`二、公共危險物品種類及數量如下：\n${chemText()}`);
+  findings.forEach((f,i)=>{const nums='一二三四五六七八九十';lines.push(`三${findings.length>1?`-${nums[i]||i+1}`:''}、${f.body}（${f.article}）`);});
+  lines.push('四、以上違反消防法第15條第1項及公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法相關規定，詳如現場檢查紀錄、照片或清冊。');
+  const note=document.getElementById('caseNote').value.trim();
+  if(note)lines.push(`備註：${note}`);
+  document.getElementById('out').textContent=lines.join('\n');
+}
+function copyOut(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('已複製'))}
+function resetAll(){
+  if(!confirm('確定清空？'))return;
+  document.querySelectorAll('input,textarea').forEach(el=>{if(el.type!=='date')el.value='';});
+  document.querySelectorAll('select').forEach(el=>el.selectedIndex=0);
+  document.getElementById('chemRows').innerHTML='';
+  findings=[];addChem();calcAll();document.getElementById('out').textContent='尚未產生。';
+}
+addChem();calcAll();
+</script>
+</body>
+</html>
