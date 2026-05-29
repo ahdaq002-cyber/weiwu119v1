@@ -445,21 +445,21 @@ input[type=number]:focus{outline:none;border-color:#2d6a9f;box-shadow:0 0 0 3px 
     <div class="card-title">📄 違規事實（複製貼入舉發單）</div>
     <div class="output-area" id="outV"></div>
     <div class="law-box" id="outL"></div>
-    <div class="off-box" id="outO"></div>
-    <div class="dead-box" id="reportGuidePanel">
-      <strong>開單前資料核對</strong>
-      <div style="margin-top:8px;line-height:1.8">每一份舉發單都要核對這份共用檢核表。確認違規事實、法條、附件與簽章後，再往下看裁處期限。</div>
-      <div id="reportGuideBody" style="margin-top:12px"></div>
-    </div>
     <div class="dead-box" id="dateCalc">
       <strong>限改到期日計算器</strong>
       <div style="display:flex;align-items:center;gap:14px;margin-top:10px;flex-wrap:wrap">
         <div>
           <label for="issueDate" style="font-size:.85rem;font-weight:600;color:#4a5568;display:block;margin-bottom:5px">開單日期（民國換西元）</label>
-          <input type="date" id="issueDate" onchange="calcDead()" style="padding:8px 12px;border:1.5px solid #93c5fd;border-radius:8px;font-size:.95rem;font-family:inherit;color:#1a202c;background:#fff">
+          <input type="date" id="issueDate" onchange="gen()" style="padding:8px 12px;border:1.5px solid #93c5fd;border-radius:8px;font-size:.95rem;font-family:inherit;color:#1a202c;background:#fff">
         </div>
         <div id="deadResult" style="padding-top:18px;line-height:2"></div>
       </div>
+    </div>
+    <div class="off-box" id="outO"></div>
+    <div class="dead-box" id="reportGuidePanel">
+      <strong>開單前資料核對</strong>
+      <div style="margin-top:8px;line-height:1.8">每一份舉發單都要核對這份共用檢核表。確認違規事實、法條、限改期限、附件與簽章後，再送出案件。</div>
+      <div id="reportGuideBody" style="margin-top:12px"></div>
     </div>
     <div class="btn-row">
       <button class="btn btn-cpy" onclick="cp(0)">📋 複製違規事實</button>
@@ -1617,6 +1617,40 @@ const DAYS={
 function toROC(d){
   const y=d.getFullYear()-1911,m=d.getMonth()+1,day=d.getDate();
   return `民國${y}年${m}月${day}日`;
+}
+
+const FACT_PARA_NUMS=['一','二','三','四','五','六','七','八','九','十','十一','十二','十三','十四','十五','十六','十七','十八','十九','二十'];
+function factParaIndex(label){
+  const i=FACT_PARA_NUMS.indexOf(label);
+  return i>=0?i+1:0;
+}
+function appendDeadlineParagraph(text,sentence){
+  if(!sentence)return text;
+  const clean=String(text||'').trim();
+  if(!clean)return sentence;
+  const matches=[...clean.matchAll(/^([一二三四五六七八九十]+)、/gm)];
+  const max=matches.reduce((m,x)=>Math.max(m,factParaIndex(x[1])),0);
+  const label=FACT_PARA_NUMS[max]||`第${max+1}點`;
+  return `${clean}\n${label}、${sentence}`;
+}
+function dateValueOrToday(){
+  const el=document.getElementById('issueDate');
+  if(el&&!el.value)el.value=new Date().toISOString().split('T')[0];
+  return el?.value||new Date().toISOString().split('T')[0];
+}
+function improvementDeadlineSentence(days,dateVal,dayOptions=null){
+  if(!days)return '';
+  const base=new Date((dateVal||dateValueOrToday())+'T00:00:00');
+  if(Array.isArray(dayOptions)&&dayOptions.length>1){
+    const parts=dayOptions.map((n,i)=>{
+      const t=new Date(base);t.setDate(t.getDate()+n);
+      const label=i===0?`30倍以上${n}天`:`30倍以下${n}天`;
+      return `${label}至${toROC(t)}`;
+    });
+    return `改善期限：${parts.join('，')}。`;
+  }
+  const t=new Date(base);t.setDate(t.getDate()+days);
+  return `改善期限至${toROC(t)}。`;
 }
 
 function calcDead(){
@@ -3077,7 +3111,8 @@ function runLpgGuide(){
     '- 管理辦法條文：待補充事實後判斷。',
     '- 限期改善天數：待確認。',
   ].join('\n');
-  const factsText=issues.length?issues.map(x=>x.text).join('\n\n'):'目前依輸入資料未自動判定可直接開單的液化石油氣違規事實；請補充場所性質、數量、灌裝行為、鋼瓶標示或小貨車停放情境。';
+  const rawFactsText=issues.length?issues.map(x=>x.text).join('\n\n'):'目前依輸入資料未自動判定可直接開單的液化石油氣違規事實；請補充場所性質、數量、灌裝行為、鋼瓶標示或小貨車停放情境。';
+  const factsText=issues.length?appendDeadlineParagraph(rawFactsText,`改善期限至${toROC(lpgAddDays(issueDate,maxDays))}。`):rawFactsText;
   const evidenceText=lpgUnique(evidence).length?lpgUnique(evidence).map(x=>`- ${x}`).join('\n'):'- 拍照、錄影、拍攝鋼瓶標示與數量，並確認場所性質及是否有灌裝行為。';
   const noteLines=lpgUnique([...notes,...confirms,'限改日期自開單日起算，使用日曆天；BA單於空白處填寫限改日期，CA單於主旨、理由及法令依據欄位填寫限改日期。']);
   const noteText=noteLines.length?noteLines.map(x=>`- ${x}`).join('\n'):'- 無。';
@@ -4043,7 +4078,7 @@ function gen(){
   const sections=[];
   const laws=[];
   const offs=[];
-  let maxDays=0,maxDeadTxt='',zeroDeadTxt='';
+  let maxDays=0,maxDeadTxt='',zeroDeadTxt='',maxArr=null;
   selectedVids.forEach((vid,i)=>{
     const fd=FM[vid];if(!fd)return;
     const vals=collectVals(fd);
@@ -4061,9 +4096,11 @@ function gen(){
       return;
     }
     const dn=Array.isArray(d)?Math.max(...d):d;
-    if(dn>maxDays){maxDays=dn;maxDeadTxt=DEAD[vid]||(dn+'天');}
+    if(dn>maxDays){maxDays=dn;maxDeadTxt=DEAD[vid]||(dn+'天');maxArr=Array.isArray(d)?d:null;}
   });
-  document.getElementById('outV').textContent=sections.join('\n\n');
+  const issueDateVal=dateValueOrToday();
+  const factsOutput=appendDeadlineParagraph(sections.join('\n\n'),improvementDeadlineSentence(maxDays,issueDateVal,maxArr));
+  document.getElementById('outV').textContent=factsOutput;
   const lawHtml=laws.length<=1
     ?(laws[0]||'')
     :'<br>'+laws.map((l,i)=>`(${i+1}) ${l}`).join('<br>');
@@ -4075,11 +4112,8 @@ function gen(){
   const deadPrefix=maxDeadTxt?'自開單日起算 ':'';
   document.getElementById('outL').innerHTML=`<strong>法令依據：</strong>${lawHtml}<br><strong>限改期限：</strong>${deadPrefix}<span style="color:#b45309;font-weight:700">${deadTxt}</span>${maxDeadTxt?multiNote:''}`;
   document.getElementById('outO').innerHTML=`<strong>管理權人填寫方式：</strong>${offHtml}`;
-  setCurrentReportTicket([sections.join('\n\n'),laws.join('|'),offs.join('|')]);
+  setCurrentReportTicket([factsOutput,laws.join('|'),offs.join('|')]);
   renderReportGuide();
-  if(!document.getElementById('issueDate').value){
-    document.getElementById('issueDate').value=new Date().toISOString().split('T')[0];
-  }
   calcDead();
   show('s4');
   document.getElementById('s4').scrollIntoView({behavior:'smooth',block:'start'});
