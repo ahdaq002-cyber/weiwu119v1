@@ -94,7 +94,6 @@ input[type=number]:focus{outline:none;border-color:#2d6a9f;box-shadow:0 0 0 3px 
     <a href="index.html">回主頁</a>
     <a href="SDS與現場物品核對助手.html">SDS 與現場物品核對</a>
     <a href="危物案件式填寫助手.html">危物檢查紀錄表</a>
-    <a href="https://github.com/ahdaq002-cyber/weiwu119v1/discussions/new/choose" target="_blank" rel="noopener">回報此頁問題</a>
   </div>
 </header>
 <div class="container">
@@ -136,16 +135,33 @@ input[type=number]:focus{outline:none;border-color:#2d6a9f;box-shadow:0 0 0 3px 
 
   <div class="card hidden" id="lpgGuide">
     <div class="card-title"><span class="step-num">2</span>液化石油氣案件判斷助手</div>
-    <div class="alert-info" style="margin-bottom:14px">此區先分開判斷第73條備用量、第73-1條串接使用場所、第73-2條新建建築物容器位置。新建物使用瓦斯本身不是違規，重點是容器是否放在室內。</div>
+    <div class="alert-info" style="margin-bottom:14px">此區依會議資料分成五大檢舉態樣，並分流「鋼瓶本身問題」與「違規灌裝行為」。未填明灌裝事實時，不會把逾期鋼瓶直接套用消防法第15條、第42條。</div>
     <div class="form-grid">
+      <div class="form-group">
+        <label for="lpg_case_kind">主要檢舉態樣</label>
+        <select id="lpg_case_kind" onchange="runLpgGuide()">
+          <option value="auto">依下方事實綜合判斷</option>
+          <option value="admin">一、瓦斯行容器管理資料未定期申報</option>
+          <option value="over">二、瓦斯行超量儲存</option>
+          <option value="cylinder">三、瓦斯鋼瓶檢驗或標示問題</option>
+          <option value="truck">四、小貨車違規存放瓦斯鋼瓶</option>
+          <option value="serial">五、串接營業場所違反安全管理</option>
+        </select>
+      </div>
       <div class="form-group">
         <label for="lpg_use">場所使用型態</label>
         <select id="lpg_use" onchange="runLpgGuide()">
-          <option value="business">營業使用</option>
+          <option value="office">辦公室、辦公處所（限40公斤）</option>
+          <option value="vendor">瓦斯行、煤氣行、液化石油氣販賣場所（限128公斤）</option>
+          <option value="business" selected>營業使用</option>
+          <option value="factory">工廠製程使用（第73-1條需先排除）</option>
           <option value="home">家庭使用</option>
-          <option value="vendor">瓦斯行或販賣場所</option>
           <option value="unknown">尚未確認</option>
         </select>
+      </div>
+      <div class="form-group">
+        <label for="lpg_issue_date">開單日期（限改計算）</label>
+        <input type="date" id="lpg_issue_date" onchange="runLpgGuide()">
       </div>
       <div class="form-group">
         <label for="lpg_building">建築物適用狀態</label>
@@ -187,6 +203,22 @@ input[type=number]:focus{outline:none;border-color:#2d6a9f;box-shadow:0 0 0 3px 
           <option value="reserve">僅以備用或未連接鋼瓶判斷</option>
         </select>
       </div>
+      <div class="form-group">
+        <label for="lpg_truck_place">小貨車停放情境</label>
+        <select id="lpg_truck_place" onchange="runLpgGuide()">
+          <option value="none">非小貨車案件</option>
+          <option value="road">車輛停放於馬路旁</option>
+          <option value="business">車輛停放於營業場所或瓦斯行</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="lpg_truck_plate">小貨車車號（可選填）</label>
+        <input type="text" id="lpg_truck_plate" placeholder="例：ABC-1234" oninput="runLpgGuide()">
+      </div>
+      <div class="form-group">
+        <label for="lpg_video_minutes">錄影時間（分鐘）</label>
+        <input type="number" id="lpg_video_minutes" min="0" step="1" value="15" oninput="runLpgGuide()">
+      </div>
       <div class="form-group span-full">
         <label>鋼瓶明細</label>
         <div id="lpgRows"></div>
@@ -196,13 +228,85 @@ input[type=number]:focus{outline:none;border-color:#2d6a9f;box-shadow:0 0 0 3px 
         </div>
       </div>
       <div class="form-group span-full">
-        <label>串接場所安全缺失（有檢查到再勾）</label>
+        <label>消防法第15條 + 第42條安全管理缺失（有查到再勾）</label>
+        <div class="cb-group">
+          <div class="cb-item"><input type="checkbox" id="lpg_storage_missing" onchange="lpgToggle(this);runLpgGuide()"><label for="lpg_storage_missing">未依規定將容器存放於儲存場所（第71條）</label></div>
+          <div class="cb-item"><input type="checkbox" id="lpg_fill_expired" onchange="lpgToggle(this);runLpgGuide()"><label for="lpg_fill_expired">違規灌裝逾期未檢驗容器</label></div>
+          <div class="cb-item"><input type="checkbox" id="lpg_fill_no_mark" onchange="lpgToggle(this);runLpgGuide()"><label for="lpg_fill_no_mark">灌裝未標示或未檢附合格販賣場所商號、電話之容器</label></div>
+          <div class="cb-item"><input type="checkbox" id="lpg_fill_bad_body" onchange="lpgToggle(this);runLpgGuide()"><label for="lpg_fill_bad_body">灌裝腐蝕、變形或無法直立之容器</label></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="lpg_fill_article">違規灌裝引用條文</label>
+        <select id="lpg_fill_article" onchange="runLpgGuide()">
+          <option value="78">第78條（分裝場灌裝前確認容器）</option>
+          <option value="77">第77條（分裝場外灌氣裝卸）</option>
+          <option value="unknown">尚未確認，先提醒補查</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="lpg_fill_fact">違規灌裝事實</label>
+        <select id="lpg_fill_fact" onchange="runLpgGuide()">
+          <option value="confirmed">已確認正在灌裝或已完成灌裝</option>
+          <option value="staged">僅置於灌裝臺或分裝場附近，尚未灌氣</option>
+          <option value="unknown">尚未確認灌裝行為</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="lpg_supplier_no_gas">瓦斯行不得供氣情形</label>
+        <select id="lpg_supplier_no_gas" onchange="runLpgGuide()">
+          <option value="unknown">尚未判斷</option>
+          <option value="yes">疑似符合，不得直接自動認定雙方皆違規</option>
+          <option value="no">未發現不得供氣情形</option>
+        </select>
+      </div>
+      <div class="form-group span-full">
+        <label>串接營業場所安全缺失（第73-1條）</label>
         <div class="cb-group">
           <div class="cb-item"><input type="checkbox" id="lpg_bad_basement" onchange="lpgToggle(this);runLpgGuide()"><label for="lpg_bad_basement">容器置於地下室</label></div>
+          <div class="cb-item"><input type="checkbox" id="lpg_bad_vent" onchange="lpgToggle(this);runLpgGuide()"><label for="lpg_bad_vent">安裝於室內未設置或未維持有效通風裝置</label></div>
           <div class="cb-item"><input type="checkbox" id="lpg_bad_sign" onchange="lpgToggle(this);runLpgGuide()"><label for="lpg_bad_sign">無嚴禁煙火標示</label></div>
           <div class="cb-item"><input type="checkbox" id="lpg_bad_fix" onchange="lpgToggle(this);runLpgGuide()"><label for="lpg_bad_fix">使用或備用容器未直立或未防止傾倒</label></div>
           <div class="cb-item"><input type="checkbox" id="lpg_bad_alarm" onchange="lpgToggle(this);runLpgGuide()"><label for="lpg_bad_alarm">未設置氣體漏氣警報器</label></div>
+          <div class="cb-item"><input type="checkbox" id="lpg_bad_shutoff" onchange="lpgToggle(this);runLpgGuide()"><label for="lpg_bad_shutoff">未設置緊急遮斷裝置</label></div>
+          <div class="cb-item"><input type="checkbox" id="lpg_bad_sun" onchange="lpgToggle(this);runLpgGuide()"><label for="lpg_bad_sun">無防止日光直射措施</label></div>
+          <div class="cb-item"><input type="checkbox" id="lpg_bad_extinguisher" onchange="lpgToggle(this);runLpgGuide()"><label for="lpg_bad_extinguisher">未設置滅火器</label></div>
         </div>
+      </div>
+      <div class="form-group span-full">
+        <label>瓦斯行容器管理資料、申報及安全技術人員缺失（消防法第15-2條）</label>
+        <div class="cb-group">
+          <div class="cb-item"><input type="checkbox" id="lpg_admin_no_tech" onchange="lpgToggle(this);runLpgGuide()"><label for="lpg_admin_no_tech">未設置安全技術人員</label></div>
+          <div class="cb-item"><input type="checkbox" id="lpg_admin_fill_false" onchange="lpgToggle(this);runLpgGuide()"><label for="lpg_admin_fill_false">灌裝證明等資料登載不實</label></div>
+          <div class="cb-item"><input type="checkbox" id="lpg_admin_storage_false" onchange="lpgToggle(this);runLpgGuide()"><label for="lpg_admin_storage_false">容器儲存場所管理資料登載不實</label></div>
+          <div class="cb-item"><input type="checkbox" id="lpg_admin_user_false" onchange="lpgToggle(this);runLpgGuide()"><label for="lpg_admin_user_false">用戶資料登載不實</label></div>
+          <div class="cb-item"><input type="checkbox" id="lpg_admin_no_insurance" onchange="lpgToggle(this);runLpgGuide()"><label for="lpg_admin_no_insurance">未投保公共意外責任保險</label></div>
+          <div class="cb-item"><input type="checkbox" id="lpg_admin_no_report" onchange="lpgToggle(this);runLpgGuide()"><label for="lpg_admin_no_report">零售業者4月、10月未定期申報</label></div>
+          <div class="cb-item"><input type="checkbox" id="lpg_admin_no_retrain" onchange="lpgToggle(this);runLpgGuide()"><label for="lpg_admin_no_retrain">安全技術人員未複訓</label></div>
+          <div class="cb-item"><input type="checkbox" id="lpg_admin_cert_bad" onchange="lpgToggle(this);runLpgGuide()"><label for="lpg_admin_cert_bad">瓦斯行證書核發、有效期間、變更、廢止未依規定</label></div>
+        </div>
+      </div>
+      <div class="form-group span-full">
+        <label>鋼瓶本身問題（預設消防法第15-4條 + 第42-2條）</label>
+        <div class="cb-group">
+          <div class="cb-item"><input type="checkbox" id="lpg_cyl_expired" onchange="lpgToggle(this);runLpgGuide()"><label for="lpg_cyl_expired">鋼瓶逾期未檢驗</label></div>
+          <div class="cb-item"><input type="checkbox" id="lpg_cyl_no_mark" onchange="lpgToggle(this);runLpgGuide()"><label for="lpg_cyl_no_mark">鋼瓶未有合格標示</label></div>
+          <div class="cb-item"><input type="checkbox" id="lpg_cyl_mark_altered" onchange="lpgToggle(this);runLpgGuide()"><label for="lpg_cyl_mark_altered">合格標識遭塗改</label></div>
+          <div class="cb-item"><input type="checkbox" id="lpg_cyl_mark_dirty" onchange="lpgToggle(this);runLpgGuide()"><label for="lpg_cyl_mark_dirty">合格標識污損</label></div>
+          <div class="cb-item"><input type="checkbox" id="lpg_cyl_over_age" onchange="lpgToggle(this);runLpgGuide()"><label for="lpg_cyl_over_age">容器逾使用年限未汰換</label></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="lpg_mfg_date">製造日期（可填民國或西元）</label>
+        <input type="text" id="lpg_mfg_date" placeholder="例：95.05 或 2006-05-01" oninput="runLpgGuide()">
+      </div>
+      <div class="form-group">
+        <label for="lpg_next_date">下次檢驗期限</label>
+        <input type="text" id="lpg_next_date" placeholder="例：114.06 或 2025-06-30" oninput="runLpgGuide()">
+      </div>
+      <div class="form-group">
+        <label for="lpg_mark_date">合格標示日期</label>
+        <input type="text" id="lpg_mark_date" placeholder="例：109.06 或 2020-06-01" oninput="runLpgGuide()">
       </div>
       <div class="form-group span-full">
         <label for="lpg_place">違規地點或場所名稱（產生文字用，可選填）</label>
@@ -367,12 +471,24 @@ input[type=number]:focus{outline:none;border-color:#2d6a9f;box-shadow:0 0 0 3px 
   <div class="card" id="commentBoard">
     <div class="card-title">💬 意見回饋</div>
     <div class="alert-info" style="margin-bottom:14px">
-      意見回饋已集中到主頁留言板管理。回報時請註明「舉發單填寫助手」及問題位置，方便後續追蹤與修正。
+      請在留言中註明「舉發單填寫助手」、問題位置與希望修正的內容，避免放入個資或案件敏感資料。
     </div>
-    <div class="btn-row">
-      <a class="btn btn-cpy" href="index.html">回主頁留言板</a>
-      <a class="btn btn-rst" href="https://github.com/ahdaq002-cyber/weiwu119v1/discussions/new/choose" target="_blank" rel="noopener">到 GitHub 留言</a>
-    </div>
+    <script src="https://giscus.app/client.js"
+            data-repo="ahdaq002-cyber/weiwu119"
+            data-repo-id="R_kgDOSTyI6A"
+            data-category="General"
+            data-category-id="DIC_kwDOSTyI6M4C8UKZ"
+            data-mapping="specific"
+            data-term="舉發單填寫助手改進留言板"
+            data-strict="0"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-theme="preferred_color_scheme"
+            data-lang="zh-TW"
+            crossorigin="anonymous"
+            async>
+    </script>
   </div>
 
 </div>
@@ -2447,19 +2563,138 @@ function resetFwGuide(){
 const LPG_STATUS_LABEL={active:'使用中',reserve:'備用或未連接',empty:'空瓶或殘氣瓶'};
 const LPG_SAFETY_TEXT={
   lpg_bad_basement:'容器置於地下室',
+  lpg_bad_vent:'安裝於室內未設置或未維持防止氣體滯留之有效通風裝置',
   lpg_bad_sign:'無嚴禁煙火標示',
   lpg_bad_fix:'使用或備用容器未直立放置或未有防止傾倒之固定措施',
-  lpg_bad_alarm:'未設置氣體漏氣警報器'
+  lpg_bad_alarm:'未設置氣體漏氣警報器',
+  lpg_bad_shutoff:'未設置自動緊急遮斷裝置',
+  lpg_bad_sun:'無防止日光直射措施',
+  lpg_bad_extinguisher:'未設置滅火器'
+};
+const LPG_ADMIN_IDS=[
+  'lpg_admin_no_tech','lpg_admin_fill_false','lpg_admin_storage_false','lpg_admin_user_false',
+  'lpg_admin_no_insurance','lpg_admin_no_report','lpg_admin_no_retrain','lpg_admin_cert_bad'
+];
+const LPG_CYL_IDS=['lpg_cyl_expired','lpg_cyl_no_mark','lpg_cyl_mark_altered','lpg_cyl_mark_dirty','lpg_cyl_over_age'];
+const LPG_FILL_IDS=['lpg_fill_expired','lpg_fill_no_mark','lpg_fill_bad_body'];
+const LPG_CHECK_IDS=['lpg_storage_missing','lpg_supplier_no_gas',...Object.keys(LPG_SAFETY_TEXT),...LPG_ADMIN_IDS,...LPG_CYL_IDS,...LPG_FILL_IDS];
+
+const LPG_RULES={
+  storage_missing:{
+    category:'一五條安全管理違規：未設置於儲存場所',
+    violation:'消防法第15條', penalty:'消防法第42條', management:'管理辦法第71條', days:30,
+    legacy:{mode:'retail',id:'rtol'},
+    evidence:['拍攝現場容器存放位置、數量及場所全景。','確認該處是否為核准儲存場所或容器保管室。'],
+    notes:['第71條處理的是未依規定存放於儲存場所；若同時超量，另檢討第73條。'],
+    text:c=>`一、稽查發現，${c.place}有液化石油氣容器${c.parts}，未依規定存放於申請核准之儲存場所或容器保管室。\n二、上開情形違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第71條規定。`
+  },
+  over_storage:{
+    category:'瓦斯行超量儲存',
+    violation:'消防法第15條', penalty:'消防法第42條', management:'管理辦法第73條', days:30,
+    legacy:{mode:'retail',id:'rol'},
+    evidence:['拍攝每支容器規格、數量及全景。','確認場所性質為辦公處所、瓦斯行、煤氣行或液化石油氣販賣場所。','確認是否設有合格容器保管室及核准範圍。'],
+    text:c=>`一、稽查發現，${c.place}儲放液化石油氣容器${c.parts}，合計${c.amount}公斤，超過${c.placeType}法定上限${c.limit}公斤之規定（超出${c.over}公斤）。\n二、上開液化石油氣儲放量逾規定上限，違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第73條規定。`
+  },
+  reserve_over:{
+    category:'第73條備用量超量',
+    violation:'消防法第15條', penalty:'消防法第42條', management:'管理辦法第73條', days:30,
+    legacy:{mode:'serial',id:'sre'},
+    evidence:['拍攝備用或未連接鋼瓶數量、規格及放置位置。','確認使用型態為家庭或營業使用，並區分使用中與備用容器。'],
+    notes:['若現場為辦公室、辦公處所，依本次會議資料以40公斤檢討。'],
+    text:c=>`一、稽查發現，${c.place}存放${c.parts}，合計${c.amount}公斤，超過${c.placeType}法定上限${c.limit}公斤之規定（超出${c.over}公斤）。\n二、上開情形違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第73條規定。`
+  },
+  serial_over:{
+    category:'串接營業場所使用量超過上限',
+    violation:'消防法第15條', penalty:'消防法第42條', management:'管理辦法第73-1條', days:30,
+    legacy:{mode:'serial',id:'sol'},
+    evidence:['拍攝串接配管、供應設備、容器規格及數量。','確認同一場所串接使用量是否可依防火區劃分別計算；分別計算須查明是否有無開口且具1小時以上防火時效之牆壁或樓地板區劃。'],
+    notes:['同一防火區劃內，即使分多條管線或混合單瓶供氣，仍可能需合併計算使用量。'],
+    text:c=>`一、稽查發現，${c.place}之容器串接使用場所，現場液化石油氣串接使用量計${c.amount}公斤，超過法定上限1000公斤之規定（超出${c.over}公斤）。\n二、上開情形違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第73-1條規定。`
+  },
+  serial_safety:{
+    category:'串接營業場所違反安全管理',
+    violation:'消防法第15條', penalty:'消防法第42條', management:'管理辦法第73-1條', days:90,
+    legacy:{mode:'serial',id:'sit'},
+    evidence:['拍攝串接設備全景、缺失項目近照、容器數量及規格。','確認串接使用量級距、是否達80公斤以上、是否超過120公斤或300公斤。','確認是否有瓦斯行不得供氣情形，但不得未經判斷即自動認定瓦斯行與串接場所皆違規。','若缺失為通風，請拍攝機械通風設備運轉狀態，或自然通風口位置、開口高度及是否通常保持開啟。'],
+    notes:['滅火器項目請依檢查紀錄表及現場適用規定核對後再列入舉發文字。','同一防火區劃內分別連接或混合單瓶供氣時，仍應評估是否合併計入串接使用量。'],
+    text:c=>`一、稽查發現，${c.place}之容器串接使用場所，現場液化石油氣串接使用量計${c.amount}公斤，供應設備安全設施或管理有下列缺失：${c.defects}。\n二、上開情形違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第73-1條規定。`
+  },
+  new_building_indoor:{
+    category:'新建建築物容器位置不符',
+    violation:'消防法第15條', penalty:'消防法第42條', management:'管理辦法第73-2條', days:30,
+    legacy:{mode:'serial',id:'spos'},
+    evidence:['確認建築執照掛件日期。','拍攝容器放置位置，確認是否屬室內或地下室。','拍攝容器規格及數量，確認使用量是否逾10公斤。'],
+    notes:['新建建築物使用瓦斯本身不是違規，重點是容器位置與使用量。'],
+    text:c=>`一、稽查發現，${c.place}屬111年7月1日後申請建築執照掛件之新建建築物，現場液化石油氣容器設置於${c.position}，使用量合計${c.amount}公斤，已逾10公斤。\n二、上開情形係容器設置位置不符規定，違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第73-2條規定。`
+  },
+  illegal_fill_expired:{
+    category:'違規灌裝逾期容器',
+    violation:'消防法第15條', penalty:'消防法第42條', management:c=>`管理辦法第${c.article}條`, days:30,
+    legacy:{mode:'fill',id:'fe'},
+    evidence:['拍攝分裝或灌裝行為、灌裝臺位置、容器號碼及下次檢驗期限。','確認是正在灌裝、已灌裝，或僅單純查獲逾期鋼瓶。','若在分裝場附近發現未充填之逾期容器，須查明是否已有待檢驗標示或檢驗紀錄。'],
+    notes:['只有查獲違規灌裝行為時才用消防法第15條、第42條；單純鋼瓶本身逾期預設用第15-4條、第42-2條。','檢驗合格標示與瓶肩戳記不一致時，應先查明合格標示是否遭移動；未移動者原則以合格標示日期判斷，已移動者再回歸瓶肩戳記。'],
+    text:c=>`一、稽查發現，${c.place}有分裝或灌裝逾期未檢驗液化石油氣容器之情形，容器明細為${c.parts}。\n二、上開情形屬違反灌裝安全管理規定，違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第${c.article}條規定。`
+  },
+  illegal_fill_no_mark:{
+    category:'違規灌裝未標示商號或電話容器',
+    violation:'消防法第15條', penalty:'消防法第42條', management:'管理辦法第78條', days:30,
+    evidence:['拍攝灌裝臺、容器外觀、未標示或未檢附資料之位置。','確認容器是否未標示或未檢附送驗販賣場所商號、電話等資料。','確認已有灌氣事實；若僅置於灌裝臺或分裝場附近，應先補查，不宜直接開單。'],
+    text:c=>`一、稽查發現，${c.place}將未標示或未檢附合格販賣場所商號、電話等資料之液化石油氣容器予以灌氣，容器明細為${c.parts}。\n二、上開情形違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第78條規定。`
+  },
+  illegal_fill_bad_body:{
+    category:'違規灌裝腐蝕、變形或無法直立容器',
+    violation:'消防法第15條', penalty:'消防法第42條', management:'管理辦法第78條', days:30,
+    evidence:['拍攝容器腐蝕、變形或無法直立狀態。','拍攝已有灌氣事實，或分裝場未執行灌裝前確認事項即予灌氣之事證。'],
+    notes:['腐蝕、變形或無法直立容器若僅置於灌裝臺、尚未灌氣，依消防署函釋尚不宜直接認定管理辦法第78條違規。'],
+    text:c=>`一、稽查發現，${c.place}將外觀腐蝕、變形或無法直立之液化石油氣容器予以灌氣，或未執行灌裝前確認事項即予灌氣，容器明細為${c.parts}。\n二、上開情形違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第78條規定。`
+  },
+  cylinder_problem:{
+    category:'瓦斯鋼瓶逾期、標示或使用年限問題',
+    violation:'消防法第15-4條第1項', penalty:'消防法第42-2條', management:'無；本項為鋼瓶本身問題，勿與管理辦法第77條或第78條灌裝行為混用', days:30,
+    legacy:{mode:'retail',id:'rex'},
+    evidence:['拍攝鋼瓶容器號碼、下次檢驗期限、合格標示或污損塗改處。','拍攝容器數量、規格及現場仍繼續使用或儲放情形。','若在分裝場或灌裝臺附近發現逾期容器，須補查是否為待檢驗容器、是否已有待檢標示或相關紀錄。'],
+    notes:['若現場另有正在或已經違規灌裝問題容器，才另依消防法第15條、第42條及管理辦法第77條或第78條檢討。','合格標示日期、瓶肩戳記或其他標識不一致時，先釐清標示是否移動、污損或遭塗改，再決定是否可直接開單。'],
+    text:c=>`一、稽查發現，${c.place}有液化石油氣容器${c.problems}，容器明細為${c.parts}，仍繼續使用或儲放。\n二、上開情形違反消防法第15-4條第1項規定。`
+  },
+  truck_road:{
+    category:'小貨車違規存放瓦斯鋼瓶：車輛停放於馬路旁',
+    violation:'消防法第15條', penalty:'消防法第42條', management:'管理辦法第71條', days:30,
+    legacy:{mode:'retail',id:'rtol'},
+    evidence:['錄影15分鐘並保存連續畫面。','拍攝車牌、停放位置、鋼瓶數量及規格。'],
+    text:c=>`一、稽查發現，${c.place}有小貨車${c.plateText}載放液化石油氣容器${c.parts}，合計${c.amount}公斤，車輛長時間停放於馬路旁，未依規定將容器存放於儲存場所。\n二、現場已錄影${c.videoMinutes}分鐘，未見車輛駛離。\n三、上開情形違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第71條規定。`
+  },
+  truck_business_storage:{
+    category:'小貨車違規存放瓦斯鋼瓶：車輛停放於營業場所',
+    violation:'消防法第15條', penalty:'消防法第42條', management:'管理辦法第71條', days:30,
+    legacy:{mode:'retail',id:'rtol'},
+    evidence:['錄影15分鐘並保存連續畫面。','確認車輛停放地是否屬營業場所、瓦斯行或辦公處所。','確認是否為核准儲存場所或容器保管室。'],
+    text:c=>`一、稽查發現，${c.place}有小貨車${c.plateText}載放液化石油氣容器${c.parts}，合計${c.amount}公斤，車輛停放於營業場所，且未依規定將容器存放於儲存場所或容器保管室。\n二、現場已錄影${c.videoMinutes}分鐘。\n三、上開情形違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第71條規定。`
+  },
+  admin_no_tech:{category:'瓦斯行安全技術人員缺失',violation:'消防法第15-2條第1項',penalty:'消防法第42-3條',management:'消防法第15-2條授權之安全技術人員管理規定',days:90,evidence:['查調安管系統、安全技術人員設置資料及證書。'],text:c=>`一、稽查發現，${c.place}未依規定設置可燃性高壓氣體安全技術人員。\n二、上開情形違反消防法第15-2條第1項規定。`},
+  admin_fill_false:{category:'瓦斯行資料登載不實',violation:'消防法第15-2條第1項',penalty:'消防法第42-3條',management:'消防法第15-2條授權之灌裝證明資料管理規定',days:30,evidence:['比對灌裝證明、容器資料、分裝紀錄及安管系統登載內容。'],text:c=>`一、稽查發現，${c.place}之灌裝證明等資料有登載不實情形。\n二、上開情形違反消防法第15-2條第1項規定。`},
+  admin_storage_false:{category:'瓦斯行資料登載不實',violation:'消防法第15-2條第1項',penalty:'消防法第42-4條',management:'消防法第15-2條授權之容器儲存場所管理資料規定',days:30,evidence:['比對儲存場所證明書、平面配置圖、契約及安管系統資料。'],text:c=>`一、稽查發現，${c.place}之容器儲存場所管理資料有登載不實情形。\n二、上開情形違反消防法第15-2條第1項規定。`},
+  admin_user_false:{category:'瓦斯行資料登載不實',violation:'消防法第15-2條第1項',penalty:'消防法第42-4條',management:'消防法第15-2條授權之用戶資料管理規定',days:30,evidence:['比對用戶資料、供氣紀錄、現場使用者及安管系統資料。'],text:c=>`一、稽查發現，${c.place}之用戶資料有登載不實情形。\n二、上開情形違反消防法第15-2條第1項規定。`},
+  admin_no_insurance:{category:'瓦斯行公共意外責任保險缺失',violation:'消防法第15-2條第1項',penalty:'消防法第42-4條',management:'消防法第15-2條授權之公共意外責任保險證明文件規定',days:30,evidence:['查調有效保險證明、保單期間、保險標的及安管系統資料。'],text:c=>`一、稽查發現，${c.place}未依規定投保公共意外責任保險或未備置有效證明文件。\n二、上開情形違反消防法第15-2條第1項規定。`},
+  admin_no_report:{category:'瓦斯行容器管理資料未定期申報',violation:'消防法第15-2條第2項',penalty:'消防法第42-4條',management:'消防法第15-2條授權之零售業者資料申報規定',days:30,evidence:['查調4月、10月定期申報紀錄及安管系統收件狀態。'],text:c=>`一、稽查發現，${c.place}未於4月或10月依規定辦理零售業者資料定期申報。\n二、上開情形違反消防法第15-2條第2項規定。`},
+  admin_no_retrain:{category:'安全技術人員未複訓',violation:'消防法第15-2條第3項',penalty:'消防法第42-4條',management:'消防法第15-2條授權之安全技術人員複訓規定',days:90,evidence:['查調安全技術人員訓練及複訓證明、到期日及安管系統資料。'],text:c=>`一、稽查發現，${c.place}之安全技術人員任職期間未依規定定期接受複訓。\n二、上開情形違反消防法第15-2條第3項規定。`},
+  admin_cert_bad:{category:'瓦斯行證書管理缺失',violation:'消防法第15-2條第4項',penalty:'消防法第42-3條',management:'消防法第15-2條授權之證書核發、有效期間、變更及廢止規定',days:30,evidence:['查調瓦斯行證書、有效期間、變更申請及廢止資料。'],text:c=>`一、稽查發現，${c.place}之瓦斯行證書核發、有效期間、變更或廢止事項未依規定辦理。\n二、上開情形違反消防法第15-2條第4項規定。`}
 };
 
 function lpgToggle(el){el.closest('.cb-item')?.classList.toggle('on',el.checked);}
 function lpgNum(v){const n=parseFloat(v);return Number.isFinite(n)?n:0;}
 function lpgFmt(n){return fwFmt(n,2)||'0';}
+function lpgTodayInput(){
+  const d=new Date();
+  d.setMinutes(d.getMinutes()-d.getTimezoneOffset());
+  return d.toISOString().slice(0,10);
+}
 function initLpgGuide(){
   const rows=document.getElementById('lpgRows');
   if(rows&&!rows.children.length){
     addLpgRow(20,3,'active');
   }
+  const issue=document.getElementById('lpg_issue_date');
+  if(issue&&!issue.value)issue.value=lpgTodayInput();
   runLpgGuide();
 }
 function addLpgRow(kg='',count='',status='active'){
@@ -2536,14 +2771,111 @@ function lpgBuildingText(v){
   return '建築物適用狀態尚待確認';
 }
 function lpgUseText(v){
+  if(v==='office')return '辦公室、辦公處所';
   if(v==='home')return '家庭使用';
   if(v==='business')return '營業使用';
-  if(v==='vendor')return '瓦斯行或販賣場所';
+  if(v==='factory')return '工廠製程使用';
+  if(v==='vendor')return '瓦斯行、煤氣行或液化石油氣販賣場所';
   return '使用型態尚待確認';
+}
+function lpgChecked(id){return !!document.getElementById(id)?.checked;}
+function lpgUnique(arr){return [...new Set(arr.filter(Boolean))];}
+function lpgGetIssueDate(){
+  const raw=document.getElementById('lpg_issue_date')?.value;
+  if(raw)return new Date(raw+'T00:00:00');
+  return new Date(lpgTodayInput()+'T00:00:00');
+}
+function lpgAddDays(d,days){
+  const t=new Date(d.getTime());
+  t.setDate(t.getDate()+days);
+  return t;
+}
+function lpgROC(d){return `${d.getFullYear()-1911}年${d.getMonth()+1}月${d.getDate()}日`;}
+function lpgDeadlineSentence(days,issueDate){
+  if(!days)return '限期改善天數待確認。';
+  return `限於${lpgROC(lpgAddDays(issueDate,days))}前改善完畢。`;
+}
+function lpgParseDate(raw,opt={}){
+  if(!raw)return null;
+  const nums=String(raw).trim().match(/\d+/g);
+  if(!nums||nums.length<2)return null;
+  let y=parseInt(nums[0],10);
+  if(y<1911)y+=1911;
+  const m=Math.max(1,Math.min(12,parseInt(nums[1],10)));
+  let day=nums[2]?parseInt(nums[2],10):(opt.endOfMonth?new Date(y,m,0).getDate():1);
+  day=Math.max(1,Math.min(new Date(y,m,0).getDate(),day));
+  const d=new Date(y,m-1,day);
+  return Number.isNaN(d.getTime())?null:d;
+}
+function lpgYearsBetween(a,b){
+  let y=b.getFullYear()-a.getFullYear();
+  const before=b.getMonth()<a.getMonth()||(b.getMonth()===a.getMonth()&&b.getDate()<a.getDate());
+  return before?y-1:y;
+}
+function lpgAddYears(a,years){
+  const d=new Date(a.getTime());
+  d.setFullYear(d.getFullYear()+years);
+  return d;
+}
+function lpgCylinderDateAssessment(issueDate){
+  const mfg=lpgParseDate(document.getElementById('lpg_mfg_date')?.value);
+  const next=lpgParseDate(document.getElementById('lpg_next_date')?.value,{endOfMonth:true});
+  const mark=lpgParseDate(document.getElementById('lpg_mark_date')?.value,{endOfMonth:true});
+  const notes=[],autoIds=[];
+  const today=new Date(issueDate.getFullYear(),issueDate.getMonth(),issueDate.getDate());
+  if(mfg){
+    const age=lpgYearsBetween(mfg,today);
+    if(age>30){
+      autoIds.push('lpg_cyl_over_age');
+      notes.push(`製造日期推算容器已出廠${age}年，超過30年，不可使用，應辦理壓毀。`);
+    }else if(age>20){
+      notes.push(`製造日期推算容器已出廠${age}年，檢驗週期應為每2年1次。`);
+    }else{
+      notes.push(`製造日期推算容器出廠未逾20年，檢驗週期原則為每5年1次。`);
+    }
+  }
+  if(next){
+    if(next<today){
+      autoIds.push('lpg_cyl_expired');
+      notes.push(`下次檢驗期限為${lpgROC(next)}，已逾期。`);
+    }else{
+      notes.push(`下次檢驗期限為${lpgROC(next)}，尚未逾期。`);
+    }
+  }
+  if(mark&&mfg){
+    const ageAtMark=lpgYearsBetween(mfg,mark);
+    const interval=ageAtMark>20?2:5;
+    const due=lpgAddYears(mark,interval);
+    if(due<today)autoIds.push('lpg_cyl_expired');
+    notes.push(`依合格標示日期及製造日期推估，本次檢驗週期為${interval}年，推估期限為${lpgROC(due)}。`);
+  }else if(mark&&!mfg){
+    notes.push('已填合格標示日期，但未填製造日期；無法穩定判斷應採2年或5年檢驗週期。');
+  }
+  return {notes,autoIds:lpgUnique(autoIds)};
+}
+function lpgBuildIssue(ruleId,ctx={}){
+  const rule=LPG_RULES[ruleId];
+  const management=typeof rule.management==='function'?rule.management(ctx):rule.management;
+  return {
+    ...rule,
+    id:ruleId,
+    management,
+    text:typeof rule.text==='function'?rule.text(ctx):rule.text,
+    evidence:rule.evidence||[],
+    notes:rule.notes||[],
+  };
+}
+function lpgOverLimit(use,basisAmount){
+  if(use==='office'||use==='home')return {limit:40,label:use==='office'?'辦公室、辦公處所':'家庭使用場所'};
+  if(use==='vendor')return {limit:128,label:'瓦斯行、煤氣行或液化石油氣販賣場所'};
+  if(use==='business')return {limit:80,label:'營業使用場所'};
+  if(use==='factory')return {limit:null,label:'工廠製程使用'};
+  return {limit:null,label:'使用型態尚待確認'};
 }
 function runLpgGuide(){
   const result=document.getElementById('lpgGuideResult');if(!result)return;
   const rows=collectLpgRows();
+  const caseKind=document.getElementById('lpg_case_kind')?.value||'auto';
   const use=document.getElementById('lpg_use')?.value||'business';
   const building=document.getElementById('lpg_building')?.value||'existing';
   const loc=document.getElementById('lpg_location')?.value||'indoor';
@@ -2552,112 +2884,226 @@ function runLpgGuide(){
   const basis=document.getElementById('lpg_count_basis')?.value||'total';
   const place=document.getElementById('lpg_place')?.value.trim()||'現場';
   const note=document.getElementById('lpg_note')?.value.trim()||'';
+  const truckPlace=document.getElementById('lpg_truck_place')?.value||'none';
+  const truckPlate=document.getElementById('lpg_truck_plate')?.value.trim()||'';
+  const videoMinutes=document.getElementById('lpg_video_minutes')?.value||'15';
+  const fillArticleSel=document.getElementById('lpg_fill_article')?.value||'78';
+  const fillFact=document.getElementById('lpg_fill_fact')?.value||'confirmed';
+  const supplierNoGas=document.getElementById('lpg_supplier_no_gas')?.value||'unknown';
+  const issueDate=lpgGetIssueDate();
   const active=rows.filter(r=>r.status==='active').reduce((s,r)=>s+r.total,0);
   const reserve=rows.filter(r=>r.status==='reserve').reduce((s,r)=>s+r.total,0);
   const nonEmpty=rows.filter(r=>r.status!=='empty').reduce((s,r)=>s+r.total,0);
   const empty=rows.filter(r=>r.status==='empty').reduce((s,r)=>s+r.total,0);
   const allParts=lpgParts(rows,r=>r.status!=='empty');
-  const activeParts=lpgParts(rows,r=>r.status==='active');
   const reserveParts=lpgParts(rows,r=>r.status==='reserve');
-  const safetyIds=Object.keys(LPG_SAFETY_TEXT).filter(id=>document.getElementById(id)?.checked);
+  const safetyIds=Object.keys(LPG_SAFETY_TEXT).filter(id=>lpgChecked(id));
   if(loc==='basement'&&!document.getElementById('lpg_bad_basement')?.checked){
     safetyIds.push('lpg_bad_basement');
   }
 
   const issues=[];
-  const confirms=[];
-  const facts=[];
+  const confirms=[], statusBlocks=[];
+  const evidence=[], notes=[];
   let statusHtml='';
+  const commonCtx={
+    place,
+    parts:allParts,
+    amount:lpgFmt(nonEmpty),
+    videoMinutes,
+    plateText:truckPlate?`（車號${truckPlate}）`:'',
+  };
+  function addIssue(id,ctx={}){
+    if(issues.some(x=>x.id===id))return;
+    const issue=lpgBuildIssue(id,{...commonCtx,...ctx});
+    issues.push(issue);
+    evidence.push(...issue.evidence);
+    notes.push(...issue.notes);
+  }
 
-  const limit=use==='home'?40:(use==='business'?80:null);
+  const limitInfo=lpgOverLimit(use);
   const limitAmount=basis==='reserve'?reserve:nonEmpty;
-  if(use==='vendor'){
-    if(nonEmpty>128){
-      issues.push({id:'rol',mode:'retail'});
-      facts.push(`一、稽查發現，${place}儲放液化石油氣容器${allParts}，合計${lpgFmt(nonEmpty)}公斤，超過液化石油氣販賣場所總儲氣量128公斤之規定。\n二、違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第73條第1項規定。`);
-      statusHtml+=lpgStatusBlock('第73條販賣場所總儲氣量','bad',`瓦斯行或販賣場所現場非空瓶合計${lpgFmt(nonEmpty)}公斤，已超過128公斤。`,'若超過部分設有容器保管室且總量未逾1000公斤，應另依第73條但書檢討。');
-    }else{
-      statusHtml+=lpgStatusBlock('第73條販賣場所總儲氣量','ok',`瓦斯行或販賣場所現場非空瓶合計${lpgFmt(nonEmpty)}公斤，未超過128公斤。`);
-    }
-  }else if(limit){
-    const label=use==='home'?'家庭':'營業';
-    if(limitAmount>limit){
-      issues.push({id:'sre',mode:'serial'});
-      const basisText=basis==='reserve'?`備用或未連接鋼瓶${reserveParts}`:`液化石油氣容器${allParts}`;
-      facts.push(`一、稽查發現，${place}供${label}使用，現場存放${basisText}，合計${lpgFmt(limitAmount)}公斤，超過${label}使用場所液化石油氣備用量${limit}公斤之規定（超出${lpgFmt(limitAmount-limit)}公斤）。\n二、違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第73條第3項規定。`);
-      statusHtml+=lpgStatusBlock('第73條備用量','bad',`${label}使用的判斷量為${lpgFmt(limitAmount)}公斤，已超過${limit}公斤。`,basis==='total'?'目前以現場非空瓶總量判斷；如要只算備用鋼瓶，可切換判斷範圍。':'目前僅以備用或未連接鋼瓶判斷。');
-    }else{
-      statusHtml+=lpgStatusBlock('第73條備用量','ok',`${label}使用的判斷量為${lpgFmt(limitAmount)}公斤，未超過${limit}公斤。`,basis==='total'?'例如營業場所60公斤，未超過80公斤，不能開成備用量超量。':'目前僅以備用或未連接鋼瓶判斷。');
-    }
+  if(limitInfo.limit&&limitAmount>limitInfo.limit){
+    const ctx={placeType:limitInfo.label,limit:limitInfo.limit,amount:lpgFmt(limitAmount),over:lpgFmt(limitAmount-limitInfo.limit),parts:basis==='reserve'?reserveParts:allParts};
+    addIssue(use==='vendor'||use==='office'?'over_storage':'reserve_over',ctx);
+    statusBlocks.push(lpgStatusBlock('第73條儲放量判斷','bad',`${limitInfo.label}判斷量為${lpgFmt(limitAmount)}公斤，已超過${limitInfo.limit}公斤。`,basis==='reserve'?'目前僅以備用或未連接鋼瓶判斷。':'目前以現場非空瓶總量判斷。'));
+  }else if(limitInfo.limit){
+    statusBlocks.push(lpgStatusBlock('第73條儲放量判斷','ok',`${limitInfo.label}判斷量為${lpgFmt(limitAmount)}公斤，未超過${limitInfo.limit}公斤。`));
   }else{
     confirms.push('尚未確認家庭、營業或瓦斯行身分，無法穩定判斷第73條上限。');
-    statusHtml+=lpgStatusBlock('第73條備用量','warn','使用型態尚未確認。','請先確認是家庭使用、營業使用，或瓦斯行/販賣場所。');
+    statusBlocks.push(lpgStatusBlock('第73條儲放量判斷','warn','使用型態尚未確認。','請先確認是辦公處所、家庭使用、營業使用，或瓦斯行/販賣場所。'));
+  }
+
+  if(lpgChecked('lpg_storage_missing'))addIssue('storage_missing');
+  if(truckPlace==='road'){
+    addIssue('truck_road',{amount:lpgFmt(nonEmpty)});
+  }else if(truckPlace==='business'){
+    if(limitInfo.limit&&nonEmpty>limitInfo.limit){
+      addIssue('over_storage',{placeType:limitInfo.label,limit:limitInfo.limit,amount:lpgFmt(nonEmpty),over:lpgFmt(nonEmpty-limitInfo.limit),parts:allParts});
+    }else if(lpgChecked('lpg_storage_missing')){
+      addIssue('truck_business_storage',{amount:lpgFmt(nonEmpty)});
+    }else{
+      confirms.push('小貨車停放於營業場所時，請確認是否超量；若未超量，仍需確認是否屬未依規定存放於儲存場所或容器保管室。');
+    }
+    evidence.push('小貨車停放於營業場所時，仍建議錄影15分鐘並拍攝車牌、鋼瓶數量及規格。');
   }
 
   const isIndoor=loc==='basement'||loc==='indoor'||(loc!=='outdoor'&&indoorDef==='yes');
   const indoorUnknown=loc==='unknown'||indoorDef==='unknown';
   if(building==='new'){
     if(nonEmpty>10&&isIndoor){
-      issues.push({id:'spos',mode:'serial'});
-      facts.push(`一、稽查發現，${place}屬${lpgBuildingText(building)}，現場液化石油氣容器設置於${loc==='basement'?'地下室':'室內'}，容器明細為${allParts}，使用量合計${lpgFmt(nonEmpty)}公斤，已逾10公斤。\n二、上開情形係容器設置位置不符規定，違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第73-2條規定。`);
-      statusHtml+=lpgStatusBlock('第73-2條新建建築物容器位置','bad',`新建建築物、容器在室內、使用量${lpgFmt(nonEmpty)}公斤，已逾10公斤。`,'這不是禁止使用瓦斯，而是容器位置應設於室外或屋外。');
+      addIssue('new_building_indoor',{position:loc==='basement'?'地下室':'室內',amount:lpgFmt(nonEmpty)});
+      statusBlocks.push(lpgStatusBlock('第73-2條新建建築物容器位置','bad',`新建建築物、容器在室內、使用量${lpgFmt(nonEmpty)}公斤，已逾10公斤。`,'這不是禁止使用瓦斯，而是容器位置應設於室外或屋外。'));
     }else if(nonEmpty<=10){
-      statusHtml+=lpgStatusBlock('第73-2條新建建築物容器位置','ok',`使用量${lpgFmt(nonEmpty)}公斤，未超過10公斤，不受第73-2條第1項位置限制。`);
+      statusBlocks.push(lpgStatusBlock('第73-2條新建建築物容器位置','ok',`使用量${lpgFmt(nonEmpty)}公斤，未超過10公斤，不受第73-2條第1項位置限制。`));
     }else if(!isIndoor&&!indoorUnknown){
-      statusHtml+=lpgStatusBlock('第73-2條新建建築物容器位置','ok',`使用量${lpgFmt(nonEmpty)}公斤，但容器設於室外或屋外，不以第73-2條判定室內放置違規。`);
+      statusBlocks.push(lpgStatusBlock('第73-2條新建建築物容器位置','ok',`使用量${lpgFmt(nonEmpty)}公斤，但容器設於室外或屋外，不以第73-2條判定室內放置違規。`));
     }else{
       confirms.push('容器放置處是否屬第8條所稱室內尚未確認。');
-      statusHtml+=lpgStatusBlock('第73-2條新建建築物容器位置','warn','新建建築物且使用量超過10公斤，但容器位置或室內定義尚未確認。','請確認放置處是否具有頂蓋且三面以上有牆，或無頂蓋且四周有牆。');
+      statusBlocks.push(lpgStatusBlock('第73-2條新建建築物容器位置','warn','新建建築物且使用量超過10公斤，但容器位置或室內定義尚未確認。','請確認放置處是否具有頂蓋且三面以上有牆，或無頂蓋且四周有牆。'));
     }
   }else if(building==='unknown'){
     if(nonEmpty>10&&isIndoor){
       confirms.push('液化石油氣容器在室內且超過10公斤，需確認是否為111年7月1日後申請建築執照掛件的新建建築物。');
-      statusHtml+=lpgStatusBlock('第73-2條新建建築物容器位置','warn',`容器在室內且使用量${lpgFmt(nonEmpty)}公斤，已逾10公斤，但建築物適用狀態尚未確認。`);
+      statusBlocks.push(lpgStatusBlock('第73-2條新建建築物容器位置','warn',`容器在室內且使用量${lpgFmt(nonEmpty)}公斤，已逾10公斤，但建築物適用狀態尚未確認。`));
     }else{
-      statusHtml+=lpgStatusBlock('第73-2條新建建築物容器位置','warn','建築物適用狀態尚未確認。','若要用第73-2條，請確認建照掛件日期。');
+      statusBlocks.push(lpgStatusBlock('第73-2條新建建築物容器位置','warn','建築物適用狀態尚未確認。','若要用第73-2條，請確認建照掛件日期。'));
     }
   }else{
-    statusHtml+=lpgStatusBlock('第73-2條新建建築物容器位置','ok','目前選擇為既有建築物或111年6月30日前已掛件，不以第73-2條判斷。','仍應檢討第73條、第73-1條及其他安全缺失。');
+    statusBlocks.push(lpgStatusBlock('第73-2條新建建築物容器位置','ok','目前選擇為既有建築物或111年6月30日前已掛件，不以第73-2條判斷。','仍應檢討第73條、第73-1條及其他安全缺失。'));
   }
 
   const serialAmount=active>0?active:nonEmpty;
-  if(connect==='manifold'){
+  if(use==='factory'){
+    notes.push('消防署函釋曾說明，工廠以液化石油氣供製程使用者，不當然適用管理辦法第73-1條「使用液化石油氣容器營業場所」規定；如要處理，應另查適用之製造、儲存或處理場所規定。');
+    if(connect==='manifold'||caseKind==='serial'||safetyIds.length){
+      confirms.push('目前場所型態選為工廠製程使用，請勿直接以第73-1條串接營業場所開單；需先確認是否確屬營業場所供應設備，或改依其他高壓氣體場所規定檢討。');
+    }
+    statusBlocks.push(lpgStatusBlock('第73-1條串接使用場所','warn','目前選擇為工廠製程使用。','依消防署函釋，工廠製程用液化石油氣不宜直接套用第73-1條串接營業場所規定。'));
+  }else if(connect==='manifold'){
     if(serialAmount>1000){
-      issues.push({id:'sol',mode:'serial'});
-      facts.push(`一、稽查發現，${place}之容器串接使用場所，現場液化石油氣串接使用量計${lpgFmt(serialAmount)}公斤，超過法定上限1000公斤之規定（超出${lpgFmt(serialAmount-1000)}公斤）。\n二、違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第73-1條第1項規定。`);
-      statusHtml+=lpgStatusBlock('第73-1條串接使用量','bad',`串接使用量${lpgFmt(serialAmount)}公斤，已超過1000公斤。`);
+      addIssue('serial_over',{amount:lpgFmt(serialAmount),over:lpgFmt(serialAmount-1000)});
+      statusBlocks.push(lpgStatusBlock('第73-1條串接使用量','bad',`串接使用量${lpgFmt(serialAmount)}公斤，已超過1000公斤。`));
     }else if(serialAmount>=80){
       if(safetyIds.length){
-        issues.push({id:'sit',mode:'serial'});
         const defects=safetyIds.map(id=>LPG_SAFETY_TEXT[id]).filter(Boolean);
-        facts.push(`一、稽查發現，${place}之容器串接使用場所，現場液化石油氣串接使用量計${lpgFmt(serialAmount)}公斤，已達80公斤以上，惟現場有下列安全設施或管理缺失：${defects.join('、')}。\n二、上開情形違反公共危險物品及可燃性高壓氣體製造儲存處理場所設置標準暨安全管理辦法第73-1條第1項規定。`);
-        statusHtml+=lpgStatusBlock('第73-1條串接使用場所','bad',`串接使用量${lpgFmt(serialAmount)}公斤，已達80公斤以上，且有安全缺失。`,defects.join('、'));
+        addIssue('serial_safety',{amount:lpgFmt(serialAmount),defects:defects.join('、')});
+        statusBlocks.push(lpgStatusBlock('第73-1條串接使用場所','bad',`串接使用量${lpgFmt(serialAmount)}公斤，已達80公斤以上，且有安全缺失。`,defects.join('、')));
       }else{
-        statusHtml+=lpgStatusBlock('第73-1條串接使用場所','warn',`串接使用量${lpgFmt(serialAmount)}公斤，已達80公斤以上，屬第73-1條應檢討對象。`,'目前未勾選安全缺失，不能只因達80公斤就說違規；應檢查屋外設置、標示、防倒、漏氣警報器、導管等項目。');
+        statusBlocks.push(lpgStatusBlock('第73-1條串接使用場所','warn',`串接使用量${lpgFmt(serialAmount)}公斤，已達80公斤以上，屬第73-1條應檢討對象。`,'目前未勾選安全缺失，不能只因達80公斤就說違規；應檢查屋外設置、標示、防倒、漏氣警報器、導管等項目。'));
       }
     }else{
-      statusHtml+=lpgStatusBlock('第73-1條串接使用場所','ok',`串接使用量${lpgFmt(serialAmount)}公斤，未達80公斤。`);
+      statusBlocks.push(lpgStatusBlock('第73-1條串接使用場所','ok',`串接使用量${lpgFmt(serialAmount)}公斤，未達80公斤。`));
     }
   }else if(connect==='separate'){
     if(serialAmount>=80){
-      confirms.push('雖選擇分別連接設備，但同一場所使用量已達80公斤以上，需確認是否實際有共用管線或串接供氣。');
-      statusHtml+=lpgStatusBlock('第73-1條串接使用場所','warn',`目前輸入使用中容量${lpgFmt(serialAmount)}公斤，達80公斤以上。`,'若確實各鋼瓶分別連接不同設備，是否構成串接使用場所需依現場配管與主管機關認定。');
+      confirms.push('雖選擇分別連接設備，但同一場所使用量已達80公斤以上，需確認是否實際有共用管線或串接供氣；同一防火區劃內分別連接或混合單瓶供氣，仍可能需合併計算。只有在無開口且具1小時以上防火時效牆壁或樓地板區劃等條件下，才可評估分別計算。');
+      statusBlocks.push(lpgStatusBlock('第73-1條串接使用場所','warn',`目前輸入使用中容量${lpgFmt(serialAmount)}公斤，達80公斤以上。`,'只有在無開口且具1小時以上防火時效之牆壁或樓地板區劃等條件下，才可評估分別計算。'));
     }else{
-      statusHtml+=lpgStatusBlock('第73-1條串接使用場所','ok',`各鋼瓶分別連接不同設備，使用中容量${lpgFmt(serialAmount)}公斤，未達80公斤。`,'例如3支20公斤分別連接炒鍋、湯鍋、蒸籠機，合計60公斤，不能直接開成串接場所違規。');
+      statusBlocks.push(lpgStatusBlock('第73-1條串接使用場所','ok',`各鋼瓶分別連接不同設備，使用中容量${lpgFmt(serialAmount)}公斤，未達80公斤。`,'例如3支20公斤分別連接炒鍋、湯鍋、蒸籠機，合計60公斤，不能直接開成串接場所違規。'));
     }
   }else{
     if(serialAmount>=80)confirms.push('供氣方式尚未確認且使用量達80公斤以上，需確認是否屬容器串接使用場所。');
-    statusHtml+=lpgStatusBlock('第73-1條串接使用場所','warn','供氣連接方式尚未確認。','請確認是多支鋼瓶串接或共用管線，還是各鋼瓶分別連接不同設備。');
+    statusBlocks.push(lpgStatusBlock('第73-1條串接使用場所','warn','供氣連接方式尚未確認。','請確認是多支鋼瓶串接或共用管線，還是各鋼瓶分別連接不同設備。'));
   }
 
-  const factsText=facts.length?facts.join('\n\n'):'目前依輸入資料未自動判定可直接開單的液化石油氣違規事實；仍應依現場其他缺失另行檢討。';
+  LPG_ADMIN_IDS.forEach(id=>{
+    if(lpgChecked(id))addIssue(id.replace('lpg_',''));
+  });
+
+  const cylAssessment=lpgCylinderDateAssessment(issueDate);
+  const cylIds=lpgUnique([...LPG_CYL_IDS.filter(id=>lpgChecked(id)),...cylAssessment.autoIds]);
+  notes.push(...cylAssessment.notes);
+  if(cylIds.length){
+    const problemText=cylIds.map(id=>({
+      lpg_cyl_expired:'逾期未檢驗',
+      lpg_cyl_no_mark:'未有合格標示',
+      lpg_cyl_mark_altered:'合格標識遭塗改',
+      lpg_cyl_mark_dirty:'合格標識污損',
+      lpg_cyl_over_age:'逾使用年限未汰換'
+    }[id])).filter(Boolean).join('、');
+    addIssue('cylinder_problem',{problems:problemText});
+  }
+
+  const fillArticle=fillArticleSel==='77'?'77':(fillArticleSel==='78'?'78':'77或78');
+  const hasFillIssue=LPG_FILL_IDS.some(lpgChecked);
+  const fillConfirmed=fillFact==='confirmed';
+  if(hasFillIssue&&!fillConfirmed){
+    confirms.push('已勾選違規灌裝類型，但尚未確認正在灌裝或已完成灌裝；若只是置於灌裝臺或分裝場附近，請先補查，暫不直接引用消防法第15條、第42條及管理辦法第77條或第78條。');
+    evidence.push('補拍或補查灌裝事實，例如灌裝中影像、已充填容器流向、分裝紀錄、待檢驗標示及相關紀錄。');
+  }
+  if(lpgChecked('lpg_fill_expired')&&fillConfirmed)addIssue('illegal_fill_expired',{article:fillArticle});
+  if(lpgChecked('lpg_fill_no_mark')&&fillConfirmed)addIssue('illegal_fill_no_mark');
+  if(lpgChecked('lpg_fill_bad_body')&&fillConfirmed)addIssue('illegal_fill_bad_body');
+  if(lpgChecked('lpg_fill_bad_body')){
+    notes.push('腐蝕、變形或無法直立容器若僅在灌裝前被發現、尚未灌氣，依消防署函釋應提醒業者不得灌裝，尚不宜直接認定第78條違規。');
+  }
+  if(hasFillIssue&&fillArticleSel==='unknown'){
+    confirms.push('已勾選違規灌裝行為，但尚未確認應引用第77條或第78條；請補查是否為分裝場外灌氣，或分裝場灌裝前未確認容器。');
+  }
+  if(cylIds.length&&!hasFillIssue){
+    notes.push('目前僅有鋼瓶本身問題，未勾選違規灌裝行為；預設不引用消防法第15條、第42條或管理辦法第77條、第78條。');
+  }
+  if(cylIds.length&&hasFillIssue&&fillConfirmed){
+    notes.push('同案同時有鋼瓶本身問題與違規灌裝行為時，請分別敘明事實，不要把消防法第15-4條、第42-2條與第15條、第42條混成同一個構成要件。');
+  }else if(cylIds.length&&hasFillIssue&&!fillConfirmed){
+    notes.push('目前已有鋼瓶本身問題，但灌裝事實尚未確認；請先以第15-4條、第42-2條檢討鋼瓶問題，待補足灌裝事證後再評估第15條、第42條。');
+  }
+  if(safetyIds.includes('lpg_bad_vent')){
+    notes.push('通風缺失採證請確認：機械通風設備是否可正常運轉並維持有效通風；自然通風口是否接近地板、約30公分以下，且非依賴平時不會開啟之門窗。');
+  }
+  if(supplierNoGas==='yes'||['lpg_bad_basement','lpg_bad_sign','lpg_bad_fix','lpg_bad_alarm'].some(id=>safetyIds.includes(id))){
+    notes.push('若符合瓦斯行不得供氣情形，可評估是否同時舉發瓦斯行與串接營業場所；但不得未經判斷就自動認定兩者皆違規。');
+  }
+  if(caseKind==='admin'&&!LPG_ADMIN_IDS.some(lpgChecked))confirms.push('主要態樣選擇「瓦斯行容器管理資料未定期申報」，請至少勾選一項消防法第15-2條缺失。');
+  if(caseKind==='cylinder'&&!cylIds.length&&!LPG_FILL_IDS.some(lpgChecked))confirms.push('主要態樣選擇「鋼瓶檢驗或標示問題」，請勾選鋼瓶本身問題，或填寫製造日期、檢驗期限、合格標示日期。');
+  if(caseKind==='truck'&&truckPlace==='none')confirms.push('主要態樣選擇「小貨車違規存放」，請選擇車輛停放於馬路旁或營業場所。');
+
+  statusHtml=statusBlocks.join('');
+  const maxDays=issues.reduce((m,x)=>Math.max(m,x.days||0),0);
+  const deadline=maxDays?`${maxDays}天，${lpgDeadlineSentence(maxDays,issueDate)}`:'待確認';
+  const judgement=issues.length?[
+    '一、判斷結果：',
+    `- 違規態樣：${lpgUnique(issues.map(x=>x.category)).join('；')}`,
+    `- 違反法條：${lpgUnique(issues.map(x=>x.violation)).join('；')}`,
+    `- 裁罰法條：${lpgUnique(issues.map(x=>x.penalty)).join('；')}`,
+    `- 管理辦法條文：${lpgUnique(issues.map(x=>x.management)).join('；')}`,
+    `- 限期改善天數：${deadline}`,
+  ].join('\n'):[
+    '一、判斷結果：',
+    '- 違規態樣：尚未依輸入資料判定可直接開單的液化石油氣違規態樣。',
+    '- 違反法條：待補充事實後判斷。',
+    '- 裁罰法條：待補充事實後判斷。',
+    '- 管理辦法條文：待補充事實後判斷。',
+    '- 限期改善天數：待確認。',
+  ].join('\n');
+  const factsText=issues.length?issues.map(x=>x.text).join('\n\n'):'目前依輸入資料未自動判定可直接開單的液化石油氣違規事實；請補充場所性質、數量、灌裝行為、鋼瓶標示或小貨車停放情境。';
+  const evidenceText=lpgUnique(evidence).length?lpgUnique(evidence).map(x=>`- ${x}`).join('\n'):'- 拍照、錄影、拍攝鋼瓶標示與數量，並確認場所性質及是否有灌裝行為。';
+  const noteLines=lpgUnique([...notes,...confirms,'限改日期自開單日起算，使用日曆天；BA單於空白處填寫限改日期，CA單於主旨、理由及法令依據欄位填寫限改日期。']);
+  const noteText=noteLines.length?noteLines.map(x=>`- ${x}`).join('\n'):'- 無。';
+  const outputText=[
+    judgement,
+    '',
+    '二、舉發單建議文字：',
+    factsText,
+    '',
+    '三、採證提醒：',
+    evidenceText,
+    '',
+    '四、注意事項：',
+    noteText,
+  ].join('\n');
+
   const confirmHtml=confirms.length?`<div class="law-box"><strong>開單前需再確認</strong><br>${confirms.map((x,i)=>`${i+1}. ${fwEsc(x)}`).join('<br>')}</div>`:'';
   const noteHtml=note?`<div class="alert-info" style="margin-top:10px"><strong>現場補充：</strong>${fwEsc(note)}</div>`:'';
-  const serialIds=[...new Set(issues.filter(x=>x.mode==='serial').map(x=>x.id))];
-  const retailIds=[...new Set(issues.filter(x=>x.mode==='retail').map(x=>x.id))];
+  const legacyIssues=issues.map(x=>x.legacy).filter(Boolean);
+  const serialIds=[...new Set(legacyIssues.filter(x=>x.mode==='serial').map(x=>x.id))];
+  const retailIds=[...new Set(legacyIssues.filter(x=>x.mode==='retail').map(x=>x.id))];
+  const fillIds=[...new Set(legacyIssues.filter(x=>x.mode==='fill').map(x=>x.id))];
   const applyBtns=[
     serialIds.length?`<button class="btn btn-gen" type="button" onclick="lpgApply('serial','${serialIds.join(',')}')">套用到容器串接使用場所選單</button>`:'',
-    retailIds.length?`<button class="btn btn-gen" type="button" onclick="lpgApply('retail','${retailIds.join(',')}')">套用到瓦斯行選單</button>`:''
+    retailIds.length?`<button class="btn btn-gen" type="button" onclick="lpgApply('retail','${retailIds.join(',')}')">套用到瓦斯行選單</button>`:'',
+    fillIds.length?`<button class="btn btn-gen" type="button" onclick="lpgApply('fill','${fillIds.join(',')}')">套用到分裝場選單</button>`:''
   ].filter(Boolean).join('');
   result.innerHTML=`
     <div class="lpg-summary">
@@ -2669,7 +3115,7 @@ function runLpgGuide(){
     ${statusHtml}
     ${confirmHtml}
     ${noteHtml}
-    <div class="output-area" id="lpgFacts" style="margin-top:12px">${fwEsc(factsText)}</div>
+    <div class="output-area" id="lpgFacts" style="margin-top:12px">${fwEsc(outputText)}</div>
     <div class="btn-row">
       <button class="btn btn-cpy" type="button" onclick="lpgCopyFacts()">複製判斷文字</button>
       ${applyBtns}
@@ -2699,12 +3145,14 @@ function lpgCopyFacts(){
 }
 function resetLpgGuide(){
   const rows=document.getElementById('lpgRows');if(rows)rows.innerHTML='';
-  ['lpg_bad_basement','lpg_bad_sign','lpg_bad_fix','lpg_bad_alarm'].forEach(id=>{
+  LPG_CHECK_IDS.forEach(id=>{
     const el=document.getElementById(id);if(el){el.checked=false;el.closest('.cb-item')?.classList.remove('on');}
   });
-  const defaults={lpg_use:'business',lpg_building:'existing',lpg_location:'indoor',lpg_indoor_def:'yes',lpg_connect:'separate',lpg_count_basis:'total'};
+  const defaults={lpg_case_kind:'auto',lpg_use:'business',lpg_building:'existing',lpg_location:'indoor',lpg_indoor_def:'yes',lpg_connect:'separate',lpg_count_basis:'total',lpg_truck_place:'none',lpg_fill_article:'78',lpg_fill_fact:'confirmed',lpg_supplier_no_gas:'unknown'};
   Object.entries(defaults).forEach(([id,val])=>{const el=document.getElementById(id);if(el)el.value=val;});
-  ['lpg_place','lpg_note'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['lpg_place','lpg_note','lpg_truck_plate','lpg_mfg_date','lpg_next_date','lpg_mark_date'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const vd=document.getElementById('lpg_video_minutes');if(vd)vd.value='15';
+  const issue=document.getElementById('lpg_issue_date');if(issue)issue.value=lpgTodayInput();
   addLpgRow(20,3,'active');
   runLpgGuide();
 }
