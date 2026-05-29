@@ -60,6 +60,11 @@ button,.btn-link{border:none;border-radius:8px;padding:9px 15px;font-family:inhe
 .checkbox-row{display:flex;gap:9px;align-items:flex-start;border:1.5px solid #e2e8f0;border-radius:8px;padding:10px 12px;background:#fff}
 .checkbox-row input{margin-top:4px;accent-color:#17324d;transform:scale(1.16)}
 .checkbox-row span{line-height:1.65}
+.optional-panel{border:1.5px dashed #93c5fd;border-radius:10px;background:#f8fafc;padding:14px}
+.optional-panel summary{cursor:pointer;color:#17324d;font-weight:800;list-style:none}
+.optional-panel summary::-webkit-details-marker{display:none}
+.optional-panel summary::before{content:'+';display:inline-flex;width:20px;height:20px;margin-right:8px;align-items:center;justify-content:center;border-radius:999px;background:#dbeafe;color:#17324d}
+.optional-panel[open] summary::before{content:'-'}
 @media(max-width:860px){.grid,.three,.fields{grid-template-columns:1fr}.preview-grid{grid-template-columns:repeat(2,minmax(0,1fr))}header h1{font-size:1.3rem}}
 @media(max-width:560px){.preview-grid{grid-template-columns:1fr}.compare{display:block;overflow-x:auto}}
 </style>
@@ -72,7 +77,6 @@ button,.btn-link{border:none;border-radius:8px;padding:9px 15px;font-family:inhe
     <a href="index.html">回主頁</a>
     <a href="舉發單填寫助手.html">舉發單填寫助手</a>
     <a href="危物案件式填寫助手.html">危物檢查紀錄表</a>
-    <a href="https://github.com/ahdaq002-cyber/weiwu119v1/discussions/new/choose" target="_blank" rel="noopener">回報此頁問題</a>
   </div>
 </header>
 
@@ -92,20 +96,12 @@ button,.btn-link{border:none;border-radius:8px;padding:9px 15px;font-family:inhe
         <input id="sdsFiles" type="file" accept="image/*" capture="environment" multiple onchange="previewFiles('sds')">
         <div class="help">建議拍 SDS 第 1 節產品資訊、第 2 節危害辨識、第 3 節成分/CAS、第 9 節閃火點等物性資料、第 14 節 UN 運送資料。</div>
         <div id="sdsPreview" class="preview-grid"></div>
-        <div class="btn-row">
-          <button class="primary" type="button" onclick="runOcr('sds')">讀取 SDS 照片文字</button>
-        </div>
-        <div id="sdsProgress" class="progress">尚未讀取 SDS 照片。</div>
       </div>
       <div class="upload">
         <label for="itemFiles">現場物品照片<span class="req">建議正反面</span></label>
         <input id="itemFiles" type="file" accept="image/*" capture="environment" multiple onchange="previewFiles('item')">
         <div class="help">建議拍品名、廠商/品牌、容量、批號、危害圖示、警示語；標籤字太小時補拍近照。</div>
         <div id="itemPreview" class="preview-grid"></div>
-        <div class="btn-row">
-          <button class="primary" type="button" onclick="runOcr('item')">讀取現場照片文字</button>
-        </div>
-        <div id="itemProgress" class="progress">尚未讀取現場物品照片。</div>
       </div>
       <div class="span checkbox-row">
         <input id="operatorSds" type="checkbox" onchange="compareNow()">
@@ -115,33 +111,13 @@ button,.btn-link{border:none;border-radius:8px;padding:9px 15px;font-family:inhe
   </div>
 
   <div class="card">
-    <div class="title"><span class="badge">2</span>文字辨識結果</div>
-    <div class="info" style="margin-bottom:12px">
-      照片文字辨識會先在瀏覽器內讀字，第一次使用可能需載入辨識資料。辨識錯字很常見，請先修正下列文字，再按「擷取欄位並核對」。
-    </div>
-    <div class="grid">
-      <div>
-        <label for="sdsText">SDS 讀到的文字</label>
-        <textarea id="sdsText" placeholder="可由上方自動讀取，也可自行貼上 SDS 關鍵頁文字。" oninput="clearCompareHint()"></textarea>
-      </div>
-      <div>
-        <label for="itemText">現場物品標籤讀到的文字</label>
-        <textarea id="itemText" placeholder="可由上方自動讀取，也可自行貼上現場標籤文字。" oninput="clearCompareHint()"></textarea>
-      </div>
-    </div>
-    <div class="btn-row">
-      <button class="teal" type="button" onclick="extractAndCompare()">擷取欄位並核對</button>
-      <button class="light" type="button" onclick="resetAll()">清空重填</button>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="title"><span class="badge">3</span>擷取欄位，可人工修正</div>
+    <div class="title"><span class="badge">2</span>人工填寫關鍵欄位</div>
+    <div class="info" style="margin-bottom:12px">先從 SDS 與現場照片填下列欄位即可核對。至少先填 SDS 產品名稱與現場標籤品名；廠商、CAS、UN 有資料時再補，核對會更穩。</div>
     <div class="fields">
       <div class="field-group">
         <h3>SDS 關鍵資料</h3>
         <div class="stack">
-          <div><label for="sdsName">產品名稱</label><input id="sdsName" oninput="compareNow()"></div>
+          <div><label for="sdsName">產品名稱<span class="req">必填</span></label><input id="sdsName" oninput="compareNow()"></div>
           <div><label for="sdsMaker">製造商/供應商</label><input id="sdsMaker" oninput="compareNow()"></div>
           <div><label for="sdsCas">CAS No.</label><input id="sdsCas" placeholder="多筆用逗號分開" oninput="compareNow()"></div>
           <div><label for="sdsUn">UN No.</label><input id="sdsUn" placeholder="例：UN 1219" oninput="compareNow()"></div>
@@ -153,7 +129,7 @@ button,.btn-link{border:none;border-radius:8px;padding:9px 15px;font-family:inhe
       <div class="field-group">
         <h3>現場物品關鍵資料</h3>
         <div class="stack">
-          <div><label for="itemName">標籤品名/商品名</label><input id="itemName" oninput="compareNow()"></div>
+          <div><label for="itemName">標籤品名/商品名<span class="req">必填</span></label><input id="itemName" oninput="compareNow()"></div>
           <div><label for="itemMaker">標籤廠商/品牌</label><input id="itemMaker" oninput="compareNow()"></div>
           <div><label for="itemCas">標籤 CAS No.</label><input id="itemCas" placeholder="標籤沒有可留空" oninput="compareNow()"></div>
           <div><label for="itemUn">標籤 UN No.</label><input id="itemUn" placeholder="標籤沒有可留空" oninput="compareNow()"></div>
@@ -163,21 +139,75 @@ button,.btn-link{border:none;border-radius:8px;padding:9px 15px;font-family:inhe
         </div>
       </div>
     </div>
+    <div class="btn-row">
+      <button class="teal" type="button" onclick="compareNow()">依人工欄位核對</button>
+      <button class="light" type="button" onclick="resetAll()">清空重填</button>
+    </div>
   </div>
 
   <div class="card">
-    <div class="title"><span class="badge">4</span>核對結果</div>
-    <div id="compareStatus" class="status need">尚未完成核對。請先上傳照片或貼入文字，再擷取欄位。</div>
+    <div class="title"><span class="badge">選用</span>照片文字辨識輔助</div>
+    <div class="note" style="margin-bottom:12px">目前中文照片文字辨識不穩，這裡只保留成選用輔助。直接人工填寫上方關鍵欄位即可，不必先做文字辨識。</div>
+    <details class="optional-panel">
+      <summary>展開文字辨識與貼字區</summary>
+      <div class="grid" style="margin-top:12px">
+        <div>
+          <label for="sdsText">SDS 讀到或貼上的文字</label>
+          <textarea id="sdsText" placeholder="可試讀 SDS 照片，也可自行貼上 SDS 關鍵頁文字。" oninput="clearCompareHint()"></textarea>
+          <div class="btn-row">
+            <button class="primary" type="button" onclick="runOcr('sds')">試讀 SDS 照片文字</button>
+          </div>
+          <div id="sdsProgress" class="progress">尚未使用 SDS 文字辨識。</div>
+        </div>
+        <div>
+          <label for="itemText">現場標籤讀到或貼上的文字</label>
+          <textarea id="itemText" placeholder="可試讀現場物品照片，也可自行貼上標籤文字。" oninput="clearCompareHint()"></textarea>
+          <div class="btn-row">
+            <button class="primary" type="button" onclick="runOcr('item')">試讀現場照片文字</button>
+          </div>
+          <div id="itemProgress" class="progress">尚未使用現場照片文字辨識。</div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="teal" type="button" onclick="extractAndCompare()">從文字擷取欄位並核對</button>
+      </div>
+    </details>
+  </div>
+
+  <div class="card">
+    <div class="title"><span class="badge">3</span>核對結果</div>
+    <div id="compareStatus" class="status need">尚未完成核對。請先填寫 SDS 與現場物品的關鍵欄位；文字辨識可略過。</div>
     <div id="compareTable"></div>
     <div id="fireCheck" class="status partial">消防判斷前提醒會在核對後顯示。</div>
   </div>
 
   <div class="card">
-    <div class="title"><span class="badge">5</span>可複製核對摘要</div>
+    <div class="title"><span class="badge">4</span>可複製核對摘要</div>
     <div class="btn-row" style="margin-bottom:12px">
       <button class="teal" type="button" onclick="copySummary()">複製摘要</button>
     </div>
     <div id="summaryOut" class="output">尚未產生。</div>
+  </div>
+
+  <div class="card" id="commentBoard">
+    <div class="title"><span class="badge">留言板</span>意見回饋</div>
+    <div class="info" style="margin-bottom:14px">請在留言中註明「SDS 與現場物品核對」、問題位置與希望修正的內容，避免放入個資或案件敏感資料。若留言板未載入，可改用 <a href="https://github.com/ahdaq002-cyber/weiwu119/discussions/new/choose" target="_blank" rel="noopener">GitHub Discussions 留言板</a>。</div>
+    <script src="https://giscus.app/client.js"
+            data-repo="ahdaq002-cyber/weiwu119"
+            data-repo-id="R_kgDOSTyI6A"
+            data-category="General"
+            data-category-id="DIC_kwDOSTyI6M4C8UKZ"
+            data-mapping="specific"
+            data-term="舉發單填寫助手改進留言板"
+            data-strict="0"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-theme="preferred_color_scheme"
+            data-lang="zh-TW"
+            crossorigin="anonymous"
+            async>
+    </script>
   </div>
 </div>
 
@@ -453,8 +483,8 @@ function resetAll(){
   });
   fileStore.sds=[];fileStore.item=[];
   $('sdsPreview').innerHTML='';$('itemPreview').innerHTML='';
-  $('sdsProgress').textContent='尚未讀取 SDS 照片。';$('itemProgress').textContent='尚未讀取現場物品照片。';
-  $('compareStatus').className='status need';$('compareStatus').textContent='尚未完成核對。請先上傳照片或貼入文字，再擷取欄位。';
+  $('sdsProgress').textContent='尚未使用 SDS 文字辨識。';$('itemProgress').textContent='尚未使用現場照片文字辨識。';
+  $('compareStatus').className='status need';$('compareStatus').textContent='尚未完成核對。請先填寫 SDS 與現場物品的關鍵欄位；文字辨識可略過。';
   $('compareTable').innerHTML='';
   $('fireCheck').className='status partial';$('fireCheck').textContent='消防判斷前提醒會在核對後顯示。';
   $('summaryOut').textContent='尚未產生。';
